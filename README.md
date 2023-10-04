@@ -15,4 +15,9 @@ pnpm i # pnpm is required
 - Run the development server:
 ```bash
 npm run dev 
+<<<<<<< HEAD
 ```
+=======
+```
+## Deployment guide
+>>>>>>> ECO-548 add deploy guide
