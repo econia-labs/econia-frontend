@@ -2,7 +2,7 @@
 SUBMODULE_GITHUB=github.com/tradingview/charting_library.git
 
 # .gitmodules submodule path
-SUBMODULE_PATH=src/frontend/public/static
+SUBMODULE_PATH=public/static
 
 # github access token is necessary
 # add it to Environment Variables on Vercel
