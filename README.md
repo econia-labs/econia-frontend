@@ -16,3 +16,5 @@ pnpm i # pnpm is required
 ```bash
 npm run dev 
 ```
+## Deployment
+- Just merge pull request to develop branch
