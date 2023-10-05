@@ -2,7 +2,8 @@
 ## Getting Started
 - Pull  [TradingView Submodule](https://github.com/tradingview/charting_library)
 ```bash
-git submodule update
+git submodule int # only first time
+git submodule update # only first time
 ```
 - Change directory to frontend folder
 ```bash
