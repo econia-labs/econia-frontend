@@ -26,6 +26,6 @@ jobs:
     #   - name: Deploy Project Artifacts to Vercel
     #     run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
       - name: Deploy to Vercel
-        uses: vercel/actions/deploy@v21
+        uses: vercel/actions/deploy@v2
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
