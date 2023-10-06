@@ -18,7 +18,9 @@ jobs:
       - name: Configure pnpm
         run: npm install -g pnpm
       - name: Initialize Submodules
-        run: git submodule update --init --recursive            
+        run: git submodule update --init --recursive    
+      - name: Change directory
+        run: cd src/frontend            
       - name: Install Vercel CLI
         run: pnpm install
       - name: Pull Vercel Environment Information
