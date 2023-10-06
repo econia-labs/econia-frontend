@@ -19,13 +19,10 @@ jobs:
         run: npm install -g pnpm
       - name: Initialize Submodules
         run: git submodule update --init --recursive    
-      - name: Change directory
+      - name: Install Vercel CLI
         run: |
             cd src/frontend
             ls            
-      - name: Install Vercel CLI
-        run: |
-            ls
             pnpm install
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
