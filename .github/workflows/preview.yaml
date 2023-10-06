@@ -15,6 +15,8 @@ jobs:
             echo "${{ secrets.ECONIA_CI_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
             chmod 600 ~/.ssh/id_rsa
             ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+      - name: Configure pnpm
+        run: npm install -g pnpm
       - name: Initialize Submodules
         run: git submodule update --init --recursive            
       - name: Install Vercel CLI
