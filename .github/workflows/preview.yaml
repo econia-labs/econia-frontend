@@ -1,0 +1,31 @@
+name: GitHub Actions Vercel Preview Deployment
+on:
+    pull_request:
+        types:
+          - opened
+          - synchronize
+jobs:
+  Deploy-Preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Configure Git
+        run: |
+            mkdir -p ~/.ssh
+            echo "${{ secrets.ECONIA_CI_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+            ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+      - name: Initialize Submodules
+        run: git submodule update --init --recursive            
+    #   - name: Install Vercel CLI
+    #     run: npm install --global vercel@canary
+    #   - name: Pull Vercel Environment Information
+    #     run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+    #   - name: Build Project Artifacts
+    #     run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+    #   - name: Deploy Project Artifacts to Vercel
+    #     run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy to Vercel
+        uses: vercel/actions/deploy@v21
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
