@@ -37,23 +37,22 @@ npm run dev
 
 To deploy on Vercel, you'll need to set up the following environment variables:
 
-| Variable                   | Meaning                                                                               |
-| -------------------------- | ------------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_ECONIA_ADDR`  | The Econia address                                                                    |
-| `NEXT_PUBLIC_FAUCET_ADDR`  | The Econia faucet address                                                             |
-| `NEXT_PUBLIC_NETWORK_NAME` | The network name ex: testnet                                                          |
-| `NEXT_PUBLIC_API_URL`      | The Econia restfull backend url                                                       |
-| `NEXT_PUBLIC_API_URL`      | The Econia websocket backend url                                                      |
-| `NEXT_PUBLIC_WS_URL`       | The Econia backend url                                                                |
-| `GITHUB_ACCESS_TOKEN`      | Access token for GitHub account with TradingView repo access (Only require in vercel) |
+| Variable                   | Meaning                                                                                |
+| -------------------------- | -------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_ECONIA_ADDR`  | The Econia address                                                                     |
+| `NEXT_PUBLIC_FAUCET_ADDR`  | The Econia faucet address                                                              |
+| `NEXT_PUBLIC_NETWORK_NAME` | The network name (for example, testnet)                                                |
+| `NEXT_PUBLIC_API_URL`      | The Econia REST API URL                                                                |
+| `NEXT_PUBLIC_WS_URL`       | The Econia WebSockets API URL                                                          |
+| `GITHUB_ACCESS_TOKEN`      | Access token for GitHub account with TradingView repo access (only required in Vercel) |
 
 ### Generating a `GITHUB_ACCESS_TOKEN`
 
-To generate a GITHUB_ACCESS_TOKEN, follow these steps:
+To generate a `GITHUB_ACCESS_TOKEN`:
 
-- Go to https://github.com/settings/tokens/new
-- Provide a descriptive `note`.
-- In `Expiration` selection box, chooes `No expiration`
-- In the `Select scopes` section, click on `repo - Full control of private repositories` to select all repository-related options.
-- Click `Generate token`
-- Copy the generated token a replace the `GITHUB_ACCESS_TOKEN` environment variable in vercel with this token.
+1. Go to https://github.com/settings/tokens/new
+1. Provide a descriptive `note`.
+1. In `Expiration` selection box, choose `No expiration`
+1. In the `Select scopes` section, click on `repo - Full control of private repositories` to select all repository-related options.
+1. Click `Generate token`
+1. Copy the generated token to your Vercel environment variables and name it `GITHUB_ACCESS_TOKEN`
