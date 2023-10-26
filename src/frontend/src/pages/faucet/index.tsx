@@ -18,8 +18,8 @@ import { fromRawCoinAmount } from "@/utils/coin";
 import { TypeTag } from "@/utils/TypeTag";
 
 const TYPE_TAGS = [
-  new TypeTag(FAUCET_ADDR, "test_eth", "TestETHCoin"),
-  new TypeTag(FAUCET_ADDR, "test_usdc", "TestUSDCoin"),
+  new TypeTag(FAUCET_ADDR, "example_apt", "ExampleAPT"),
+  new TypeTag(FAUCET_ADDR, "example_usdc", "ExampleUSDC"),
 ] as const;
 const AMOUNTS = [0.1, 1000];
 
@@ -68,7 +68,7 @@ export default function Faucet({
       try {
         await signAndSubmitTransaction({
           type: "entry_function_payload",
-          function: `${FAUCET_ADDR}::test_coin::mint`,
+          function: `${FAUCET_ADDR}::faucet::mint`,
           type_arguments: [typeTag.toString()],
           arguments: [Math.floor(AMOUNTS[i] * 10 ** coinInfoList[i].decimals)],
         });
