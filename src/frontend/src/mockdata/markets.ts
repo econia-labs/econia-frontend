@@ -3,24 +3,24 @@ import { type ApiMarket } from "@/types/api";
 export const MOCK_MARKETS: ApiMarket[] = [
   {
     market_id: 1,
-    name: "tETH-tUSDC",
+    name: "eAPT-eUSDC",
     base: {
       account_address:
-        "0x7c36a610d1cde8853a692c057e7bd2479ba9d5eeaeceafa24f125c23d2abf942",
-      module_name: "test_eth",
-      struct_name: "TestETHCoin",
-      symbol: "tETH",
-      name: "TestETHCoin",
+        "0xc0de11113b427d35ece1d8991865a941c0578b0f349acabbe9753863c24109ff",
+      module_name: "example_apt",
+      struct_name: "ExampleAPT",
+      symbol: "eAPT",
+      name: "ExampleAPT",
       decimals: 8,
     },
     base_name_generic: "",
     quote: {
       account_address:
-        "0x7c36a610d1cde8853a692c057e7bd2479ba9d5eeaeceafa24f125c23d2abf942",
-      module_name: "test_usdc",
-      struct_name: "TestUSDCoin",
-      symbol: "tUSDC",
-      name: "TestUSDCoin",
+        "0xc0de11113b427d35ece1d8991865a941c0578b0f349acabbe9753863c24109ff",
+      module_name: "example_usdc",
+      struct_name: "ExampleUSDC",
+      symbol: "eUSDC",
+      name: "ExampleUSDC",
       decimals: 6,
     },
     lot_size: 1,
