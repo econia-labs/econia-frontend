@@ -21,7 +21,7 @@ const TYPE_TAGS = [
   new TypeTag(FAUCET_ADDR, "example_apt", "ExampleAPT"),
   new TypeTag(FAUCET_ADDR, "example_usdc", "ExampleUSDC"),
 ] as const;
-const AMOUNTS = [0.1, 1000];
+const AMOUNTS = [100, 600];
 
 export default function Faucet({
   allMarketData,
