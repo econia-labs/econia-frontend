@@ -24,11 +24,11 @@ export const TradeHistoryTable: React.FC<{
           market_order_id: 0,
           market_id: 0,
           side: "bid",
-          size: 1000,
+          remaining_size: 1000,
           price: 1000,
           user_address: "0x1",
           custodian_id: null,
-          order_state: "filled",
+          order_status: "filled",
           created_at: "2023-04-30T12:34:56.789012Z",
         },
       ] as ApiOrder[];
@@ -46,7 +46,7 @@ export const TradeHistoryTable: React.FC<{
         cell: (info) => info.getValue(),
         header: () => "PRICE",
       }),
-      columnHelper.accessor("size", {
+      columnHelper.accessor("remaining_size", {
         cell: (info) => info.getValue(),
         header: () => "AMOUNT",
       }),

@@ -17,6 +17,7 @@ import { type ApiMarket, type ApiOrder } from "@/types/api";
 
 import bg from "../../../public/bg.png";
 import { ConnectedButton } from "../ConnectedButton";
+import { API_URL } from "@/env";
 
 type TableOrder = ApiOrder & { total: number };
 
@@ -24,8 +25,9 @@ const columnHelper = createColumnHelper<TableOrder>();
 
 export const OrdersTable: React.FC<{
   className?: string;
+  market_id: number;
   allMarketData: ApiMarket[];
-}> = ({ className, allMarketData }) => {
+}> = ({ className, market_id, allMarketData }) => {
   const { connected, account } = useWallet();
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -33,24 +35,14 @@ export const OrdersTable: React.FC<{
   const { data, isLoading } = useQuery<TableOrder[]>(
     ["useUserOrders", account?.address],
     async () => {
-      if (!account) return [];
-      const apiOrders: ApiOrder[] = [...Array(20).keys()].map((i) => ({
-        market_order_id: i,
-        market_id: 1,
-        side: i % 2 === 0 ? "bid" : "ask",
-        size: (i + 1) * 10,
-        price: (i + 1) * 100,
-        user_address: "0x1",
-        custodian_id: null,
-        order_state: "open",
-        created_at: new Date(
-          new Date("2023-05-01T12:34:56.789012Z").getTime() +
-            (i + 1) * 86400000,
-        ).toISOString(),
-      }));
-      const orders: TableOrder[] = apiOrders.map((order) => ({
+      // if (!account) return [];
+      const response = await fetch(
+        `${API_URL}/limit_orders?order_status=eq.open&order=last_increase_stamp.asc&market_id=eq.${market_id}`,
+      );
+      const data = await response.json();
+      const orders: TableOrder[] = data.map((order: TableOrder) => ({
         ...order,
-        total: order.price * order.size,
+        total: order.price * order.remaining_size,
       }));
       return orders;
       // TODO: Need working API
@@ -113,7 +105,7 @@ export const OrdersTable: React.FC<{
             marketById.get(info.row.original.market_id)?.quote.symbol ?? ""
           }`,
       }),
-      columnHelper.accessor("size", {
+      columnHelper.accessor("remaining_size", {
         cell: (info) =>
           `${info.getValue()} ${
             marketById.get(info.row.original.market_id)?.base?.symbol ?? ""
@@ -126,7 +118,7 @@ export const OrdersTable: React.FC<{
           return `${total} ${marketById.get(market_id)?.quote?.symbol ?? ""}`;
         },
       }),
-      columnHelper.accessor("order_state", {
+      columnHelper.accessor("order_status", {
         header: "Status",
         cell: (info) => {
           const value = info.getValue();
