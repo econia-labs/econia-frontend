@@ -35,6 +35,7 @@ export const OrdersTable: React.FC<{
     async () => {
       if (!account) return [];
       const apiOrders: ApiOrder[] = [...Array(20).keys()].map((i) => ({
+        name: "",
         market_order_id: i,
         market_id: 1,
         side: i % 2 === 0 ? "bid" : "ask",
