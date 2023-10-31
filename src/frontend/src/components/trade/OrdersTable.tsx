@@ -126,7 +126,7 @@ export const OrdersTable: React.FC<{
             return <span className="text-green">{value.toUpperCase()}</span>;
           }
           // TODO colors for other order statuses?
-          return value!!.toUpperCase();
+          return value.toUpperCase();
         },
       }),
     ],

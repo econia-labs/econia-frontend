@@ -363,7 +363,10 @@ export default function Market({ allMarketData, marketData }: Props) {
                 <p className="font-jost font-bold text-white">Orders</p>
               </div>
 
-              <OrdersTable market_id={marketData.market_id} allMarketData={allMarketData} />
+              <OrdersTable
+                market_id={marketData?.market_id}
+                allMarketData={allMarketData}
+              />
             </div>
           </div>
           <div className="flex min-w-[268px] py-3 pr-3">

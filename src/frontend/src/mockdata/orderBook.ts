@@ -1,4 +1,4 @@
-import { Orderbook } from "@/types/global";
+import { type Orderbook } from "@/types/global";
 
 export const mockOrderbook: Orderbook = {
   bids: [

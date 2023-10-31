@@ -19,7 +19,7 @@ export const useOrderBook = (
       // const data = await response.json();
       // return data as Orderbook;
 
-      return mockOrderbook
+      return mockOrderbook as Orderbook;
     },
     { keepPreviousData: true, refetchOnWindowFocus: false },
   );
