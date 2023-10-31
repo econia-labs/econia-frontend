@@ -7,6 +7,7 @@ import { type Orderbook, type PriceLevel } from "@/types/global";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 import { averageOrOtherPriceLevel } from "@/utils/formatter";
 import Skeleton from "react-loading-skeleton";
+import { mockOrderbook } from "@/mockdata/orderBook";
 
 // const precisionOptions: Precision[] = [
 //   "0.01",
@@ -121,24 +122,28 @@ export function OrderbookTable({
   }, [isFetching]);
 
   const midPrice: PriceLevel | undefined = useMemo(() => {
-    if (data == null) {
+    if (mockOrderbook == null) {
       return undefined;
     }
     return averageOrOtherPriceLevel(
-      data.asks ? data.asks[0] : undefined,
-      data.bids ? data.bids[0] : undefined,
+      mockOrderbook.asks ? mockOrderbook.asks[0] : undefined,
+      mockOrderbook.bids ? mockOrderbook.bids[0] : undefined,
     );
-  }, [data]);
+  }, [mockOrderbook]);
 
   const highestSize = useMemo(() => {
-    if (data == null) {
-      return 0;
-    }
-    return Math.max(
-      ...data.asks.map((order) => order.size),
-      ...data.bids.map((order) => order.size),
-    );
-  }, [data]);
+    if (!mockOrderbook) return 0;
+
+    const asks = mockOrderbook.asks || [];
+    const bids = mockOrderbook.bids || [];
+
+    const askSizes = asks.map((order) => order.size);
+    const bidSizes = bids.map((order) => order.size);
+
+    const allSizes = [...askSizes, ...bidSizes];
+
+    return Math.max(...allSizes);
+  }, [mockOrderbook]);
 
   return (
     <div className="flex grow flex-col">
@@ -209,8 +214,8 @@ export function OrderbookTable({
         ) : (
           <div className="absolute w-full">
             {/* ASK */}
-            {data?.asks
-              .slice()
+            {mockOrderbook?.asks
+              ?.slice()
               .reverse()
               .map((level) => (
                 <Row
@@ -219,7 +224,7 @@ export function OrderbookTable({
                   key={`ask-${level.price}-${level.size}`}
                   highestSize={highestSize}
                   marketData={marketData}
-                  updatedLevel={data.updatedLevel}
+                  updatedLevel={mockOrderbook.updatedLevel}
                 />
               ))}
             {/* SPREAD */}
@@ -241,14 +246,14 @@ export function OrderbookTable({
               </div>
             </div>
             {/* BID */}
-            {data?.bids.map((level) => (
+            {mockOrderbook?.bids?.map((level) => (
               <Row
                 level={level}
                 type={"bid"}
                 key={`bid-${level.price}-${level.size}`}
                 highestSize={highestSize}
                 marketData={marketData}
-                updatedLevel={data.updatedLevel}
+                updatedLevel={mockOrderbook.updatedLevel}
               />
             ))}
           </div>
