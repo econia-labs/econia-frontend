@@ -191,8 +191,8 @@ export default function Market({ allMarketData, marketData }: Props) {
 
       if (msg.event === "update") {
         if (msg.channel === "orders") {
-          const { order_state, market_order_id }: ApiOrder = msg.data;
-          switch (order_state) {
+          const { order_status, market_order_id }: ApiOrder = msg.data;
+          switch (order_status) {
             // TODO further discuss what toast text should be
             case "open":
               toast.success(
@@ -370,7 +370,10 @@ export default function Market({ allMarketData, marketData }: Props) {
                 <p className="font-jost font-bold text-white">Orders</p>
               </div>
 
-              <OrdersTable allMarketData={allMarketData} />
+              <OrdersTable
+                market_id={marketData?.market_id}
+                allMarketData={allMarketData}
+              />
             </div>
           </div>
           <div className="flex min-w-[268px] py-3 pr-3">
