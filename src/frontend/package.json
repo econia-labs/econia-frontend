@@ -55,5 +55,12 @@
     "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.3.0",
     "vercel-submodules": "^1.0.10"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "pnpm lint",
+      "pnpm format",
+      "git add ."
+    ]
   }
 }
