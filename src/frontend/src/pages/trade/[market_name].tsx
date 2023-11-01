@@ -336,7 +336,7 @@ export default function Market({ allMarketData, marketData }: Props) {
           <title>Not Found</title>
         </Head>
         <div className="flex min-h-screen flex-col">
-          <Header logoHref={`${allMarketData[0].name}`} />
+          <Header logoHref={`${allMarketData[0]?.name}`} />
           Market not found.
         </div>
       </>
