@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+const urlBase = process.env.NEXT_PUBLIC_API_URL_CHART;
 const nextConfig = {
   reactStrictMode: true,
   async redirects() {
@@ -23,6 +24,16 @@ const nextConfig = {
         hostname: "raw.githubusercontent.com",
       },
     ],
+  },
+  async rewrites() {
+    return process.env.NEXT_PUBLIC_ENVIRONMENT === "local"
+      ? [
+        {
+          source: "/api/:path*",
+          destination: `${urlBase}/:path*`,
+        },
+      ]
+      : [];
   },
 };
 

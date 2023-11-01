@@ -1,8 +1,19 @@
 import { useEffect, useMemo, useRef } from "react";
 
-import { API_URL } from "@/env";
-import { type ApiBar, type ApiMarket, type ApiResolution } from "@/types/api";
-import { TypeTag } from "@/utils/TypeTag";
+import {
+  type ApiBar,
+  type ApiMarket,
+  type ApiResolution,
+  type APITickerExchange,
+  type MarketData,
+} from "@/types/api";
+import {
+  generateSymbol,
+  getClientTimezone,
+  makeApiRequest,
+  makeApiRequestMin,
+  parseFullSymbol,
+} from "@/utils/helpers";
 
 import {
   type Bar,
@@ -15,8 +26,15 @@ import {
   type SearchSymbolResultItem,
   type Timezone,
   widget,
+  SeriesFormat,
+  VisiblePlotsSet,
 } from "../../../public/static/charting_library";
+import { white } from "tailwindcss/colors";
 
+type QueryParams = {
+  vs_currency: string;
+  days: string;
+};
 export interface ChartContainerProps {
   symbol: ChartingLibraryWidgetOptions["symbol"];
   interval: ChartingLibraryWidgetOptions["interval"];
@@ -44,9 +62,9 @@ const resolutions = [
   "15",
   "30",
   "60",
-  // "4H", // TODO: enable on backend
-  // "12H",
-  // "1D",
+  "4H",
+  "12H",
+  "1D",
 ] as ResolutionString[];
 
 const resolutionMap: Record<string, ApiResolution> = {
@@ -60,15 +78,29 @@ const resolutionMap: Record<string, ApiResolution> = {
   "1D": "1d",
 };
 
+type DataStatus = "streaming" | "endofday" | "pulsed" | "delayed_streaming";
+
 const configurationData: DatafeedConfiguration = {
   supported_resolutions: resolutions,
-  exchanges: [
-    {
-      value: "Econia",
-      name: "Econia",
-      desc: "econia",
-    },
-  ],
+  // exchanges: [
+  //   // {
+  //   //   value: "Pontem",
+  //   //   name: "Pontem",
+  //   //   desc: "pontem",
+  //   // },
+  //   {
+  //     value: "bitfinex",
+  //     name: "Bitfinex",
+  //     desc: "Bitfinex",
+  //   },
+  //   {
+  //     value: "Kraken",
+  //     // Filter name
+  //     name: "Kraken",
+  //     // Full exchange name displayed in the filter popup
+  //     desc: "Kraken bitcoin exchange",
+  //   },
+  // ],
   symbols_types: [
     {
       name: "crypto",
@@ -77,83 +109,41 @@ const configurationData: DatafeedConfiguration = {
   ],
 };
 
-const getSymbolInfo = (marketInfo: ApiMarket): LibrarySymbolInfo => {
-  if (marketInfo.base != null) {
+async function getAllCurrency() {
+  const data = await makeApiRequest(`api/v3/simple/supported_vs_currencies`);
+  return data && data.map((item: string) => item.toLowerCase());
+}
+// Obtains all symbols for all exchanges supported by CryptoCompare API
+async function getAllSymbols(exchange: string) {
+  const data = await makeApiRequest(`api/v3/exchanges/${exchange}/tickers`);
+  let allSymbols: any[] = [];
+  const tickers = data?.tickers || [];
+  const symbols = (tickers as APITickerExchange[]).map((item) => {
+    const symbol = generateSymbol(exchange, item.base, item.target);
     return {
-      name: marketInfo.name,
-      full_name: marketInfo.name,
-      description: marketInfo.name,
-      base_name: [marketInfo.base.name],
-      pricescale: marketInfo.tick_size,
+      symbol: symbol.short,
+      full_name: symbol.full,
+      description: symbol.short,
+      exchange: exchange,
+      target: item.target,
       type: "crypto",
-      session: "24x7",
-      exchange: "Econia",
-      listed_exchange: "Econia",
-      timezone: "Etc/UTC",
-      has_intraday: true,
-      minmov: 10,
-      format: "price",
-      supported_resolutions: resolutions,
     };
-  } else if (marketInfo.base_name_generic != null) {
-    return {
-      name: marketInfo.name,
-      full_name: marketInfo.name,
-      description: marketInfo.name,
-      base_name: [marketInfo.base_name_generic],
-      pricescale: marketInfo.tick_size,
-      type: "crypto",
-      session: "24x7",
-      exchange: "Econia",
-      listed_exchange: "Econia",
-      timezone: "Etc/UTC",
-      has_intraday: true,
-      minmov: 10,
-      format: "price",
-      supported_resolutions: resolutions,
-    };
-  } else {
-    throw new Error("Neither base nor base_name_generic are defined.");
-  }
-};
+  });
 
-const getSearchItem = ({
-  name,
-  base,
-  quote,
-  base_name_generic,
-}: ApiMarket): SearchSymbolResultItem => {
-  if (base != null) {
-    const fullBase = TypeTag.fromApiCoin(base).toString();
-    const fullQuote = TypeTag.fromApiCoin(quote).toString();
-
-    return {
-      symbol: name,
-      ticker: name,
-      full_name: `${fullBase}/${fullQuote}`,
-      description: name,
-      exchange: "Econia",
-      type: "crypto",
-    };
-  } else if (base_name_generic != null) {
-    return {
-      symbol: name,
-      ticker: name,
-      full_name: base_name_generic,
-      description: name,
-      exchange: "Econia",
-      type: "crypto",
-    };
-  } else {
-    throw new Error("Neither base nor base_name_generic are defined.");
-  }
-};
+  allSymbols = [...allSymbols, ...symbols];
+  return allSymbols;
+}
 
 type TVChartContainerProps = {
-  selectedMarket: ApiMarket;
-  allMarketData: ApiMarket[];
+  selectedMarket: MarketData | ApiMarket;
+  allMarketData: MarketData[] | ApiMarket[];
 };
 
+const lastBarsCache = new Map();
+const STEP: { [key: string]: number } = {
+  "1D": 86400000,
+  "30": 30 * 60 * 1000,
+};
 export const TVChartContainer: React.FC<
   Partial<ChartContainerProps> & TVChartContainerProps
 > = (props) => {
@@ -163,9 +153,7 @@ export const TVChartContainer: React.FC<
   const datafeed: IBasicDataFeed = useMemo(
     () => ({
       onReady: (callback) => {
-        setTimeout(() => {
-          callback(configurationData);
-        }, 0);
+        setTimeout(() => callback(configurationData));
       },
       searchSymbols: async (
         userInput,
@@ -173,40 +161,54 @@ export const TVChartContainer: React.FC<
         symbolType,
         onResultReadyCallback,
       ) => {
-        if (exchange !== "Econia" || symbolType !== "crypto") {
-          throw new Error("Parameters not supported.");
-        }
-
-        const symbols: SearchSymbolResultItem[] =
-          props.allMarketData.map(getSearchItem);
-
-        const searchResults = symbols.filter(
-          (symbol) =>
+        // const currencySupport = await getAllCurrency();
+        const symbols = await getAllSymbols(exchange);
+        const newSymbols = symbols.filter((symbol) => {
+          const isExchangeValid =
+            exchange === "" || symbol.exchange === exchange;
+          const isFullSymbolContainsInput =
             symbol.full_name.toLowerCase().indexOf(userInput.toLowerCase()) !==
-              -1 ||
-            symbol.symbol.toLowerCase().indexOf(userInput.toLowerCase()) !== -1,
-        );
-        onResultReadyCallback(searchResults);
+            -1;
+          // const isCurrencySupport = currencySupport.includes(
+          //   symbol.target.toLowerCase(),
+          // );
+          return isExchangeValid && isFullSymbolContainsInput;
+        });
+        onResultReadyCallback(newSymbols);
       },
       resolveSymbol: async (
         symbolName,
         onSymbolResolvedCallback,
         onResolveErrorCallback,
+        extension,
       ) => {
-        const marketInfo: ApiMarket | undefined = props.allMarketData.find(
-          ({ name }) => name === symbolName,
-        );
+        const symbol = `${props.symbol}`;
+        const symbolInfo: LibrarySymbolInfo = {
+          ticker: symbol,
+          name: symbol,
+          description: symbol,
+          pricescale: 100,
+          volume_precision: -Math.ceil(
+            Math.log10(Number("0.00000100") * Number("100.00000000")),
+          ),
+          minmov: 1,
+          exchange: "Econia",
+          full_name: "",
+          listed_exchange: "",
+          session: "24x7",
+          has_intraday: true,
+          has_daily: true,
+          has_weekly_and_monthly: false,
+          // intraday_multipliers: configurationData.intraday_multipliers,
+          timezone: getClientTimezone(),
+          type: "bitcoin",
+          supported_resolutions:
+            configurationData.supported_resolutions as ResolutionString[],
+          format: "price",
+        };
+        onSymbolResolvedCallback(symbolInfo);
 
-        if (marketInfo != null) {
-          const symbolInfo = getSymbolInfo(marketInfo);
-          setTimeout(() => {
-            onSymbolResolvedCallback(symbolInfo);
-          }, 0);
-        } else {
-          setTimeout(() => {
-            onResolveErrorCallback(`Market "${symbolName}" not found.`);
-          }, 0);
-        }
+        onSymbolResolvedCallback(symbolInfo);
       },
       getBars: async (
         symbolInfo,
@@ -215,38 +217,90 @@ export const TVChartContainer: React.FC<
         onHistoryCallback,
         onErrorCallback,
       ) => {
-        // TODO find a better way to pass market ID
-        const market = props.allMarketData.find(
-          ({ name }) => name === symbolInfo.name,
+        console.log(
+          "🚀 ~ file: TVChartContainer.tsx:219 ~ resolution:",
+          resolution,
         );
-        if (market == null) {
-          throw new Error("market not found.");
-        }
-        const { from, to } = periodParams;
-
+        const { from, to, firstDataRequest } = periodParams;
         try {
+          // const data = await makeApiRequest(
+          //   `api/v3/coins/${coinID}/ohlc?${query}`,
+          // );
+          // const data = await makeApiRequestMin(`data/histoday?${query}`);
+          const DAY_BY_RESOLUTION: { [key: string]: string } = {
+            "1D": "365",
+            "30": "1",
+            "60": "7",
+            "15": "1",
+            "240": "7",
+          };
           const res = await fetch(
             new URL(
-              `/markets/${market.market_id}/history?${new URLSearchParams({
-                resolution: resolutionMap[resolution],
-                from: from.toString(),
-                to: to.toString(),
+              `/api/v3/coins/aptos/ohlc?${new URLSearchParams({
+                vs_currency: "usd",
+                days: `${DAY_BY_RESOLUTION[resolution.toString()]}`,
               })}`,
-              API_URL,
+              "https://api.coingecko.com",
             ).href,
           );
           const data = await res.json();
+          if (data.length < 1) {
+            onHistoryCallback([], {
+              noData: true,
+            });
+            return;
+          }
+          const stepInterval = STEP[resolution];
 
-          const bars = data.map(
-            (bar: ApiBar): Bar => ({
-              time: new Date(bar.start_time).getTime(),
-              ...bar,
-            }),
-          );
+          const bars: Bar[] = data
+            .map(
+              (
+                bar: [number, number, number, number, number],
+                index: number,
+              ): Bar => ({
+                time: bar[0],
+                open: bar[1],
+                high: bar[2],
+                low: bar[3],
+                close: bar[4],
+              }),
+            )
+            .filter(
+              (bar: Bar) => bar.time >= from * 1000 && bar.time <= to * 1000,
+            );
+          if (bars.length === 0) {
+            bars.push({
+              time: to * 1000,
+              open: 0,
+              close: 0,
+              high: 0,
+              low: 0,
+            });
+          }
 
-          onHistoryCallback(bars, { noData: bars.length === 0 });
+          while (bars[0].time > from * 1000) {
+            bars.unshift({
+              time: bars[0].time - stepInterval,
+              open: 0,
+              close: 0,
+              high: 0,
+              low: 0,
+            });
+          }
+
+          if (firstDataRequest) {
+            lastBarsCache.set(symbolInfo.full_name, {
+              ...bars[bars.length - 1],
+            });
+          }
+
+          console.log(`[getBars]: returned ${bars.length} bar(s)`);
+          onHistoryCallback(bars, {
+            noData: false,
+          });
         } catch (e) {
           if (e instanceof Error) {
+            console.log("[getBars]: Get error", e);
             onErrorCallback(e.message);
           }
         }
@@ -264,7 +318,7 @@ export const TVChartContainer: React.FC<
         // TODO
       },
     }),
-    [props.allMarketData],
+    [],
   );
 
   useEffect(() => {
@@ -275,7 +329,7 @@ export const TVChartContainer: React.FC<
     const widgetOptions: ChartingLibraryWidgetOptions = {
       symbol: props.symbol as string,
       datafeed,
-      interval: "1" as ResolutionString,
+      interval: "30" as ResolutionString,
       container: ref.current,
       library_path: props.libraryPath as string,
       theme: props.theme,
@@ -290,6 +344,7 @@ export const TVChartContainer: React.FC<
         "control_bar",
         "study_templates",
         "snapshot_trading_drawings",
+        // "header_resolutions",
       ],
       client_id: props.clientId,
       user_id: props.userId,
@@ -353,7 +408,7 @@ export const TVChartContainer: React.FC<
         },
         {
           text: "1000y", // custom ALL timeframe
-          resolution: "60" as ResolutionString, // may want to specify a different resolution here for server load purposes
+          resolution: "1" as ResolutionString, // may want to specify a different resolution here for server load purposes
           description: "All",
           title: "All",
         },
@@ -363,6 +418,7 @@ export const TVChartContainer: React.FC<
     tvWidget.current = new widget(widgetOptions);
 
     return () => {
+      console.log("reject");
       if (tvWidget.current != null) {
         tvWidget.current.remove();
         tvWidget.current = undefined;
