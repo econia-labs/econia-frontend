@@ -68,11 +68,11 @@ export type ApiOrder = {
   market_id: number;
   name: string;
   side: "bid" | "ask";
-  size: number;
+  remaining_size: number;
   price: number;
   user_address: string;
   custodian_id: number | null;
-  order_state: "open" | "filled" | "cancelled" | "evicted";
+  order_status: "open" | "filled" | "cancelled" | "evicted";
   created_at: string;
 };
 
