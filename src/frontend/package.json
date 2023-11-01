@@ -59,8 +59,8 @@
   },
   "lint-staged": {
     "*.ts": [
-      "pnpm lint",
       "pnpm format",
+      "pnpm lint",
       "git add ."
     ]
   }
