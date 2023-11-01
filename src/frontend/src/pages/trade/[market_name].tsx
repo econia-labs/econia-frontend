@@ -313,7 +313,7 @@ export default function Market({ allMarketData, marketData }: Props) {
 
   const defaultTVChartProps = useMemo(() => {
     return {
-      symbol: `Bitfinex:${marketData?.name ?? ""}`,
+      symbol: `${marketData?.name ?? ""}`,
       interval: "1" as ResolutionString,
       datafeedUrl: "https://api.coingecko.com",
       libraryPath: "/static/charting_library/",

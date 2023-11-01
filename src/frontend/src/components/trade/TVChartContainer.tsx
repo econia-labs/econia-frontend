@@ -9,6 +9,7 @@ import {
 } from "@/types/api";
 import {
   generateSymbol,
+  getClientTimezone,
   makeApiRequest,
   makeApiRequestMin,
   parseFullSymbol,
@@ -81,25 +82,25 @@ type DataStatus = "streaming" | "endofday" | "pulsed" | "delayed_streaming";
 
 const configurationData: DatafeedConfiguration = {
   supported_resolutions: resolutions,
-  exchanges: [
-    // {
-    //   value: "Pontem",
-    //   name: "Pontem",
-    //   desc: "pontem",
-    // },
-    {
-      value: "bitfinex",
-      name: "Bitfinex",
-      desc: "Bitfinex",
-    },
-    {
-      value: "Kraken",
-      // Filter name
-      name: "Kraken",
-      // Full exchange name displayed in the filter popup
-      desc: "Kraken bitcoin exchange",
-    },
-  ],
+  // exchanges: [
+  //   // {
+  //   //   value: "Pontem",
+  //   //   name: "Pontem",
+  //   //   desc: "pontem",
+  //   // },
+  //   {
+  //     value: "bitfinex",
+  //     name: "Bitfinex",
+  //     desc: "Bitfinex",
+  //   },
+  //   {
+  //     value: "Kraken",
+  //     // Filter name
+  //     name: "Kraken",
+  //     // Full exchange name displayed in the filter popup
+  //     desc: "Kraken bitcoin exchange",
+  //   },
+  // ],
   symbols_types: [
     {
       name: "crypto",
@@ -181,39 +182,31 @@ export const TVChartContainer: React.FC<
         onResolveErrorCallback,
         extension,
       ) => {
-        const [exchange, symbolValue] = symbolName.split(":");
-        const symbols = await getAllSymbols(exchange);
-        const symbolItem = symbols.find(
-          ({ full_name }) => full_name === symbolName,
-        );
-        if (!symbolItem) {
-          onResolveErrorCallback("cannot resolve symbol");
-          return;
-        }
-        // Symbol information object
-        const symbolInfo = {
-          ticker: symbolItem.full_name,
-          full_name: symbolItem.full_name,
-          listed_exchange: symbolItem.exchange,
-          format: "price" as SeriesFormat,
-          name: symbolItem.symbol,
-          description: symbolItem.description,
-          type: symbolItem.type,
-          session: "24x7",
-          timezone:
-            (Intl.DateTimeFormat().resolvedOptions().timeZone as Timezone) ??
-            "Etc/UTC",
-          exchange: symbolItem.exchange,
-          minmov: 1,
+        const symbol = `${props.symbol}`;
+        const symbolInfo: LibrarySymbolInfo = {
+          ticker: symbol,
+          name: symbol,
+          description: symbol,
           pricescale: 100,
-          has_intraday: false,
-          has_no_volume: true,
+          volume_precision: -Math.ceil(
+            Math.log10(Number("0.00000100") * Number("100.00000000")),
+          ),
+          minmov: 1,
+          exchange: "Econia",
+          full_name: "",
+          listed_exchange: "",
+          session: "24x7",
+          has_intraday: true,
+          has_daily: true,
           has_weekly_and_monthly: false,
-          visible_plots_set: "ohlcv" as VisiblePlotsSet,
-          supported_resolutions: configurationData.supported_resolutions || [],
-          volume_precision: 2,
-          data_status: "streaming" as DataStatus,
+          // intraday_multipliers: configurationData.intraday_multipliers,
+          timezone: getClientTimezone(),
+          type: "bitcoin",
+          supported_resolutions:
+            configurationData.supported_resolutions as ResolutionString[],
+          format: "price",
         };
+        onSymbolResolvedCallback(symbolInfo);
 
         onSymbolResolvedCallback(symbolInfo);
       },
@@ -224,47 +217,28 @@ export const TVChartContainer: React.FC<
         onHistoryCallback,
         onErrorCallback,
       ) => {
-        const { from, to, firstDataRequest } = periodParams;
         console.log(
-          "🚀 ~ file: TVChartContainer.tsx:224 ~ from:",
-          from,
-          to,
-          new Date(from * 1000),
-          new Date(to * 1000),
+          "🚀 ~ file: TVChartContainer.tsx:219 ~ resolution:",
+          resolution,
         );
-        const parsedSymbol = parseFullSymbol(symbolInfo.full_name);
-        // const currency = parsedSymbol?.toSymbol.toLowerCase() as string;
-        // const coinID = symbolInfo.description.split("/")[0].toLowerCase();
-        // const urlParameters = {
-        //   vs_currency:
-        //     currency == "usdt" || currency == "usdc" ? "usd" : currency,
-        //   days: "365",
-        // } as any;
-        // const query = Object.keys(urlParameters)
-        //   .map((name) => `${name}=${encodeURIComponent(urlParameters[name])}`)
-        //   .join("&");
-        const urlParameters = {
-          e: parsedSymbol?.exchange,
-          fsym: parsedSymbol?.fromSymbol,
-          tsym: parsedSymbol?.toSymbol,
-          toTs: to,
-          limit: 500,
-        } as any;
-
-        const query = Object.keys(urlParameters)
-          .map((name) => `${name}=${encodeURIComponent(urlParameters[name])}`)
-          .join("&");
-
+        const { from, to, firstDataRequest } = periodParams;
         try {
           // const data = await makeApiRequest(
           //   `api/v3/coins/${coinID}/ohlc?${query}`,
           // );
           // const data = await makeApiRequestMin(`data/histoday?${query}`);
+          const DAY_BY_RESOLUTION: { [key: string]: string } = {
+            "1D": "365",
+            "30": "1",
+            "60": "7",
+            "15": "1",
+            "240": "7",
+          };
           const res = await fetch(
             new URL(
               `/api/v3/coins/aptos/ohlc?${new URLSearchParams({
                 vs_currency: "usd",
-                days: "365",
+                days: `${DAY_BY_RESOLUTION[resolution.toString()]}`,
               })}`,
               "https://api.coingecko.com",
             ).href,
@@ -284,7 +258,7 @@ export const TVChartContainer: React.FC<
                 bar: [number, number, number, number, number],
                 index: number,
               ): Bar => ({
-                time: from * 1000 + index * 86400000,
+                time: bar[0],
                 open: bar[1],
                 high: bar[2],
                 low: bar[3],
@@ -296,7 +270,7 @@ export const TVChartContainer: React.FC<
             );
           if (bars.length === 0) {
             bars.push({
-              time: from * 1000,
+              time: to * 1000,
               open: 0,
               close: 0,
               high: 0,
@@ -314,22 +288,11 @@ export const TVChartContainer: React.FC<
             });
           }
 
-          while (bars[bars.length - 1].time < to * 1000 - stepInterval) {
-            bars.push({
-              time: bars[bars.length - 1].time + stepInterval,
-              open: 0,
-              close: 0,
-              high: 0,
-              low: 0,
-            });
-          }
-
           if (firstDataRequest) {
             lastBarsCache.set(symbolInfo.full_name, {
               ...bars[bars.length - 1],
             });
           }
-          console.log("bars", bars);
 
           console.log(`[getBars]: returned ${bars.length} bar(s)`);
           onHistoryCallback(bars, {
