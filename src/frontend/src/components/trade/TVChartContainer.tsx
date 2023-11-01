@@ -295,15 +295,13 @@ export const TVChartContainer: React.FC<
               (bar: Bar) => bar.time >= from * 1000 && bar.time <= to * 1000,
             );
           if (bars.length === 0) {
-            bars.push(
-              {
-                time: from * 1000,
-                open: 0,
-                close: 0,
-                high: 0,
-                low: 0,
-              }
-            )
+            bars.push({
+              time: from * 1000,
+              open: 0,
+              close: 0,
+              high: 0,
+              low: 0,
+            });
           }
 
           while (bars[0].time > from * 1000) {
