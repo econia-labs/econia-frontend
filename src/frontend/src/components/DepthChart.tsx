@@ -24,7 +24,7 @@ export const DepthChart: React.FC<{
     const askData: (number | undefined)[] = [];
     let minPrice = Infinity;
     let maxPrice = -Infinity;
-    if (!isFetching && data) {
+    if (!isFetching && data?.bids) {
       // Get min and max price to set a range
       for (const order of data.bids.concat(data.asks)) {
         if (order.price < minPrice) {

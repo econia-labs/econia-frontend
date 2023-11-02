@@ -20,13 +20,19 @@ import { useAptos } from "@/contexts/AptosContext";
 import { OrderEntryContextProvider } from "@/contexts/OrderEntryContext";
 import { API_URL, WS_URL } from "@/env";
 import { MOCK_MARKETS } from "@/mockdata/markets";
-import type { ApiMarket, ApiOrder, ApiPriceLevel } from "@/types/api";
+import type {
+  ApiMarket,
+  ApiOrder,
+  ApiPriceLevel,
+  MarketData,
+} from "@/types/api";
 import { type Orderbook } from "@/types/global";
 
 import {
   type ResolutionString,
   type ThemeName,
 } from "../../../public/static/charting_library";
+import { getAllMarket } from "@/utils/helpers";
 
 const ORDERBOOK_DEPTH = 60;
 
@@ -39,7 +45,7 @@ const TVChartContainer = dynamic(
 );
 
 type Props = {
-  marketData: ApiMarket | undefined;
+  marketData: ApiMarket | undefined | null;
   allMarketData: ApiMarket[];
 };
 
@@ -303,22 +309,23 @@ export default function Market({ allMarketData, marketData }: Props) {
     },
     { keepPreviousData: true, refetchOnWindowFocus: false },
   );
+  const libraryPath = "/static/charting_library/";
 
   const defaultTVChartProps = useMemo(() => {
     return {
-      symbol: marketData?.name ?? "",
+      symbol: `${marketData?.name ?? ""}`,
       interval: "1" as ResolutionString,
-      datafeedUrl: "https://dev.api.econia.exchange",
+      datafeedUrl: "https://api.coingecko.com",
       libraryPath: "/static/charting_library/",
-      clientId: "econia.exchange",
+      clientId: "pontem.exchange",
       userId: "public_user_id",
       fullscreen: false,
       autosize: true,
       studiesOverrides: {},
       theme: "Dark" as ThemeName,
       // antipattern if we render market not found? need ! for typescript purposes
-      selectedMarket: marketData!,
-      allMarketData,
+      selectedMarket: marketData as ApiMarket,
+      allMarketData: allMarketData as any,
     };
   }, [marketData, allMarketData]);
 
@@ -329,7 +336,7 @@ export default function Market({ allMarketData, marketData }: Props) {
           <title>Not Found</title>
         </Head>
         <div className="flex min-h-screen flex-col">
-          <Header logoHref={`${allMarketData[0].name}`} />
+          <Header logoHref={`${allMarketData[0]?.name}`} />
           Market not found.
         </div>
       </>
@@ -346,7 +353,7 @@ export default function Market({ allMarketData, marketData }: Props) {
           onDepositWithdrawClick={() => setDepositWithdrawModalOpen(true)}
           onWalletButtonClick={() => setWalletButtonModalOpen(true)}
         />
-        <StatsBar allMarketData={allMarketData} selectedMarket={marketData} />
+        {/* <StatsBar allMarketData={allMarketData} selectedMarket={marketData} /> */}
         <main className="flex h-full min-h-[680px] w-full grow">
           <div className="flex grow flex-col p-3">
             <div className="mb-3 flex grow flex-col border border-neutral-600">
@@ -431,18 +438,11 @@ export const getStaticPaths: GetStaticPaths<PathParams> = async () => {
   return { paths, fallback: false };
 };
 
-export const getStaticProps: GetStaticProps<Props, PathParams> = async ({
-  params,
-}) => {
+export const getStaticProps: GetStaticProps = async ({ params }) => {
   if (!params) throw new Error("No params");
-  // const allMarketData: ApiMarket[] = await fetch(
-  //   new URL("markets", API_URL).href
-  // ).then((res) => res.json());
-  // TODO: Working API
-  const allMarketData = MOCK_MARKETS;
-  const marketData = allMarketData.find(
-    (market) => market.name === params.market_name,
-  );
+  const allMarketData = await getAllMarket();
+  const marketData =
+    allMarketData?.find((market) => market.name === params.market_name) || null;
 
   return {
     props: {
