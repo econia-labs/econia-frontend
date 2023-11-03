@@ -31,6 +31,7 @@ import {
 } from "../../../public/static/charting_library";
 import { white } from "tailwindcss/colors";
 import { API_URL } from "@/env";
+import { useRouter } from "next/router";
 
 const DAY_BY_RESOLUTION: { [key: string]: string } = {
   "1D": "86400",
@@ -84,25 +85,6 @@ type DataStatus = "streaming" | "endofday" | "pulsed" | "delayed_streaming";
 
 const configurationData: DatafeedConfiguration = {
   supported_resolutions: resolutions,
-  // exchanges: [
-  //   // {
-  //   //   value: "Pontem",
-  //   //   name: "Pontem",
-  //   //   desc: "pontem",
-  //   // },
-  //   {
-  //     value: "bitfinex",
-  //     name: "Bitfinex",
-  //     desc: "Bitfinex",
-  //   },
-  //   {
-  //     value: "Kraken",
-  //     // Filter name
-  //     name: "Kraken",
-  //     // Full exchange name displayed in the filter popup
-  //     desc: "Kraken bitcoin exchange",
-  //   },
-  // ],
   symbols_types: [
     {
       name: "crypto",
@@ -117,23 +99,24 @@ async function getAllCurrency() {
 }
 // Obtains all symbols for all exchanges supported by CryptoCompare API
 async function getAllSymbols(exchange: string) {
-  const data = await makeApiRequest(`api/v3/exchanges/${exchange}/tickers`);
-  let allSymbols: any[] = [];
-  const tickers = data?.tickers || [];
-  const symbols = (tickers as APITickerExchange[]).map((item) => {
-    const symbol = generateSymbol(exchange, item.base, item.target);
-    return {
-      symbol: symbol.short,
-      full_name: symbol.full,
-      description: symbol.short,
-      exchange: exchange,
-      target: item.target,
-      type: "crypto",
-    };
-  });
+  // const data = await makeApiRequest(`api/v3/exchanges/${exchange}/tickers`);
+  // let allSymbols: any[] = [];
+  // const tickers = data?.tickers || [];
+  // const symbols = (tickers as APITickerExchange[]).map((item) => {
+  //   const symbol = generateSymbol(exchange, item.base, item.target);
+  //   return {
+  //     symbol: symbol.short,
+  //     full_name: symbol.full,
+  //     description: symbol.short,
+  //     exchange: exchange,
+  //     target: item.target,
+  //     type: "crypto",
+  //   };
+  // });
 
-  allSymbols = [...allSymbols, ...symbols];
-  return allSymbols;
+  // allSymbols = [...allSymbols, ...symbols];
+  // return allSymbols;
+  return []
 }
 
 type TVChartContainerProps = {
@@ -141,16 +124,12 @@ type TVChartContainerProps = {
   allMarketData: MarketData[] | ApiMarket[];
 };
 
-const lastBarsCache = new Map();
-const STEP: { [key: string]: number } = {
-  "1D": 86400000,
-  "30": 30 * 60 * 1000,
-};
 export const TVChartContainer: React.FC<
   Partial<ChartContainerProps> & TVChartContainerProps
 > = (props) => {
   const tvWidget = useRef<IChartingLibraryWidget>();
   const ref = useRef<HTMLDivElement>(null);
+  const router = useRouter()
 
   const datafeed: IBasicDataFeed = useMemo(
     () => ({
@@ -163,20 +142,18 @@ export const TVChartContainer: React.FC<
         symbolType,
         onResultReadyCallback,
       ) => {
-        // const currencySupport = await getAllCurrency();
-        const symbols = await getAllSymbols(exchange);
-        const newSymbols = symbols.filter((symbol) => {
-          const isExchangeValid =
-            exchange === "" || symbol.exchange === exchange;
-          const isFullSymbolContainsInput =
-            symbol.full_name.toLowerCase().indexOf(userInput.toLowerCase()) !==
-            -1;
-          // const isCurrencySupport = currencySupport.includes(
-          //   symbol.target.toLowerCase(),
-          // );
-          return isExchangeValid && isFullSymbolContainsInput;
-        });
-        onResultReadyCallback(newSymbols);
+        const symbols: SearchSymbolResultItem[] = props.allMarketData.map((market) => {
+          return {
+            description: market.name as string,
+            exchange: 'Econia',
+            full_name: `Econia:${market.base?.symbol}`,
+            symbol: market.name,
+            ticker: market.name,
+            type: 'crypto',
+          }
+        }).filter(symbol => symbol.full_name.toLowerCase().includes(userInput) || symbol.symbol.toLowerCase().includes(userInput) || symbol.ticker.toLowerCase().includes(userInput))
+
+        onResultReadyCallback(symbols);
       },
       resolveSymbol: async (
         symbolName,
@@ -184,7 +161,10 @@ export const TVChartContainer: React.FC<
         onResolveErrorCallback,
         extension,
       ) => {
-        const symbol = `${props.symbol}`;
+        if (props.symbol !== symbolName) {
+          router.push(`/trade/${symbolName}`)
+        }
+        const symbol = `${symbolName}`;
         const symbolInfo: LibrarySymbolInfo = {
           ticker: symbol,
           name: symbol,
@@ -203,7 +183,7 @@ export const TVChartContainer: React.FC<
           has_weekly_and_monthly: false,
           // intraday_multipliers: configurationData.intraday_multipliers,
           timezone: getClientTimezone(),
-          type: "bitcoin",
+          type: "crypto",
           supported_resolutions:
             configurationData.supported_resolutions as ResolutionString[],
           format: "price",
@@ -219,17 +199,8 @@ export const TVChartContainer: React.FC<
         onHistoryCallback,
         onErrorCallback,
       ) => {
-        console.log(
-          "🚀 ~ file: TVChartContainer.tsx:219 ~ resolution:",
-          resolution,
-        );
-        const { from, to, firstDataRequest } = periodParams;
+        const { from, to } = periodParams;
         try {
-          // const data = await makeApiRequest(
-          //   `api/v3/coins/${coinID}/ohlc?${query}`,
-          // );
-          // const data = await makeApiRequestMin(`data/histoday?${query}`);
-
           const res = await fetch(
             new URL(
               `/candlesticks?${new URLSearchParams({
@@ -241,7 +212,6 @@ export const TVChartContainer: React.FC<
             ).href,
           );
           const data = await res.json();
-          console.log("🚀 ~ file: TVChartContainer.tsx:243 ~ data:", data)
           if (data.length < 1) {
             onHistoryCallback([], {
               noData: true,
@@ -266,32 +236,6 @@ export const TVChartContainer: React.FC<
             .filter(
               (bar: Bar) => bar.time >= from * 1000 && bar.time <= to * 1000,
             );
-          // if (bars.length === 0) {
-          //   bars.push({
-          //     time: to * 1000,
-          //     open: 0,
-          //     close: 0,
-          //     high: 0,
-          //     low: 0,
-          //   });
-          // }
-
-          // while (bars[0].time > from * 1000) {
-          //   bars.unshift({
-          //     time: bars[0].time - stepInterval,
-          //     open: 0,
-          //     close: 0,
-          //     high: 0,
-          //     low: 0,
-          //   });
-          // }
-
-          // if (firstDataRequest) {
-          //   lastBarsCache.set(symbolInfo.full_name, {
-          //     ...bars[bars.length - 1],
-          //   });
-          // }
-
           console.log(`[getBars]: returned ${bars.length} bar(s)`);
           onHistoryCallback(bars, {
             noData: bars.length === 0,
@@ -316,7 +260,7 @@ export const TVChartContainer: React.FC<
         // TODO
       },
     }),
-    [],
+    [props.symbol, props.allMarketData],
   );
 
   useEffect(() => {
