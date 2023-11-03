@@ -30,7 +30,18 @@ import {
   VisiblePlotsSet,
 } from "../../../public/static/charting_library";
 import { white } from "tailwindcss/colors";
+import { API_URL } from "@/env";
 
+const DAY_BY_RESOLUTION: { [key: string]: string } = {
+  "1D": "86400",
+  "30": "1800",
+  "60": "3600",
+  "15": "900",
+  "240": "14400",
+  "3D": "43200",
+  "5": "300",
+  "1": "60"
+};
 type QueryParams = {
   vs_currency: string;
   days: string;
@@ -63,20 +74,11 @@ const resolutions = [
   "30",
   "60",
   "4H",
-  "12H",
+  // "12H",
   "1D",
 ] as ResolutionString[];
 
-const resolutionMap: Record<string, ApiResolution> = {
-  "1": "1m",
-  "5": "5m",
-  "15": "15m",
-  "30": "30m",
-  "60": "1h",
-  "4H": "4h",
-  "12H": "12h",
-  "1D": "1d",
-};
+
 
 type DataStatus = "streaming" | "endofday" | "pulsed" | "delayed_streaming";
 
@@ -227,76 +229,72 @@ export const TVChartContainer: React.FC<
           //   `api/v3/coins/${coinID}/ohlc?${query}`,
           // );
           // const data = await makeApiRequestMin(`data/histoday?${query}`);
-          const DAY_BY_RESOLUTION: { [key: string]: string } = {
-            "1D": "365",
-            "30": "1",
-            "60": "7",
-            "15": "1",
-            "240": "7",
-          };
+
           const res = await fetch(
             new URL(
-              `/api/v3/coins/aptos/ohlc?${new URLSearchParams({
-                vs_currency: "usd",
-                days: `${DAY_BY_RESOLUTION[resolution.toString()]}`,
+              `/candlesticks?${new URLSearchParams({
+                market_id: `eq.${props.selectedMarket.market_id}`,
+                resolution: `eq.${DAY_BY_RESOLUTION[resolution.toString()]}`,
+                and: `(start_time.lte.${new Date(to * 1000).toISOString()},start_time.gte.${new Date(from * 1000).toISOString()})`,
               })}`,
-              "https://api.coingecko.com",
+              API_URL,
             ).href,
           );
           const data = await res.json();
+          console.log("🚀 ~ file: TVChartContainer.tsx:243 ~ data:", data)
           if (data.length < 1) {
             onHistoryCallback([], {
               noData: true,
             });
             return;
           }
-          const stepInterval = STEP[resolution];
 
           const bars: Bar[] = data
             .map(
               (
-                bar: [number, number, number, number, number],
+                bar: { start_time: string, open: number, close: number, low: number, high: number, volume: number },
                 index: number,
               ): Bar => ({
-                time: bar[0],
-                open: bar[1],
-                high: bar[2],
-                low: bar[3],
-                close: bar[4],
+                time: new Date(bar.start_time).getTime(),
+                open: bar.open / 1000,
+                high: bar.high / 1000,
+                low: bar.low / 1000,
+                close: bar.close / 1000,
+                volume: bar.volume
               }),
             )
             .filter(
               (bar: Bar) => bar.time >= from * 1000 && bar.time <= to * 1000,
             );
-          if (bars.length === 0) {
-            bars.push({
-              time: to * 1000,
-              open: 0,
-              close: 0,
-              high: 0,
-              low: 0,
-            });
-          }
+          // if (bars.length === 0) {
+          //   bars.push({
+          //     time: to * 1000,
+          //     open: 0,
+          //     close: 0,
+          //     high: 0,
+          //     low: 0,
+          //   });
+          // }
 
-          while (bars[0].time > from * 1000) {
-            bars.unshift({
-              time: bars[0].time - stepInterval,
-              open: 0,
-              close: 0,
-              high: 0,
-              low: 0,
-            });
-          }
+          // while (bars[0].time > from * 1000) {
+          //   bars.unshift({
+          //     time: bars[0].time - stepInterval,
+          //     open: 0,
+          //     close: 0,
+          //     high: 0,
+          //     low: 0,
+          //   });
+          // }
 
-          if (firstDataRequest) {
-            lastBarsCache.set(symbolInfo.full_name, {
-              ...bars[bars.length - 1],
-            });
-          }
+          // if (firstDataRequest) {
+          //   lastBarsCache.set(symbolInfo.full_name, {
+          //     ...bars[bars.length - 1],
+          //   });
+          // }
 
           console.log(`[getBars]: returned ${bars.length} bar(s)`);
           onHistoryCallback(bars, {
-            noData: false,
+            noData: bars.length === 0,
           });
         } catch (e) {
           if (e instanceof Error) {

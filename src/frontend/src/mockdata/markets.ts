@@ -2,7 +2,7 @@ import { type ApiMarket } from "@/types/api";
 
 export const MOCK_MARKETS: ApiMarket[] = [
   {
-    market_id: 1,
+    market_id: 3,
     name: "eAPT-eUSDC",
     base: {
       account_address:
