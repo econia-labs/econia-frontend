@@ -41,7 +41,7 @@ const DAY_BY_RESOLUTION: { [key: string]: string } = {
   "240": "14400",
   "3D": "43200",
   "5": "300",
-  "1": "60"
+  "1": "60",
 };
 type QueryParams = {
   vs_currency: string;
@@ -79,8 +79,6 @@ const resolutions = [
   "1D",
 ] as ResolutionString[];
 
-
-
 type DataStatus = "streaming" | "endofday" | "pulsed" | "delayed_streaming";
 
 const configurationData: DatafeedConfiguration = {
@@ -116,7 +114,7 @@ async function getAllSymbols(exchange: string) {
 
   // allSymbols = [...allSymbols, ...symbols];
   // return allSymbols;
-  return []
+  return [];
 }
 
 type TVChartContainerProps = {
@@ -129,7 +127,7 @@ export const TVChartContainer: React.FC<
 > = (props) => {
   const tvWidget = useRef<IChartingLibraryWidget>();
   const ref = useRef<HTMLDivElement>(null);
-  const router = useRouter()
+  const router = useRouter();
 
   const datafeed: IBasicDataFeed = useMemo(
     () => ({
@@ -142,16 +140,23 @@ export const TVChartContainer: React.FC<
         symbolType,
         onResultReadyCallback,
       ) => {
-        const symbols: SearchSymbolResultItem[] = props.allMarketData.map((market) => {
-          return {
-            description: market.name as string,
-            exchange: 'Econia',
-            full_name: `Econia:${market.base?.symbol}`,
-            symbol: market.name,
-            ticker: market.name,
-            type: 'crypto',
-          }
-        }).filter(symbol => symbol.full_name.toLowerCase().includes(userInput) || symbol.symbol.toLowerCase().includes(userInput) || symbol.ticker.toLowerCase().includes(userInput))
+        const symbols: SearchSymbolResultItem[] = props.allMarketData
+          .map((market) => {
+            return {
+              description: market.name as string,
+              exchange: "Econia",
+              full_name: `Econia:${market.base?.symbol}`,
+              symbol: market.name,
+              ticker: market.name,
+              type: "crypto",
+            };
+          })
+          .filter(
+            (symbol) =>
+              symbol.full_name.toLowerCase().includes(userInput) ||
+              symbol.symbol.toLowerCase().includes(userInput) ||
+              symbol.ticker.toLowerCase().includes(userInput),
+          );
 
         onResultReadyCallback(symbols);
       },
@@ -162,7 +167,7 @@ export const TVChartContainer: React.FC<
         extension,
       ) => {
         if (props.symbol !== symbolName) {
-          router.push(`/trade/${symbolName}`)
+          router.push(`/trade/${symbolName}`);
         }
         const symbol = `${symbolName}`;
         const symbolInfo: LibrarySymbolInfo = {
@@ -206,7 +211,11 @@ export const TVChartContainer: React.FC<
               `/candlesticks?${new URLSearchParams({
                 market_id: `eq.${props.selectedMarket.market_id}`,
                 resolution: `eq.${DAY_BY_RESOLUTION[resolution.toString()]}`,
-                and: `(start_time.lte.${new Date(to * 1000).toISOString()},start_time.gte.${new Date(from * 1000).toISOString()})`,
+                and: `(start_time.lte.${new Date(
+                  to * 1000,
+                ).toISOString()},start_time.gte.${new Date(
+                  from * 1000,
+                ).toISOString()})`,
               })}`,
               API_URL,
             ).href,
@@ -222,7 +231,14 @@ export const TVChartContainer: React.FC<
           const bars: Bar[] = data
             .map(
               (
-                bar: { start_time: string, open: number, close: number, low: number, high: number, volume: number },
+                bar: {
+                  start_time: string;
+                  open: number;
+                  close: number;
+                  low: number;
+                  high: number;
+                  volume: number;
+                },
                 index: number,
               ): Bar => ({
                 time: new Date(bar.start_time).getTime(),
@@ -230,7 +246,7 @@ export const TVChartContainer: React.FC<
                 high: bar.high / 1000,
                 low: bar.low / 1000,
                 close: bar.close / 1000,
-                volume: bar.volume
+                volume: bar.volume,
               }),
             )
             .filter(
