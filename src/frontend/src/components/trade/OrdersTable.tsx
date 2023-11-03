@@ -61,7 +61,6 @@ export const OrdersTable: React.FC<{
         ...order,
         total: order.price * order.remaining_size,
       }));
-      console.log({limitOrders, marketOrders, swapOrders})
       return orders;
       // TODO: Need working API
       // return await fetch(
@@ -120,9 +119,11 @@ export const OrdersTable: React.FC<{
       columnHelper.accessor("price", {
         header: "Limit price",
         cell: (info) =>
-        info.getValue() ? `${info.getValue()} ${
-            marketById.get(info.row.original.market_id)?.quote.symbol ?? ""
-          }` : "N/A",
+          info.getValue()
+            ? `${info.getValue()} ${
+                marketById.get(info.row.original.market_id)?.quote.symbol ?? ""
+              }`
+            : "N/A",
       }),
       columnHelper.display({
         header: "AVG EXECUTION PRICE",
@@ -140,7 +141,9 @@ export const OrdersTable: React.FC<{
         cell: (info) => {
           const total = info.getValue();
           const { market_id } = info.row.original;
-          return total ? `${total} ${marketById.get(market_id)?.quote?.symbol ?? ""}` : "N/A";
+          return total
+            ? `${total} ${marketById.get(market_id)?.quote?.symbol ?? ""}`
+            : "N/A";
         },
       }),
       columnHelper.display({
