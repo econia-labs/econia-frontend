@@ -67,6 +67,7 @@ export type ApiOrder = {
   market_order_id: number;
   market_id: number;
   name: string;
+  order_type: string;
   side: "bid" | "ask";
   remaining_size: number;
   price: number;

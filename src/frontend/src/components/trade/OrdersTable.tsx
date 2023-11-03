@@ -30,20 +30,38 @@ export const OrdersTable: React.FC<{
 }> = ({ className, market_id, allMarketData }) => {
   const { connected, account } = useWallet();
 
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: "created_at", desc: true },
+  ]);
 
   const { data, isLoading } = useQuery<TableOrder[]>(
     ["useUserOrders", account?.address],
     async () => {
-      // if (!account) return [];
-      const response = await fetch(
-        `${API_URL}/limit_orders?order_status=eq.open&order=last_increase_stamp.asc&market_id=eq.${market_id}`,
+      if (!account) return [];
+      const limit = 100;
+      const fetchPromises = [
+        fetch(
+          `${API_URL}/limit_orders?user=eq.${account.address}&market_id=eq.${market_id}&limit=${limit}`,
+        ),
+        fetch(
+          `${API_URL}/market_orders?user=eq.${account.address}&market_id=eq.${market_id}&limit=${limit}`,
+        ),
+        fetch(
+          `${API_URL}/swap_orders?signing_account=eq.${account.address}&market_id=eq.${market_id}&limit=${limit}`,
+        ),
+      ];
+      const [response1, response2, response3] = await Promise.all(
+        fetchPromises,
       );
-      const data = await response.json();
-      const orders: TableOrder[] = data.map((order: TableOrder) => ({
+      const limitOrders = await response1.json();
+      const marketOrders = await response2.json();
+      const swapOrders = await response3.json();
+      const combinedData = [...limitOrders, ...marketOrders, ...swapOrders];
+      const orders: TableOrder[] = combinedData.map((order: TableOrder) => ({
         ...order,
         total: order.price * order.remaining_size,
       }));
+      console.log({limitOrders, marketOrders, swapOrders})
       return orders;
       // TODO: Need working API
       // return await fetch(
@@ -92,31 +110,42 @@ export const OrdersTable: React.FC<{
           </span>
         ),
       }),
-      columnHelper.display({
+      columnHelper.accessor("order_type", {
         header: "Type",
-        cell: () => "LIMIT",
+        cell: (info) => info.getValue().toUpperCase() || "N/A",
       }),
       columnHelper.accessor("side", {
-        cell: (info) => info.getValue().toUpperCase(),
+        cell: (info) => info.getValue()?.toUpperCase() || "N/A",
       }),
       columnHelper.accessor("price", {
+        header: "Limit price",
         cell: (info) =>
-          `${info.getValue()} ${
+        info.getValue() ? `${info.getValue()} ${
             marketById.get(info.row.original.market_id)?.quote.symbol ?? ""
-          }`,
+          }` : "N/A",
+      }),
+      columnHelper.display({
+        header: "AVG EXECUTION PRICE",
+        cell: () => "N/A",
       }),
       columnHelper.accessor("remaining_size", {
+        header: "Remaining size",
         cell: (info) =>
           `${info.getValue()} ${
             marketById.get(info.row.original.market_id)?.base?.symbol ?? ""
           }`,
       }),
       columnHelper.accessor("total", {
+        header: "Size filled",
         cell: (info) => {
           const total = info.getValue();
           const { market_id } = info.row.original;
-          return `${total} ${marketById.get(market_id)?.quote?.symbol ?? ""}`;
+          return total ? `${total} ${marketById.get(market_id)?.quote?.symbol ?? ""}` : "N/A";
         },
+      }),
+      columnHelper.display({
+        header: "Total volume",
+        cell: () => "N/A",
       }),
       columnHelper.accessor("order_status", {
         header: "Status",
