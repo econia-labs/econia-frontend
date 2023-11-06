@@ -25,6 +25,12 @@ cd src/frontend
 pnpm i # pnpm is required
 ```
 
+Copy .env.example file
+
+```bash
+cp -R .env.example .env.local
+```
+
 - Run the development server:
 
 ```bash

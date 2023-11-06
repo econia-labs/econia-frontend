@@ -19,22 +19,23 @@ import bg from "../../../public/bg.png";
 import { ConnectedButton } from "../ConnectedButton";
 import { API_URL } from "@/env";
 
-type TableOrder = ApiOrder & { total: number };
-
-const columnHelper = createColumnHelper<TableOrder>();
+const columnHelper = createColumnHelper<ApiOrder>();
 
 export const OrdersTable: React.FC<{
   className?: string;
   market_id: number;
-  allMarketData: ApiMarket[];
-}> = ({ className, market_id, allMarketData }) => {
+  marketData: ApiMarket;
+}> = ({ className, market_id, marketData }) => {
+  const { base, quote } = marketData;
+  const { decimals: baseDecimals, symbol: baseSymbol } = base;
+  const { decimals: quoteDecimals, symbol: quoteSymbol } = quote;
   const { connected, account } = useWallet();
 
   const [sorting, setSorting] = useState<SortingState>([
     { id: "created_at", desc: true },
   ]);
 
-  const { data, isLoading } = useQuery<TableOrder[]>(
+  const { data, isLoading } = useQuery<ApiOrder[]>(
     ["useUserOrders", account?.address],
     async () => {
       if (!account) return [];
@@ -57,25 +58,10 @@ export const OrdersTable: React.FC<{
       const marketOrders = await response2.json();
       const swapOrders = await response3.json();
       const combinedData = [...limitOrders, ...marketOrders, ...swapOrders];
-      const orders: TableOrder[] = combinedData.map((order: TableOrder) => ({
-        ...order,
-        total: order.price * order.size,
-      }));
-      return orders;
-      // TODO: Need working API
-      // return await fetch(
-      //   `${API_URL}/account/${account.address.toString()}/open-orders`
-      // ).then((res) => res.json());
+      // console.log(combinedData)
+      return combinedData;
     },
   );
-
-  const marketById = useMemo(() => {
-    const map = new Map<number, ApiMarket>();
-    for (const market of allMarketData) {
-      map.set(market.market_id, market);
-    }
-    return map;
-  }, [allMarketData]);
 
   const sortLabel = useMemo(() => {
     const map = new Map<SortDirection | false, ReactNode>();
@@ -93,7 +79,7 @@ export const OrdersTable: React.FC<{
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor("time", {
+      columnHelper.accessor("created_at", {
         header: () => <span className="pl-4">Time Placed</span>,
         cell: (info) => (
           <span className="pl-4 text-neutral-500">
@@ -114,35 +100,38 @@ export const OrdersTable: React.FC<{
         cell: (info) => info.getValue().toUpperCase() || "N/A",
       }),
       columnHelper.accessor("side", {
-        cell: (info) => info.getValue()?.toUpperCase() || "N/A",
+        cell: (info) => {
+          if (info.getValue()) return info.getValue().toUpperCase();
+          const { direction } = info.row.original;
+          if (direction) return direction === "buy" ? "BID" : "ASK";
+        },
       }),
       columnHelper.accessor("price", {
         header: "Limit price",
-        cell: (info) =>
-          info.getValue()
-            ? `${info.getValue()} ${
-                marketById.get(info.row.original.market_id)?.quote.symbol ?? ""
-              }`
-            : "N/A",
+        cell: (info) => {
+          const price = info.getValue();
+          if (price) {
+            return `${price / Math.pow(10, quoteDecimals)} ${quoteSymbol}`;
+          } else {
+            return "N/A";
+          }
+        },
       }),
       columnHelper.display({
         header: "AVG EXECUTION PRICE",
         cell: () => "N/A",
       }),
-      columnHelper.accessor("size", {
+      columnHelper.accessor("remaining_size", {
         header: "Remaining size",
         cell: (info) =>
-          `${info.getValue()} ${
-            marketById.get(info.row.original.market_id)?.base?.symbol ?? ""
-          }`,
+          `${info.getValue() / Math.pow(10, baseDecimals)} ${baseSymbol}`,
       }),
-      columnHelper.accessor("total", {
-        header: "Size filled",
+      columnHelper.accessor("total_filled", {
+        header: "Total",
         cell: (info) => {
           const total = info.getValue();
-          const { market_id } = info.row.original;
           return total
-            ? `${total} ${marketById.get(market_id)?.quote?.symbol ?? ""}`
+            ? `${total / Math.pow(10, quoteDecimals)} ${quoteSymbol}`
             : "N/A";
         },
       }),
@@ -162,7 +151,7 @@ export const OrdersTable: React.FC<{
         },
       }),
     ],
-    [marketById],
+    [marketData],
   );
 
   const table = useReactTable({

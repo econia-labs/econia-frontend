@@ -7,11 +7,11 @@ import {
 } from "@tanstack/react-table";
 import React from "react";
 
-import { type ApiMarket, type ApiOrder } from "@/types/api";
+import { type TradeHistory, type ApiMarket } from "@/types/api";
 import Skeleton from "react-loading-skeleton";
 import { API_URL } from "@/env";
 
-const columnHelper = createColumnHelper<ApiOrder>();
+const columnHelper = createColumnHelper<TradeHistory>();
 
 export const TradeHistoryTable: React.FC<{
   className?: string;
@@ -21,7 +21,7 @@ export const TradeHistoryTable: React.FC<{
   const { base, quote } = marketData;
   const baseDecimals = base.decimals;
   const quoteDecimals = quote.decimals;
-  const { data, isLoading } = useQuery<ApiOrder[]>(
+  const { data, isLoading } = useQuery<TradeHistory[]>(
     ["useTradeHistory", marketData.market_id],
     async () => {
       const response = await fetch(
