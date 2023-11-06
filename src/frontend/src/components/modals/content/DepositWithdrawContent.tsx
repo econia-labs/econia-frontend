@@ -75,16 +75,67 @@ const DepositWithdrawForm: React.FC<{
     account?.address,
   );
 
-  const disabledReason = useMemo(
-    () =>
-      balance == null || marketAccountBalance == null
-        ? "Loading balance..."
-        : (mode === "deposit" && parseFloat(amount) > balance) ||
-          (mode === "withdraw" && parseFloat(amount) > marketAccountBalance)
-        ? "Not enough coins"
-        : null,
-    [amount, balance, marketAccountBalance, mode],
-  );
+  const disabledReason = useMemo(() => {
+    return balance == null || marketAccountBalance == null
+      ? "Loading balance..."
+      : (mode === "deposit" && parseFloat(amount) > balance) ||
+        (mode === "withdraw" && parseFloat(amount) > marketAccountBalance)
+      ? "Not enough coins"
+      : null;
+  }, [amount, balance, marketAccountBalance, mode]);
+
+  const handleSubmit = async () => {
+    if (!Number(amount)) {
+      return "";
+    }
+    const payload =
+      mode === "deposit"
+        ? entryFunctions.depositFromCoinstore(
+            ECONIA_ADDR,
+            TypeTag.fromApiCoin(selectedCoin).toString(),
+            BigInt(selectedMarket.market_id),
+            BigInt(NO_CUSTODIAN),
+            BigInt(toRawCoinAmount(amount, selectedCoin.decimals).toString()),
+          )
+        : entryFunctions.withdrawToCoinstore(
+            ECONIA_ADDR,
+            TypeTag.fromApiCoin(selectedCoin).toString(),
+            BigInt(selectedMarket.market_id),
+            BigInt(toRawCoinAmount(amount, selectedCoin.decimals).toString()),
+          );
+    await signAndSubmitTransaction({
+      type: "entry_function_payload",
+      ...payload,
+    });
+  };
+
+  const handleRegisterMarketAccount = async () => {
+    if (selectedMarket?.base == null) {
+      throw new Error("Generic markets not supported");
+    }
+    const payload = entryFunctions.registerMarketAccount(
+      ECONIA_ADDR,
+      TypeTag.fromApiCoin(selectedMarket.base).toString(),
+      TypeTag.fromApiCoin(selectedMarket.quote).toString(),
+      BigInt(selectedMarket.market_id),
+      BigInt(NO_CUSTODIAN),
+    );
+    const res = await signAndSubmitTransaction({
+      ...payload,
+      type: "entry_function_payload",
+    });
+    if (res) {
+      // refetch user market accounts
+      await queryClient.invalidateQueries({
+        queryKey: [
+          "userCheckRegisteredMarketAccount",
+          account?.address,
+          selectedMarket.market_id,
+        ],
+      });
+    }
+  };
+
   return (
     <>
       {!isRegistered && (
@@ -129,68 +180,22 @@ const DepositWithdrawForm: React.FC<{
         {isRegistered ? (
           <Button
             variant="primary"
-            onClick={async () => {
-              const payload =
-                mode === "deposit"
-                  ? entryFunctions.depositFromCoinstore(
-                      ECONIA_ADDR,
-                      TypeTag.fromApiCoin(selectedCoin).toString(),
-                      BigInt(selectedMarket.market_id),
-                      BigInt(NO_CUSTODIAN),
-                      BigInt(
-                        toRawCoinAmount(
-                          amount,
-                          selectedCoin.decimals,
-                        ).toString(),
-                      ),
-                    )
-                  : entryFunctions.withdrawToCoinstore(
-                      ECONIA_ADDR,
-                      TypeTag.fromApiCoin(selectedCoin).toString(),
-                      BigInt(selectedMarket.market_id),
-                      BigInt(
-                        toRawCoinAmount(
-                          amount,
-                          selectedCoin.decimals,
-                        ).toString(),
-                      ),
-                    );
-              await signAndSubmitTransaction({
-                type: "entry_function_payload",
-                ...payload,
-              });
-            }}
+            onClick={handleSubmit}
             disabledReason={disabledReason}
             className="mt-8 w-full"
+            disabled={Number(amount) === 0}
           >
-            {mode === "deposit" ? "Deposit" : "Withdraw"}
+            {Number(amount) === 0
+              ? "Enter amount"
+              : mode === "deposit"
+              ? "Deposit"
+              : "Withdraw"}
           </Button>
         ) : (
           // TODO: copied over from RegsiterAccountContext, make this a util function?
           <Button
             variant="primary"
-            onClick={async () => {
-              if (selectedMarket?.base == null) {
-                throw new Error("Generic markets not supported");
-              }
-              const payload = entryFunctions.registerMarketAccount(
-                ECONIA_ADDR,
-                TypeTag.fromApiCoin(selectedMarket.base).toString(),
-                TypeTag.fromApiCoin(selectedMarket.quote).toString(),
-                BigInt(selectedMarket.market_id),
-                BigInt(NO_CUSTODIAN),
-              );
-              const res = await signAndSubmitTransaction({
-                ...payload,
-                type: "entry_function_payload",
-              });
-              if (res) {
-                // refetch user market accounts
-                await queryClient.invalidateQueries({
-                  queryKey: ["userMarketAccounts"],
-                });
-              }
-            }}
+            onClick={handleRegisterMarketAccount}
             className="relative z-50 mt-8 w-full"
           >
             Create Account
