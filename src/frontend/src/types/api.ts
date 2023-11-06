@@ -12,7 +12,7 @@ export type ApiCoin = {
 export type ApiMarket = {
   market_id: number;
   name: string;
-  base: ApiCoin | null;
+  base: ApiCoin;
   base_name_generic: string | null;
   quote: ApiCoin;
   lot_size: number;

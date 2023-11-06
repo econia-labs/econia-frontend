@@ -18,6 +18,9 @@ export const TradeHistoryTable: React.FC<{
   marketData: ApiMarket;
   marketId: number;
 }> = ({ className, marketData, marketId }) => {
+  const { base, quote } = marketData;
+  const baseDecimals = base.decimals;
+  const quoteDecimals = quote.decimals;
   const { data, isLoading } = useQuery<ApiOrder[]>(
     ["useTradeHistory", marketData.market_id],
     async () => {
@@ -31,11 +34,11 @@ export const TradeHistoryTable: React.FC<{
   const table = useReactTable({
     columns: [
       columnHelper.accessor("price", {
-        cell: (info) => info.getValue().toLocaleString(),
+        cell: (info) => info.getValue() / Math.pow(10, quoteDecimals),
         header: () => "PRICE",
       }),
       columnHelper.accessor("size", {
-        cell: (info) => info.getValue().toLocaleString(),
+        cell: (info) => info.getValue() / Math.pow(10, baseDecimals),
         header: () => "AMOUNT",
       }),
       columnHelper.accessor("time", {
