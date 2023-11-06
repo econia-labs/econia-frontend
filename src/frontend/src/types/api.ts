@@ -66,15 +66,41 @@ export type MarketData = MarketRes & {
 export type ApiOrder = {
   market_order_id: number;
   market_id: number;
-  name: string;
+  order_id: number;
+  user: string;
+  custodian_id: number;
+  self_matching_behavior: number;
+  restriction?: number;
+  created_at: string;
+  last_updated_at: string;
+  integrator: string;
+  total_filled: number;
+  remaining_size: number;
+  order_status: string;
   order_type: string;
+  price?: number;
+  last_increase_stamp?: number;
   side: "bid" | "ask";
-  size: number;
-  price: number;
-  user_address: string;
-  custodian_id: number | null;
-  order_status: "open" | "filled" | "cancelled" | "evicted";
+  direction?: "buy" | "sell";
+};
+
+export type TradeHistory = {
+  txn_version: number;
+  event_idx: number;
+  emit_address: string;
   time: string;
+  maker_address: string;
+  maker_custodian_id: number;
+  maker_order_id: number;
+  maker_side: boolean;
+  market_id: number;
+  price: number;
+  sequence_number_for_trade: number;
+  size: number;
+  taker_address: string;
+  taker_custodian_id: number;
+  taker_order_id: number;
+  taker_quote_fees_paid: number;
 };
 
 export type ApiBar = {

@@ -371,8 +371,8 @@ export default function Market({ allMarketData, marketData }: Props) {
               </div>
 
               <OrdersTable
-                market_id={marketData?.market_id}
-                allMarketData={allMarketData}
+                market_id={marketData.market_id}
+                marketData={marketData}
               />
             </div>
           </div>
