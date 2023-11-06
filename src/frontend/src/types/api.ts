@@ -12,7 +12,7 @@ export type ApiCoin = {
 export type ApiMarket = {
   market_id: number;
   name: string;
-  base: ApiCoin | null;
+  base: ApiCoin;
   base_name_generic: string | null;
   quote: ApiCoin;
   lot_size: number;
@@ -69,12 +69,12 @@ export type ApiOrder = {
   name: string;
   order_type: string;
   side: "bid" | "ask";
-  remaining_size: number;
+  size: number;
   price: number;
   user_address: string;
   custodian_id: number | null;
   order_status: "open" | "filled" | "cancelled" | "evicted";
-  created_at: string;
+  time: string;
 };
 
 export type ApiBar = {

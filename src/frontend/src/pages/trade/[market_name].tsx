@@ -394,7 +394,10 @@ export default function Market({ allMarketData, marketData }: Props) {
               <p className="sticky top-0 bg-neutral-800 bg-noise py-3 pl-4 font-jost font-bold text-white">
                 Trade History
               </p>
-              <TradeHistoryTable marketData={marketData} />
+              <TradeHistoryTable
+                marketData={marketData}
+                marketId={marketData?.market_id}
+              />
             </div>
           </div>
         </main>
