@@ -59,7 +59,7 @@ export const OrdersTable: React.FC<{
       const combinedData = [...limitOrders, ...marketOrders, ...swapOrders];
       const orders: TableOrder[] = combinedData.map((order: TableOrder) => ({
         ...order,
-        total: order.price * order.remaining_size,
+        total: order.price * order.size,
       }));
       return orders;
       // TODO: Need working API
@@ -93,7 +93,7 @@ export const OrdersTable: React.FC<{
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor("created_at", {
+      columnHelper.accessor("time", {
         header: () => <span className="pl-4">Time Placed</span>,
         cell: (info) => (
           <span className="pl-4 text-neutral-500">
@@ -129,7 +129,7 @@ export const OrdersTable: React.FC<{
         header: "AVG EXECUTION PRICE",
         cell: () => "N/A",
       }),
-      columnHelper.accessor("remaining_size", {
+      columnHelper.accessor("size", {
         header: "Remaining size",
         cell: (info) =>
           `${info.getValue()} ${

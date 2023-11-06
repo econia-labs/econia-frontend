@@ -69,12 +69,12 @@ export type ApiOrder = {
   name: string;
   order_type: string;
   side: "bid" | "ask";
-  remaining_size: number;
+  size: number;
   price: number;
   user_address: string;
   custodian_id: number | null;
   order_status: "open" | "filled" | "cancelled" | "evicted";
-  created_at: string;
+  time: string;
 };
 
 export type ApiBar = {
