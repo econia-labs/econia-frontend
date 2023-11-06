@@ -11,6 +11,9 @@ const config = {
   ],
   theme: {
     extend: {
+      backgroundImage: {
+        noise: 'url("/bg.png")',
+      },
       fontFamily: {
         jost: ["var(--font-jost)", ...fontFamily.sans],
         "roboto-mono": ["var(--font-roboto-mono)", ...fontFamily.sans],

@@ -353,7 +353,7 @@ export default function Market({ allMarketData, marketData }: Props) {
           onDepositWithdrawClick={() => setDepositWithdrawModalOpen(true)}
           onWalletButtonClick={() => setWalletButtonModalOpen(true)}
         />
-        {/* <StatsBar allMarketData={allMarketData} selectedMarket={marketData} /> */}
+        <StatsBar allMarketData={allMarketData} selectedMarket={marketData} />
         <main className="flex h-full min-h-[680px] w-full grow">
           <div className="flex grow flex-col p-3">
             <div className="mb-3 flex grow flex-col border border-neutral-600">
@@ -390,8 +390,8 @@ export default function Market({ allMarketData, marketData }: Props) {
             <div className="border border-neutral-600">
               <OrderEntry marketData={marketData} />
             </div>
-            <div className="mt-3 h-full min-h-[160px] border border-neutral-600">
-              <p className="my-3 ml-4 font-jost font-bold text-white">
+            <div className="scrollbar-none mt-3 h-full max-h-[calc(100vh-658px)] min-h-[160px] overflow-auto border border-neutral-600">
+              <p className="sticky top-0 bg-neutral-800 bg-noise py-3 pl-4 font-jost font-bold text-white">
                 Trade History
               </p>
               <TradeHistoryTable marketData={marketData} />
