@@ -42,13 +42,13 @@ export const OrdersTable: React.FC<{
       const limit = 100;
       const fetchPromises = [
         fetch(
-          `${API_URL}/limit_orders?user=eq.${account.address}&market_id=eq.${market_id}&limit=${limit}`,
+          `${API_URL}/limit_orders?order_status=eq.open&user=eq.${account.address}&market_id=eq.${market_id}&limit=${limit}`,
         ),
         fetch(
-          `${API_URL}/market_orders?user=eq.${account.address}&market_id=eq.${market_id}&limit=${limit}`,
+          `${API_URL}/market_orders?order_status=eq.open&user=eq.${account.address}&market_id=eq.${market_id}&limit=${limit}`,
         ),
         fetch(
-          `${API_URL}/swap_orders?signing_account=eq.${account.address}&market_id=eq.${market_id}&limit=${limit}`,
+          `${API_URL}/swap_orders?order_status=eq.open&signing_account=eq.${account.address}&market_id=eq.${market_id}&limit=${limit}`,
         ),
       ];
       const [response1, response2, response3] = await Promise.all(
@@ -58,7 +58,6 @@ export const OrdersTable: React.FC<{
       const marketOrders = await response2.json();
       const swapOrders = await response3.json();
       const combinedData = [...limitOrders, ...marketOrders, ...swapOrders];
-      // console.log(combinedData)
       return combinedData;
     },
   );
