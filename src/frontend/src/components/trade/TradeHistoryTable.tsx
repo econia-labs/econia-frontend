@@ -10,6 +10,174 @@ import React from "react";
 import { type ApiMarket, type ApiOrder } from "@/types/api";
 import Skeleton from "react-loading-skeleton";
 
+const mockTradeHistory = [
+  {
+    "market_order_id": 1,
+    "market_id": 0,
+    "side": "ask",
+    "remaining_size": 750,
+    "price": 1050,
+    "user_address": "0x2",
+    "custodian_id": 1,
+    "order_status": "partially_filled",
+    "created_at": "2023-04-30T12:36:00.123456Z"
+  },
+  {
+    "market_order_id": 2,
+    "market_id": 1,
+    "side": "bid",
+    "remaining_size": 800,
+    "price": 980,
+    "user_address": "0x3",
+    "custodian_id": null,
+    "order_status": "open",
+    "created_at": "2023-04-30T12:37:15.987654Z"
+  },
+  {
+    "market_order_id": 3,
+    "market_id": 2,
+    "side": "ask",
+    "remaining_size": 600,
+    "price": 1100,
+    "user_address": "0x4",
+    "custodian_id": 2,
+    "order_status": "partially_filled",
+    "created_at": "2023-04-30T12:38:30.111111Z"
+  },
+  {
+    "market_order_id": 4,
+    "market_id": 0,
+    "side": "bid",
+    "remaining_size": 950,
+    "price": 990,
+    "user_address": "0x5",
+    "custodian_id": null,
+    "order_status": "open",
+    "created_at": "2023-04-30T12:39:45.222222Z"
+  },
+  {
+    "market_order_id": 5,
+    "market_id": 1,
+    "side": "ask",
+    "remaining_size": 700,
+    "price": 1080,
+    "user_address": "0x6",
+    "custodian_id": 3,
+    "order_status": "partially_filled",
+    "created_at": "2023-04-30T12:40:10.333333Z"
+  },
+  {
+    "market_order_id": 6,
+    "market_id": 2,
+    "side": "bid",
+    "remaining_size": 850,
+    "price": 970,
+    "user_address": "0x7",
+    "custodian_id": null,
+    "order_status": "filled",
+    "created_at": "2023-04-30T12:41:55.444444Z"
+  },
+  {
+    "market_order_id": 7,
+    "market_id": 0,
+    "side": "ask",
+    "remaining_size": 500,
+    "price": 1120,
+    "user_address": "0x8",
+    "custodian_id": 4,
+    "order_status": "open",
+    "created_at": "2023-04-30T12:42:20.555555Z"
+  },
+  {
+    "market_order_id": 8,
+    "market_id": 1,
+    "side": "bid",
+    "remaining_size": 900,
+    "price": 960,
+    "user_address": "0x9",
+    "custodian_id": null,
+    "order_status": "partially_filled",
+    "created_at": "2023-04-30T12:43:30.666666Z"
+  },
+  {
+    "market_order_id": 9,
+    "market_id": 2,
+    "side": "ask",
+    "remaining_size": 450,
+    "price": 1150,
+    "user_address": "0xA",
+    "custodian_id": 5,
+    "order_status": "filled",
+    "created_at": "2023-04-30T12:44:45.777777Z"
+  },
+  {
+    "market_order_id": 10,
+    "market_id": 0,
+    "side": "bid",
+    "remaining_size": 920,
+    "price": 940,
+    "user_address": "0xB",
+    "custodian_id": null,
+    "order_status": "open",
+    "created_at": "2023-04-30T12:46:00.888888Z"
+  },
+  {
+    "market_order_id": 11,
+    "market_id": 1,
+    "side": "ask",
+    "remaining_size": 550,
+    "price": 1180,
+    "user_address": "0xC",
+    "custodian_id": 6,
+    "order_status": "filled",
+    "created_at": "2023-04-30T12:47:15.999999Z"
+  },
+  {
+    "market_order_id": 12,
+    "market_id": 2,
+    "side": "bid",
+    "remaining_size": 880,
+    "price": 930,
+    "user_address": "0xD",
+    "custodian_id": null,
+    "order_status": "open",
+    "created_at": "2023-04-30T12:48:10.123456Z"
+  },
+  {
+    "market_order_id": 13,
+    "market_id": 0,
+    "side": "ask",
+    "remaining_size": 480,
+    "price": 1200,
+    "user_address": "0xE",
+    "custodian_id": 7,
+    "order_status": "partially_filled",
+    "created_at": "2023-04-30T12:49:25.234567Z"
+  },
+  {
+    "market_order_id": 14,
+    "market_id": 1,
+    "side": "bid",
+    "remaining_size": 870,
+    "price": 920,
+    "user_address": "0xF",
+    "custodian_id": null,
+    "order_status": "open",
+    "created_at": "2023-04-30T12:50:40.345678Z"
+  },
+  {
+    "market_order_id": 15,
+    "market_id": 2,
+    "side": "ask",
+    "remaining_size": 420,
+    "price": 1250,
+    "user_address": "0x10",
+    "custodian_id": 8,
+    "order_status": "filled",
+    "created_at": "2023-04-30T12:51:55.456789Z"
+  }
+] as ApiOrder[];
+
 const columnHelper = createColumnHelper<ApiOrder>();
 
 export const TradeHistoryTable: React.FC<{
@@ -19,19 +187,7 @@ export const TradeHistoryTable: React.FC<{
   const { data, isLoading } = useQuery<ApiOrder[]>(
     ["useTradeHistory", marketData.market_id],
     async () => {
-      return [
-        {
-          market_order_id: 0,
-          market_id: 0,
-          side: "bid",
-          remaining_size: 1000,
-          price: 1000,
-          user_address: "0x1",
-          custodian_id: null,
-          order_status: "filled",
-          created_at: "2023-04-30T12:34:56.789012Z",
-        },
-      ] as ApiOrder[];
+      return mockTradeHistory;
       // TODO: Endpoint needs to return data
       // return await fetch(
       //   `${API_URL}/markets/${
@@ -69,7 +225,7 @@ export const TradeHistoryTable: React.FC<{
     <table
       className={"w-full table-fixed" + (className ? ` ${className}` : "")}
     >
-      <thead>
+      <thead className="sticky top-12 bg-neutral-800 bg-noise">
         {table.getHeaderGroups().map((headerGroup) => (
           <tr
             className="text-left font-roboto-mono text-sm text-neutral-500 [&>th]:font-light"
@@ -98,7 +254,7 @@ export const TradeHistoryTable: React.FC<{
         ))}
       </thead>
       <tbody>
-        <tr>
+        <tr className="sticky top-[66px] bg-neutral-800 bg-noise">
           <td colSpan={7} className="py-2">
             <div className="h-[1px] bg-neutral-600"></div>
           </td>
