@@ -1,13 +1,13 @@
 import { entryFunctions, type order } from "@econia-labs/sdk";
 import BigNumber from "bignumber.js";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/Button";
 import { ConnectedButton } from "@/components/ConnectedButton";
 import { useAptos } from "@/contexts/AptosContext";
 import { useOrderEntry } from "@/contexts/OrderEntryContext";
-import { ECONIA_ADDR } from "@/env";
+import { API_URL, CUSTODIAN_ID, ECONIA_ADDR } from "@/env";
 import { useMarketAccountBalance } from "@/hooks/useMarketAccountBalance";
 import { type ApiMarket } from "@/types/api";
 import { type Side } from "@/types/global";
@@ -16,27 +16,93 @@ import { TypeTag } from "@/utils/TypeTag";
 
 import { OrderEntryInfo } from "./OrderEntryInfo";
 import { OrderEntryInputWrapper } from "./OrderEntryInputWrapper";
+import { useQuery } from "@tanstack/react-query";
+import { toDecimalPrice } from "@/utils/econia";
 
 type LimitFormValues = {
   price: string;
   size: string;
   totalSize: string;
 };
+export const HI_PRICE = 4294967295;
+export const MIN_PRICE = 1;
 
 export const LimitOrderEntry: React.FC<{
   marketData: ApiMarket;
   side: Side;
 }> = ({ marketData, side }) => {
   const { price } = useOrderEntry();
-  const { signAndSubmitTransaction, account } = useAptos();
+  const { signAndSubmitTransaction, account, aptosClient } = useAptos();
   const {
     handleSubmit,
     register,
-    formState: { errors },
+    formState,
     getValues,
     setValue,
     setError,
-  } = useForm<LimitFormValues>();
+    watch,
+  } = useForm<LimitFormValues>({
+    mode: "onBlur",
+  });
+
+  const { errors } = formState;
+  const { data: takerFeeDivisor } = useQuery(["takerFeeDivisor"], async () => {
+    try {
+      const rs = await aptosClient.view({
+        function: `${ECONIA_ADDR}::incentives::get_taker_fee_divisor`,
+        arguments: [],
+        type_arguments: [],
+      });
+      return Number(rs[0]);
+    } catch (e) {
+      return 2000; // default
+    }
+  });
+
+  const { data: balance } = useQuery(
+    ["accountBalance", account?.address, marketData.market_id],
+    async () => {
+      try {
+        const response = await fetch(
+          `${API_URL}/rpc/user_balance?user_address=${account?.address}&market=${marketData.market_id}&custodian=${CUSTODIAN_ID}`,
+        );
+        const balance = await response.json();
+        if (balance.length) {
+          return balance[0];
+        }
+
+        return {
+          base_total: 0,
+          base_available: 0,
+          base_ceiling: 0,
+          quote_total: 0,
+          quote_available: 0,
+          quote_ceiling: 0,
+        };
+      } catch (e) {
+        return {
+          base_total: 0,
+          base_available: 0,
+          base_ceiling: 0,
+          quote_total: 0,
+          quote_available: 0,
+          quote_ceiling: 0,
+        };
+      }
+    },
+  );
+
+  const watchPrice = watch("price", "0.0");
+  const watchSize = watch("size", "0.0");
+  const estimateFee = useMemo(() => {
+    const totalSize = Number(watchPrice) * Number(watchSize);
+    if (!takerFeeDivisor || !totalSize) {
+      return "--";
+    }
+    // check order book
+    const sizeApplyFee = Number(totalSize) * 1;
+    return `${(sizeApplyFee * 1) / takerFeeDivisor}`;
+  }, [takerFeeDivisor, watchPrice, watchSize]);
 
   useEffect(() => {
     if (price != null) {
@@ -65,6 +131,10 @@ export const LimitOrderEntry: React.FC<{
     }
 
     const rawSize = toRawCoinAmount(size, marketData.base.decimals);
+    console.log(
+      "🚀 ~ file: LimitOrderEntry.tsx:134 ~ onSubmit ~ rawSize:",
+      rawSize,
+    );
 
     // check that size satisfies lot size
     if (!rawSize.modulo(marketData.lot_size).eq(0)) {
@@ -78,7 +148,14 @@ export const LimitOrderEntry: React.FC<{
       return;
     }
 
-    const rawPrice = toRawCoinAmount(price, marketData.quote.decimals);
+    const rawPrice = toDecimalPrice({
+      price: toRawCoinAmount(price, marketData.quote.decimals),
+      lotSize: BigNumber(marketData.lot_size),
+      tickSize: BigNumber(marketData.tick_size),
+      baseCoinDecimals: BigNumber(marketData.base?.decimals || 0),
+      quoteCoinDecimals: BigNumber(marketData.quote?.decimals || 0),
+    });
+    // const rawPrice = toRawCoinAmount(price, marketData.quote.decimals);
 
     // validate tick size
     if (!rawPrice.modulo(marketData.tick_size).eq(0)) {
@@ -127,7 +204,6 @@ export const LimitOrderEntry: React.FC<{
       "immediateOrCancel", // TODO don't hardcode
       "abort", // don't hardcode this either
     );
-
     await signAndSubmitTransaction({
       type: "entry_function_payload",
       ...payload,
@@ -148,8 +224,15 @@ export const LimitOrderEntry: React.FC<{
             step="any"
             placeholder="0.00"
             {...register("price", {
-              required: "required",
-              min: 0,
+              required: "This field is required",
+              min: {
+                value: MIN_PRICE,
+                message: "Min price is: " + MIN_PRICE,
+              },
+              max: {
+                value: HI_PRICE,
+                message: "Max price is: " + HI_PRICE,
+              },
               // TODO: check that amount * size does not exceed quote currency
               // balance for bids
               onChange: (e) => {
@@ -166,7 +249,7 @@ export const LimitOrderEntry: React.FC<{
           />
         </OrderEntryInputWrapper>
         <div className="relative">
-          <p className="absolute top-[-1rem] text-xs uppercase text-red">
+          <p className="absolute top-[-1rem] text-xs text-red">
             {errors.price != null && errors.price.message}
           </p>
         </div>
@@ -185,7 +268,8 @@ export const LimitOrderEntry: React.FC<{
             placeholder="0.00"
             {...register("size", {
               required: "required",
-              min: 0,
+              min: 1,
+              max: HI_PRICE,
               // TODO: check that size does not exceed base currency balance for asks
               onChange: (e) => {
                 const price = Number(getValues("price"));
@@ -220,7 +304,7 @@ export const LimitOrderEntry: React.FC<{
       </div>
       <hr className="my-4 border-neutral-600" />
       <div className="mx-4 mb-4 flex flex-col gap-4">
-        <OrderEntryInfo label="EST. FEE" value="--" />
+        <OrderEntryInfo label="EST. FEE" value={estimateFee} />
         <ConnectedButton className="w-full">
           <Button
             type="submit"
@@ -232,7 +316,11 @@ export const LimitOrderEntry: React.FC<{
         </ConnectedButton>
         <OrderEntryInfo
           label={`${marketData.base?.symbol} AVAILABLE`}
-          value={`${baseBalance.data ?? "--"} ${marketData.base?.symbol}`}
+          value={`${
+            balance?.base_available
+              ? balance?.base_available / 10 ** marketData.base.decimals
+              : "--"
+          } ${marketData.base?.symbol}`}
           className="cursor-pointer"
           onClick={() => {
             setValue(
@@ -243,7 +331,11 @@ export const LimitOrderEntry: React.FC<{
         />
         <OrderEntryInfo
           label={`${marketData.quote?.symbol} AVAILABLE`}
-          value={`${quoteBalance.data ?? "--"} ${marketData.quote?.symbol}`}
+          value={`${
+            balance?.quote_available
+              ? balance.quote_available / 10 ** marketData.quote.decimals
+              : "--"
+          } ${marketData.quote?.symbol}`}
         />
       </div>
     </form>

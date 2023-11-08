@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/Button";
 import { ConnectedButton } from "@/components/ConnectedButton";
 import { useAptos } from "@/contexts/AptosContext";
-import { ECONIA_ADDR } from "@/env";
+import { API_URL, CUSTODIAN_ID, ECONIA_ADDR } from "@/env";
 import { useMarketAccountBalance } from "@/hooks/useMarketAccountBalance";
 import { type ApiMarket } from "@/types/api";
 import { type Side } from "@/types/global";
@@ -13,6 +13,8 @@ import { TypeTag } from "@/utils/TypeTag";
 
 import { OrderEntryInfo } from "./OrderEntryInfo";
 import { OrderEntryInputWrapper } from "./OrderEntryInputWrapper";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 type MarketFormValues = {
   size: string;
@@ -22,14 +24,16 @@ export const MarketOrderEntry: React.FC<{
   marketData: ApiMarket;
   side: Side;
 }> = ({ marketData, side }) => {
-  const { signAndSubmitTransaction, account } = useAptos();
+  const { signAndSubmitTransaction, account, aptosClient } = useAptos();
   const {
     handleSubmit,
     register,
     setValue,
     setError,
+    watch,
     formState: { errors },
   } = useForm<MarketFormValues>();
+
   const baseBalance = useMarketAccountBalance(
     account?.address,
     marketData.market_id,
@@ -40,6 +44,64 @@ export const MarketOrderEntry: React.FC<{
     marketData.market_id,
     marketData.quote,
   );
+
+  const { data: balance } = useQuery(
+    ["accountBalance", account?.address, marketData.market_id],
+    async () => {
+      try {
+        const response = await fetch(
+          `${API_URL}/rpc/user_balance?user_address=${account?.address}&market=${marketData.market_id}&custodian=${CUSTODIAN_ID}`,
+        );
+        const balance = await response.json();
+        if (balance.length) {
+          return balance[0];
+        }
+
+        return {
+          base_total: 0,
+          base_available: 0,
+          base_ceiling: 0,
+          quote_total: 0,
+          quote_available: 0,
+          quote_ceiling: 0,
+        };
+      } catch (e) {
+        return {
+          base_total: 0,
+          base_available: 0,
+          base_ceiling: 0,
+          quote_total: 0,
+          quote_available: 0,
+          quote_ceiling: 0,
+        };
+      }
+    },
+  );
+
+  const watchSize = watch("size", "0.0");
+  const lastPrice = 5; // waiting for last price
+  const { data: takerFeeDivisor } = useQuery(["takerFeeDivisor"], async () => {
+    try {
+      const rs = await aptosClient.view({
+        function: `${ECONIA_ADDR}::incentives::get_taker_fee_divisor`,
+        arguments: [],
+        type_arguments: [],
+      });
+      return Number(rs[0]);
+    } catch (e) {
+      return 2000; // default
+    }
+  });
+
+  const estimateFee = useMemo(() => {
+    const totalSize = Number(lastPrice) * Number(watchSize);
+    if (!takerFeeDivisor || !totalSize) {
+      return "--";
+    }
+    // check order book
+    const sizeApplyFee = Number(totalSize) * 1;
+    return `${(sizeApplyFee * 1) / takerFeeDivisor}`;
+  }, [takerFeeDivisor, lastPrice, watchSize]);
 
   const onSubmit = async ({ size }: MarketFormValues) => {
     if (marketData.base == null) {
@@ -127,7 +189,7 @@ export const MarketOrderEntry: React.FC<{
       </div>
       <hr className="my-4 border-neutral-600" />
       <div className="mx-4 mb-4 flex flex-col gap-4">
-        <OrderEntryInfo label="EST. FEE" value="--" />
+        <OrderEntryInfo label="EST. FEE" value={estimateFee} />
         <ConnectedButton className="w-full">
           <Button
             variant={side === "buy" ? "green" : "red"}
@@ -138,7 +200,11 @@ export const MarketOrderEntry: React.FC<{
         </ConnectedButton>
         <OrderEntryInfo
           label={`${marketData.base?.symbol} AVAILABLE`}
-          value={`${baseBalance.data ?? "--"} ${marketData.base?.symbol}`}
+          value={`${
+            balance?.base_available
+              ? balance?.base_available / 10 ** marketData.base.decimals
+              : "--"
+          } ${marketData.base?.symbol}`}
           className="cursor-pointer"
           onClick={() => {
             setValue(
@@ -149,7 +215,11 @@ export const MarketOrderEntry: React.FC<{
         />
         <OrderEntryInfo
           label={`${marketData.quote?.symbol} AVAILABLE`}
-          value={`${quoteBalance.data ?? "--"} ${marketData.quote?.symbol}`}
+          value={`${
+            balance?.quote_available
+              ? balance.quote_available / 10 ** marketData.quote.decimals
+              : "--"
+          } ${marketData.quote?.symbol}`}
         />
       </div>
     </form>
