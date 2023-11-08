@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/Button";
 import { ConnectedButton } from "@/components/ConnectedButton";
 import { useAptos } from "@/contexts/AptosContext";
-import { ECONIA_ADDR } from "@/env";
+import { API_URL, CUSTODIAN_ID, ECONIA_ADDR } from "@/env";
 import { useMarketAccountBalance } from "@/hooks/useMarketAccountBalance";
 import { type ApiMarket } from "@/types/api";
 import { type Side } from "@/types/global";
@@ -43,6 +43,39 @@ export const MarketOrderEntry: React.FC<{
     account?.address,
     marketData.market_id,
     marketData.quote,
+  );
+
+  const { data: balance } = useQuery(
+    ["accountBalance", account?.address, marketData.market_id],
+    async () => {
+      try {
+        const response = await fetch(
+          `${API_URL}/rpc/user_balance?user_address=${account?.address}&market=${marketData.market_id}&custodian=${CUSTODIAN_ID}`,
+        );
+        const balance = await response.json();
+        if (balance.length) {
+          return balance[0];
+        }
+
+        return {
+          base_total: 0,
+          base_available: 0,
+          base_ceiling: 0,
+          quote_total: 0,
+          quote_available: 0,
+          quote_ceiling: 0,
+        };
+      } catch (e) {
+        return {
+          base_total: 0,
+          base_available: 0,
+          base_ceiling: 0,
+          quote_total: 0,
+          quote_available: 0,
+          quote_ceiling: 0,
+        };
+      }
+    },
   );
 
   const watchSize = watch("size", "0.0");
@@ -167,7 +200,10 @@ export const MarketOrderEntry: React.FC<{
         </ConnectedButton>
         <OrderEntryInfo
           label={`${marketData.base?.symbol} AVAILABLE`}
-          value={`${baseBalance.data ?? "--"} ${marketData.base?.symbol}`}
+          value={`${balance?.base_available
+            ? balance?.base_available / 10 ** marketData.base.decimals
+            : "--"
+            } ${marketData.base?.symbol}`}
           className="cursor-pointer"
           onClick={() => {
             setValue(
@@ -178,7 +214,10 @@ export const MarketOrderEntry: React.FC<{
         />
         <OrderEntryInfo
           label={`${marketData.quote?.symbol} AVAILABLE`}
-          value={`${quoteBalance.data ?? "--"} ${marketData.quote?.symbol}`}
+          value={`${balance?.quote_available
+            ? balance.quote_available / 10 ** marketData.quote.decimals
+            : "--"
+            } ${marketData.quote?.symbol}`}
         />
       </div>
     </form>

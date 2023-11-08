@@ -80,7 +80,14 @@ export const LimitOrderEntry: React.FC<{
           quote_ceiling: 0,
         };
       } catch (e) {
-        return 2000; // default
+        return {
+          base_total: 0,
+          base_available: 0,
+          base_ceiling: 0,
+          quote_total: 0,
+          quote_available: 0,
+          quote_ceiling: 0,
+        };
       }
     },
   );
@@ -309,11 +316,10 @@ export const LimitOrderEntry: React.FC<{
         </ConnectedButton>
         <OrderEntryInfo
           label={`${marketData.base?.symbol} AVAILABLE`}
-          value={`${
-            balance?.base_available
+          value={`${balance?.base_available
               ? balance?.base_available / 10 ** marketData.base.decimals
               : "--"
-          } ${marketData.base?.symbol}`}
+            } ${marketData.base?.symbol}`}
           className="cursor-pointer"
           onClick={() => {
             setValue(
@@ -324,11 +330,10 @@ export const LimitOrderEntry: React.FC<{
         />
         <OrderEntryInfo
           label={`${marketData.quote?.symbol} AVAILABLE`}
-          value={`${
-            balance?.quote_available
+          value={`${balance?.quote_available
               ? balance.quote_available / 10 ** marketData.quote.decimals
               : "--"
-          } ${marketData.quote?.symbol}`}
+            } ${marketData.quote?.symbol}`}
         />
       </div>
     </form>
