@@ -23,7 +23,6 @@ import { toast } from "react-toastify";
 const DEFAULT_TOKEN_ICON = "/tokenImages/default.png";
 
 type MarketStats = {
-  // selected market pair data
   lastPrice: number;
   lastPriceChange: number;
   change24h: number;
@@ -36,6 +35,21 @@ type MarketStats = {
     baseVolume: number;
     quoteVolume: number;
   };
+};
+
+const mockMarketStats: MarketStats = {
+  lastPrice: 50000.25,
+  lastPriceChange: 150.75,
+  change24h: -800.5,
+  change24hPercent: -1.58,
+  high24h: 50500,
+  low24h: 49000.5,
+  pairData: {
+    baseAsset: "eAPT",
+    quoteAsset: "eUSDC",
+    baseVolume: 7500.3,
+    quoteVolume: 375150000.75,
+  },
 };
 
 const SocialMediaIcons: React.FC<{ className?: string }> = ({ className }) => {
@@ -75,6 +89,7 @@ export const StatsBar: React.FC<{
   allMarketData: ApiMarket[];
   selectedMarket: ApiMarket;
 }> = ({ allMarketData, selectedMarket }) => {
+  // const { market_id: marketId } = selectedMarket;
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { coinListClient } = useAptos();
@@ -99,39 +114,45 @@ export const StatsBar: React.FC<{
   const { data } = useQuery(
     ["marketStats", selectedMarket],
     async () => {
-      const resProm = fetch(
-        `${API_URL}/markets/${selectedMarket.market_id}/stats?resolution=1d`,
-      ).then((res) => res.json());
-      const priceProm = fetch(
-        `${API_URL}/markets/${selectedMarket.market_id}/orderbook?depth=1`,
-      ).then((res) => res.json());
-      const res = await resProm;
-      const priceRes = await priceProm;
+      // const response = await fetch(
+      //   `${API_URL}/rpc/price_info?market=${marketId}&seconds=100`,
+      // );
+      // const data = await response.json();
+      // console.log(data)
+      return mockMarketStats;
+      // const resProm = fetch(
+      //   `${API_URL}/markets/${selectedMarket.market_id}/stats?resolution=1d`,
+      // ).then((res) => res.json());
+      // const priceProm = fetch(
+      //   `${API_URL}/markets/${selectedMarket.market_id}/orderbook?depth=1`,
+      // ).then((res) => res.json());
+      // const res = await resProm;
+      // const priceRes = await priceProm;
 
-      return {
-        lastPrice: toDecimalPrice({
-          price: new BigNumber(
-            averageOrOther(priceRes.asks[0].price, priceRes.bids[0].price) || 0,
-          ),
-          lotSize: BigNumber(selectedMarket.lot_size),
-          tickSize: BigNumber(selectedMarket.tick_size),
-          baseCoinDecimals: BigNumber(selectedMarket.base?.decimals || 0),
-          quoteCoinDecimals: BigNumber(selectedMarket.quote?.decimals || 0),
-        }).toNumber(),
-        lastPriceChange: 10.1738, // TODO: Mock data
-        change24h: res.close,
-        change24hPercent: res.change * 100,
-        high24h: res.high,
-        low24h: res.low,
-        pairData: {
-          baseAsset: selectedMarket.base
-            ? selectedMarket.base.symbol
-            : selectedMarket.name.split("-")[0],
-          quoteAsset: selectedMarket.quote.symbol,
-          baseVolume: res.volume,
-          quoteVolume: 68026950.84, // TODO: Mock data
-        },
-      } as MarketStats;
+      // return {
+      //   lastPrice: toDecimalPrice({
+      //     price: new BigNumber(
+      //       averageOrOther(priceRes.asks[0].price, priceRes.bids[0].price) || 0,
+      //     ),
+      //     lotSize: BigNumber(selectedMarket.lot_size),
+      //     tickSize: BigNumber(selectedMarket.tick_size),
+      //     baseCoinDecimals: BigNumber(selectedMarket.base?.decimals || 0),
+      //     quoteCoinDecimals: BigNumber(selectedMarket.quote?.decimals || 0),
+      //   }).toNumber(),
+      //   lastPriceChange: 10.1738, // TODO: Mock data
+      //   change24h: res.close,
+      //   change24hPercent: res.change * 100,
+      //   high24h: res.high,
+      //   low24h: res.low,
+      //   pairData: {
+      //     baseAsset: selectedMarket.base
+      //       ? selectedMarket.base.symbol
+      //       : selectedMarket.name.split("-")[0],
+      //     quoteAsset: selectedMarket.quote.symbol,
+      //     baseVolume: res.volume,
+      //     quoteVolume: 68026950.84, // TODO: Mock data
+      //   },
+      // } as MarketStats;
     },
     {
       keepPreviousData: true,

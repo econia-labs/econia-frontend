@@ -18,6 +18,7 @@ export const TradeHistoryTable: React.FC<{
   marketData: ApiMarket;
   marketId: number;
 }> = ({ className, marketData, marketId }) => {
+  const nominal = 3;
   const { base, quote } = marketData;
   const baseDecimals = base.decimals;
   const quoteDecimals = quote.decimals;
@@ -34,11 +35,11 @@ export const TradeHistoryTable: React.FC<{
   const table = useReactTable({
     columns: [
       columnHelper.accessor("price", {
-        cell: (info) => info.getValue() / Math.pow(10, quoteDecimals),
+        cell: (info) => info.getValue() / Math.pow(10, nominal),
         header: () => "PRICE",
       }),
       columnHelper.accessor("size", {
-        cell: (info) => info.getValue() / Math.pow(10, baseDecimals),
+        cell: (info) => info.getValue() / Math.pow(10, nominal),
         header: () => "AMOUNT",
       }),
       columnHelper.accessor("time", {

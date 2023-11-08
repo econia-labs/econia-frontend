@@ -76,6 +76,7 @@ export type ApiOrder = {
   integrator: string;
   total_filled: number;
   remaining_size: number;
+  average_execution_price: number;
   order_status: string;
   order_type: string;
   price?: number;

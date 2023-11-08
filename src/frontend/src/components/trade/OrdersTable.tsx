@@ -26,6 +26,7 @@ export const OrdersTable: React.FC<{
   market_id: number;
   marketData: ApiMarket;
 }> = ({ className, market_id, marketData }) => {
+  const nominal = 3;
   const { base, quote } = marketData;
   const { decimals: baseDecimals, symbol: baseSymbol } = base;
   const { decimals: quoteDecimals, symbol: quoteSymbol } = quote;
@@ -40,25 +41,11 @@ export const OrdersTable: React.FC<{
     async () => {
       if (!account) return [];
       const limit = 100;
-      const fetchPromises = [
-        fetch(
-          `${API_URL}/limit_orders?order_status=eq.open&user=eq.${account.address}&market_id=eq.${market_id}&limit=${limit}`,
-        ),
-        fetch(
-          `${API_URL}/market_orders?order_status=eq.open&user=eq.${account.address}&market_id=eq.${market_id}&limit=${limit}`,
-        ),
-        fetch(
-          `${API_URL}/swap_orders?order_status=eq.open&signing_account=eq.${account.address}&market_id=eq.${market_id}&limit=${limit}`,
-        ),
-      ];
-      const [response1, response2, response3] = await Promise.all(
-        fetchPromises,
+      const response = await fetch(
+        `${API_URL}/orders?order_status=eq.open&select=*,average_execution_price&user=eq.${account.address}&market_id=eq.${market_id}&limit=${limit}`,
       );
-      const limitOrders = await response1.json();
-      const marketOrders = await response2.json();
-      const swapOrders = await response3.json();
-      const combinedData = [...limitOrders, ...marketOrders, ...swapOrders];
-      return combinedData;
+      const orders = await response.json();
+      return orders;
     },
   );
 
@@ -110,33 +97,40 @@ export const OrdersTable: React.FC<{
         cell: (info) => {
           const price = info.getValue();
           if (price) {
-            return `${price / Math.pow(10, quoteDecimals)} ${quoteSymbol}`;
+            return `${price / Math.pow(10, nominal)} ${quoteSymbol}`;
           } else {
             return "N/A";
           }
         },
       }),
-      columnHelper.display({
+      columnHelper.accessor("average_execution_price", {
         header: "AVG EXECUTION PRICE",
-        cell: () => "N/A",
+        cell: (info) => info.getValue() || "N/A",
       }),
       columnHelper.accessor("remaining_size", {
         header: "Remaining size",
         cell: (info) =>
-          `${info.getValue() / Math.pow(10, baseDecimals)} ${baseSymbol}`,
+          `${info.getValue() / Math.pow(10, nominal)} ${baseSymbol}`,
       }),
       columnHelper.accessor("total_filled", {
         header: "Total",
         cell: (info) => {
           const total = info.getValue();
           return total
-            ? `${total / Math.pow(10, quoteDecimals)} ${quoteSymbol}`
+            ? `${total / Math.pow(10, nominal)} ${quoteSymbol}`
             : "N/A";
         },
       }),
       columnHelper.display({
         header: "Total volume",
-        cell: () => "N/A",
+        cell: (info) => {
+          const row = info.row.original;
+          const { total_filled, average_execution_price } = row;
+          const totalVolume = total_filled * average_execution_price;
+          return totalVolume
+            ? `${totalVolume / Math.pow(10, nominal)} ${quoteSymbol}`
+            : "N/A";
+        },
       }),
       columnHelper.accessor("order_status", {
         header: "Status",
@@ -205,7 +199,7 @@ export const OrdersTable: React.FC<{
           ) : isLoading || !data ? (
             <>
               {/* temporarily removing skeletong to help UX and reduce glitchyness. see: ECO-230 */}
-              {/* <tr>
+              <tr>
                 {table.getAllColumns().map((column, i) => (
                   <td
                     className={`${
@@ -222,7 +216,7 @@ export const OrdersTable: React.FC<{
                     </div>
                   </td>
                 ))}
-              </tr> */}
+              </tr>
             </>
           ) : data.length === 0 ? (
             <tr>
