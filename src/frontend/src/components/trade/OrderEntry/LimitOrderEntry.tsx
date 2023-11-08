@@ -17,6 +17,7 @@ import { TypeTag } from "@/utils/TypeTag";
 import { OrderEntryInfo } from "./OrderEntryInfo";
 import { OrderEntryInputWrapper } from "./OrderEntryInputWrapper";
 import { useQuery } from "@tanstack/react-query";
+import { toDecimalPrice } from "@/utils/econia";
 
 type LimitFormValues = {
   price: string;
@@ -143,7 +144,14 @@ export const LimitOrderEntry: React.FC<{
       return;
     }
 
-    const rawPrice = toRawCoinAmount(price, marketData.quote.decimals);
+    const rawPrice = toDecimalPrice({
+      price: toRawCoinAmount(price, marketData.quote.decimals),
+      lotSize: BigNumber(marketData.lot_size),
+      tickSize: BigNumber(marketData.tick_size),
+      baseCoinDecimals: BigNumber(marketData.base?.decimals || 0),
+      quoteCoinDecimals: BigNumber(marketData.quote?.decimals || 0),
+    })
+    // const rawPrice = toRawCoinAmount(price, marketData.quote.decimals);
 
     // validate tick size
     if (!rawPrice.modulo(marketData.tick_size).eq(0)) {

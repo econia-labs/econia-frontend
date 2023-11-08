@@ -25,7 +25,7 @@ export const MOCK_MARKETS: ApiMarket[] = [
     },
     lot_size: 100000,
     tick_size: 1,
-    min_size: 50,
+    min_size: 500,
     underwriter_id: 0,
     created_at: "2023-05-18T17:22:48.971737Z",
     recognized: true,
