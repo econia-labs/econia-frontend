@@ -45,35 +45,30 @@ export const MarketOrderEntry: React.FC<{
     marketData.quote,
   );
 
-  const watchSize = watch('size', '0.0')
-  const lastPrice = 5 // waiting for last price
-  const { data: takerFeeDivisor } = useQuery(
-    ["takerFeeDivisor"],
-    async () => {
-      try {
-        const rs = await aptosClient.view({
-          function: `${ECONIA_ADDR}::incentives::get_taker_fee_divisor`,
-          arguments: [],
-          type_arguments: [],
-        });
-        return Number(rs[0]);
-      } catch (e) {
-        return 2000;// default
-      }
-    },
-  );
+  const watchSize = watch("size", "0.0");
+  const lastPrice = 5; // waiting for last price
+  const { data: takerFeeDivisor } = useQuery(["takerFeeDivisor"], async () => {
+    try {
+      const rs = await aptosClient.view({
+        function: `${ECONIA_ADDR}::incentives::get_taker_fee_divisor`,
+        arguments: [],
+        type_arguments: [],
+      });
+      return Number(rs[0]);
+    } catch (e) {
+      return 2000; // default
+    }
+  });
 
   const estimateFee = useMemo(() => {
-
-    const totalSize = Number(lastPrice) * Number(watchSize)
+    const totalSize = Number(lastPrice) * Number(watchSize);
     if (!takerFeeDivisor || !totalSize) {
-      return '--'
+      return "--";
     }
     // check order book
-    const sizeApplyFee = Number(totalSize) * 1
-    return `${sizeApplyFee * 1 / takerFeeDivisor}`
-
-  }, [takerFeeDivisor, lastPrice, watchSize])
+    const sizeApplyFee = Number(totalSize) * 1;
+    return `${(sizeApplyFee * 1) / takerFeeDivisor}`;
+  }, [takerFeeDivisor, lastPrice, watchSize]);
 
   const onSubmit = async ({ size }: MarketFormValues) => {
     if (marketData.base == null) {
