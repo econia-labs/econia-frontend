@@ -21,3 +21,4 @@ export const NETWORK_NAME = process.env.NEXT_PUBLIC_NETWORK_NAME;
 
 // todo: remove this when audit comes back
 export const AUDIT_ADDR = process.env.NEXT_PUBLIC_AUDIT_ONLY_ADDR;
+export const CUSTODIAN_ID = process.env.NEXT_PUBLIC_CUSTODIAN_ID
