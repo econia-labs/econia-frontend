@@ -17,7 +17,7 @@ export const priceStatsSlice = createSlice({
   initialState,
   reducers: {
     setPriceStats: (state, action: PayloadAction<MarketStats>) => {
-      state = action.payload;
+      return action.payload;
     },
   },
 });
