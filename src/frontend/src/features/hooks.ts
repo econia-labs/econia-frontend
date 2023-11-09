@@ -12,3 +12,14 @@ export const usePriceStats = () => {
     data: priceStats,
   };
 };
+
+export const useOrderBookData = () => {
+  const orderBook = useAppSelector((state) => state.orderBook);
+  const highestBid = orderBook.bids[orderBook.bids.length - 1];
+  const lowestAsk = orderBook.asks[0];
+  return {
+    orderBook,
+    highestBid,
+    lowestAsk,
+  };
+};

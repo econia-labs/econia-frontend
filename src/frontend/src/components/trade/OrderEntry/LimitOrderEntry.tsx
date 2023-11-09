@@ -19,7 +19,7 @@ import { OrderEntryInputWrapper } from "./OrderEntryInputWrapper";
 import { useQuery } from "@tanstack/react-query";
 import { toDecimalPrice } from "@/utils/econia";
 import { useBalance } from "@/hooks/useBalance";
-import { usePriceStats } from "@/features/hooks";
+import { useOrderBookData, usePriceStats } from "@/features/hooks";
 
 type LimitFormValues = {
   price: string | undefined;
@@ -80,13 +80,29 @@ export const LimitOrderEntry: React.FC<{
     }
   }, [last_price]);
 
+  const { highestBid, lowestAsk } = useOrderBookData();
+
   const estimateFee = useMemo(() => {
     const totalSize = Number(watchPrice) * Number(watchSize);
     if (!takerFeeDivisor || !totalSize) {
       return "--";
     }
+    if (watchPrice === undefined || !lowestAsk || !highestBid) {
+      return "--";
+    }
     // check order book
-    const sizeApplyFee = Number(totalSize) * 1;
+    let takerWeight = 0;
+    if (
+      (side === "buy" && Number(watchPrice) > lowestAsk.price / 1000) ||
+      (side === "sell" && Number(watchPrice) < highestBid.price / 1000)
+    ) {
+      takerWeight = 1;
+    }
+
+    if (side === "buy" && Number(watchPrice) > lowestAsk.price) {
+      takerWeight = 1;
+    }
+    const sizeApplyFee = Number(totalSize) * takerWeight;
     return `${(sizeApplyFee * 1) / takerFeeDivisor}`;
   }, [takerFeeDivisor, watchPrice, watchSize]);
 
