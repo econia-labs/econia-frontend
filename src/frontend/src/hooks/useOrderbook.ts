@@ -2,6 +2,8 @@ import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
 import { API_URL } from "@/env";
 import { type Orderbook, type Precision } from "@/types/global";
+import { useDispatch } from "react-redux";
+import { setOrderBook } from "@/features/orderBookSlice";
 
 // TODO: precision not yet implemented in API yet, so does nothing as of now
 // TODO update to include precision when backend is updated (ECO-199)
@@ -11,6 +13,8 @@ export const useOrderBook = (
   precision: Precision = "0.01",
   depth = 60,
 ): UseQueryResult<Orderbook> => {
+  const dispatch = useDispatch();
+
   return useQuery(
     ["orderBook", market_id, precision],
     async () => {
@@ -35,6 +39,7 @@ export const useOrderBook = (
         delete ask.total_size;
       });
       const orderBookData = { bids, asks };
+      dispatch(setOrderBook(orderBookData));
       return orderBookData as Orderbook;
     },
     { keepPreviousData: true, refetchOnWindowFocus: false },
