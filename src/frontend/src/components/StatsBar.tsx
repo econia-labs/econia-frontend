@@ -1,16 +1,16 @@
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useQuery } from "@tanstack/react-query";
-import BigNumber from "bignumber.js";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import Skeleton from "react-loading-skeleton";
 
 import { useAptos } from "@/contexts/AptosContext";
 import { API_URL } from "@/env";
 import { type ApiMarket } from "@/types/api";
-import { toDecimalPrice } from "@/utils/econia";
-import { averageOrOther, formatNumber } from "@/utils/formatter";
+import { formatNumber } from "@/utils/formatter";
 import { TypeTag } from "@/utils/TypeTag";
+import { setPriceStats } from "@/features/priceStatsSlice";
 
 import { BaseModal } from "./modals/BaseModal";
 import { DiscordIcon } from "./icons/DiscordIcon";
@@ -21,36 +21,6 @@ import { SelectMarketContent } from "./trade/DepositWithdrawModal/SelectMarketCo
 import { toast } from "react-toastify";
 
 const DEFAULT_TOKEN_ICON = "/tokenImages/default.png";
-
-type MarketStats = {
-  lastPrice: number;
-  lastPriceChange: number;
-  change24h: number;
-  change24hPercent: number;
-  high24h: number;
-  low24h: number;
-  pairData: {
-    baseAsset: string;
-    quoteAsset: string;
-    baseVolume: number;
-    quoteVolume: number;
-  };
-};
-
-const mockMarketStats: MarketStats = {
-  lastPrice: 50000.25,
-  lastPriceChange: 150.75,
-  change24h: -800.5,
-  change24hPercent: -1.58,
-  high24h: 50500,
-  low24h: 49000.5,
-  pairData: {
-    baseAsset: "eAPT",
-    quoteAsset: "eUSDC",
-    baseVolume: 7500.3,
-    quoteVolume: 375150000.75,
-  },
-};
 
 const SocialMediaIcons: React.FC<{ className?: string }> = ({ className }) => {
   return (
@@ -89,7 +59,11 @@ export const StatsBar: React.FC<{
   allMarketData: ApiMarket[];
   selectedMarket: ApiMarket;
 }> = ({ allMarketData, selectedMarket }) => {
-  // const { market_id: marketId } = selectedMarket;
+  const dispatch = useDispatch();
+  const { market_id: marketId, base, quote } = selectedMarket;
+  const nominal = 3;
+  const baseSymbol = base?.symbol;
+  const quoteSymbol = quote?.symbol;
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { coinListClient } = useAptos();
@@ -114,45 +88,25 @@ export const StatsBar: React.FC<{
   const { data } = useQuery(
     ["marketStats", selectedMarket],
     async () => {
-      // const response = await fetch(
-      //   `${API_URL}/rpc/price_info?market=${marketId}&seconds=100`,
-      // );
-      // const data = await response.json();
-      // console.log(data)
-      return mockMarketStats;
-      // const resProm = fetch(
-      //   `${API_URL}/markets/${selectedMarket.market_id}/stats?resolution=1d`,
-      // ).then((res) => res.json());
-      // const priceProm = fetch(
-      //   `${API_URL}/markets/${selectedMarket.market_id}/orderbook?depth=1`,
-      // ).then((res) => res.json());
-      // const res = await resProm;
-      // const priceRes = await priceProm;
-
-      // return {
-      //   lastPrice: toDecimalPrice({
-      //     price: new BigNumber(
-      //       averageOrOther(priceRes.asks[0].price, priceRes.bids[0].price) || 0,
-      //     ),
-      //     lotSize: BigNumber(selectedMarket.lot_size),
-      //     tickSize: BigNumber(selectedMarket.tick_size),
-      //     baseCoinDecimals: BigNumber(selectedMarket.base?.decimals || 0),
-      //     quoteCoinDecimals: BigNumber(selectedMarket.quote?.decimals || 0),
-      //   }).toNumber(),
-      //   lastPriceChange: 10.1738, // TODO: Mock data
-      //   change24h: res.close,
-      //   change24hPercent: res.change * 100,
-      //   high24h: res.high,
-      //   low24h: res.low,
-      //   pairData: {
-      //     baseAsset: selectedMarket.base
-      //       ? selectedMarket.base.symbol
-      //       : selectedMarket.name.split("-")[0],
-      //     quoteAsset: selectedMarket.quote.symbol,
-      //     baseVolume: res.volume,
-      //     quoteVolume: 68026950.84, // TODO: Mock data
-      //   },
-      // } as MarketStats;
+      const response = await fetch(
+        `${API_URL}/rpc/market_aggregated_info?market=${marketId}&seconds=86400`,
+      );
+      const data = await response.json();
+      const priceStats = data[0];
+      dispatch(setPriceStats(data[0]));
+      // for each value of the price stats except for price_change_percentage, convert it to nominal by dividing by 10^nominal
+      const formattedPriceStats = Object.keys(priceStats).reduce(
+        (acc: any, key) => {
+          if (key !== "price_change_percentage") {
+            acc[key] = priceStats[key] / Math.pow(10, nominal);
+          } else {
+            acc[key] = priceStats[key];
+          }
+          return acc;
+        },
+        {},
+      );
+      return formattedPriceStats;
     },
     {
       keepPreviousData: true,
@@ -207,15 +161,17 @@ export const StatsBar: React.FC<{
           <div className="block md:hidden">
             <p className="font-roboto-mono font-light">
               <span className="inline-block min-w-[4em] text-xl text-white">
-                {data?.lastPrice && "$"}
-                {formatNumber(data?.lastPrice, 2) ?? <Skeleton />}
+                {data?.last_price && "$"}
+                {formatNumber(data?.last_price, 2) ?? <Skeleton />}
               </span>
               <span
                 className={`ml-1 inline-block min-w-[6em] text-base ${
-                  (data?.lastPriceChange || 0) < 0 ? "text-red" : "text-green"
+                  (data?.price_change_nominal || 0) < 0
+                    ? "text-red"
+                    : "text-green"
                 }`}
               >
-                {formatNumber(data?.lastPriceChange, 2, "always") ?? (
+                {formatNumber(data?.price_change_nominal, 2, "always") ?? (
                   <Skeleton />
                 )}
               </span>
@@ -227,8 +183,8 @@ export const StatsBar: React.FC<{
               LAST PRICE
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
-              {data?.lastPrice && "$"}
-              {formatNumber(data?.lastPrice, 2) ?? <Skeleton />}
+              {data?.last_price && "$"}
+              {formatNumber(data?.last_price, 2) ?? <Skeleton />}
             </p>
           </div>
           {/* 24 hr */}
@@ -238,17 +194,17 @@ export const StatsBar: React.FC<{
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
               <span className="inline-block min-w-[70px] text-white">
-                {formatNumber(data?.change24h, 2) ?? <Skeleton />}
+                {formatNumber(data?.price_change_nominal, 2) ?? <Skeleton />}
               </span>
-              {data?.change24hPercent && (
+              {data?.price_change_percentage && (
                 <span
                   className={`ml-2 ${
-                    (data?.change24hPercent || 0) < 0
+                    (data?.price_change_percentage || 0) < 0
                       ? "text-red"
                       : "text-green"
                   }`}
                 >
-                  {formatNumber(data?.change24hPercent, 2, "always") ?? (
+                  {formatNumber(data?.price_change_percentage, 2, "always") ?? (
                     <Skeleton />
                   )}
                   %
@@ -262,7 +218,7 @@ export const StatsBar: React.FC<{
               24h high
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
-              {formatNumber(data?.high24h, 2) ?? <Skeleton />}
+              {formatNumber(data?.high_price, 2) ?? <Skeleton />}
             </p>
           </div>
           {/* 24 hr low */}
@@ -271,25 +227,25 @@ export const StatsBar: React.FC<{
               24h low
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
-              {formatNumber(data?.low24h, 2) ?? <Skeleton />}
+              {formatNumber(data?.low_price, 2) ?? <Skeleton />}
             </p>
           </div>
           {/* 24 hr main */}
           <div className="ml-8 hidden md:block">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
-              24H VOLUME ({data?.pairData.baseAsset || "-"})
+              24H VOLUME ({baseSymbol || "-"})
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
-              {formatNumber(data?.pairData.baseVolume, 2) ?? <Skeleton />}
+              {formatNumber(data?.base_volume, 2) ?? <Skeleton />}
             </p>
           </div>
           {/* 24 hr pair */}
           <div className="ml-8 hidden md:block">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
-              24H VOLUME ({data?.pairData.quoteAsset || "-"})
+              24H VOLUME ({quoteSymbol || "-"})
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
-              {formatNumber(data?.pairData.quoteVolume, 2) ?? <Skeleton />}
+              {formatNumber(data?.quote_volume, 2) ?? <Skeleton />}
             </p>
           </div>
         </div>
