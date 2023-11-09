@@ -19,6 +19,8 @@ import { TwitterIcon } from "./icons/TwitterIcon";
 import { MarketIconPair } from "./MarketIconPair";
 import { SelectMarketContent } from "./trade/DepositWithdrawModal/SelectMarketContent";
 import { toast } from "react-toastify";
+import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
+import BigNumber from "bignumber.js";
 
 const DEFAULT_TOKEN_ICON = "/tokenImages/default.png";
 
@@ -97,10 +99,22 @@ export const StatsBar: React.FC<{
       // for each value of the price stats except for price_change_percentage, convert it to nominal by dividing by 10^nominal
       const formattedPriceStats = Object.keys(priceStats).reduce(
         (acc: any, key) => {
-          if (key !== "price_change_percentage") {
-            acc[key] = priceStats[key] / Math.pow(10, nominal);
-          } else {
+          if (key === "price_change_percentage") {
             acc[key] = priceStats[key];
+          } else if (key.includes("price")) {
+            acc[key] = toDecimalPrice({
+              price: new BigNumber(priceStats[key]),
+              lotSize: BigNumber(selectedMarket.lot_size),
+              tickSize: BigNumber(selectedMarket.tick_size),
+              baseCoinDecimals: BigNumber(selectedMarket.base?.decimals || 0),
+              quoteCoinDecimals: BigNumber(selectedMarket.quote?.decimals || 0),
+            }).toNumber();
+          } else {
+            acc[key] = toDecimalSize({
+              size: new BigNumber(priceStats[key]),
+              lotSize: BigNumber(selectedMarket.lot_size),
+              baseCoinDecimals: BigNumber(selectedMarket.base?.decimals || 0),
+            }).toNumber();
           }
           return acc;
         },

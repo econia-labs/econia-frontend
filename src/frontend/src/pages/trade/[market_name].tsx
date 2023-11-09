@@ -33,6 +33,7 @@ import {
   type ThemeName,
 } from "../../../public/static/charting_library";
 import { getAllMarket } from "@/utils/helpers";
+import { useOrderBook } from "@/hooks/useOrderbook";
 
 const ORDERBOOK_DEPTH = 60;
 
@@ -45,7 +46,7 @@ const TVChartContainer = dynamic(
 );
 
 type Props = {
-  marketData: ApiMarket | undefined | null;
+  marketData: ApiMarket;
   allMarketData: ApiMarket[];
 };
 
@@ -293,22 +294,12 @@ export default function Market({ allMarketData, marketData }: Props) {
     };
   }, [marketData, account?.address, queryClient]);
 
-  // TODO update to include precision when backend is updated (ECO-199)
   const {
     data: orderbookData,
     isFetching: orderbookIsFetching,
     isLoading: orderbookIsLoading,
-  } = useQuery(
-    ["orderbook", marketData?.market_id],
-    async () => {
-      const res = await fetch(
-        `${API_URL}/markets/${marketData?.market_id}/orderbook?depth=${ORDERBOOK_DEPTH}`,
-      );
-      const data: Orderbook = await res.json();
-      return data;
-    },
-    { keepPreviousData: true, refetchOnWindowFocus: false },
-  );
+  } = useOrderBook(marketData.market_id);
+
   const libraryPath = "/static/charting_library/";
 
   const defaultTVChartProps = useMemo(() => {
