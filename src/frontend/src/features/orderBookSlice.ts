@@ -13,7 +13,7 @@ export const orderBookSlice = createSlice({
   initialState,
   reducers: {
     setOrderBook: (state, action: PayloadAction<Orderbook>) => {
-      state = action.payload;
+      return action.payload;
     },
   },
 });
