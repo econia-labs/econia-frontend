@@ -133,6 +133,16 @@ export type ApiStats = {
   volume: number;
 };
 
+export type MarketStats = {
+  last_price: number;
+  price_change_percentage: number;
+  price_change_nominal: number;
+  high_price: number;
+  low_price: number;
+  base_volume: number;
+  quote_volume: number;
+};
+
 export type ApiPriceLevel = {
   market_id: number;
   side: Side;
