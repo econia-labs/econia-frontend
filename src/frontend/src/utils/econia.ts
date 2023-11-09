@@ -30,7 +30,8 @@ export const toDecimalPrice = ({
   price: number | BigNumber;
   marketData: ApiMarket;
 }) => {
-  const bigNumberPrice = typeof price === "number" ? new BigNumber(price) : price;
+  const bigNumberPrice =
+    typeof price === "number" ? new BigNumber(price) : price;
   const lotSize = BigNumber(marketData?.lot_size);
   const tickSize = BigNumber(marketData?.tick_size);
   const baseCoinDecimals = BigNumber(marketData.base?.decimals || 0);
