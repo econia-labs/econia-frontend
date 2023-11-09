@@ -15,6 +15,8 @@ import { OrderEntryInfo } from "./OrderEntryInfo";
 import { OrderEntryInputWrapper } from "./OrderEntryInputWrapper";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { useBalance } from "@/hooks/useBalance";
+import { usePriceStats } from "@/features/hooks";
 
 type MarketFormValues = {
   size: string;
@@ -34,52 +36,23 @@ export const MarketOrderEntry: React.FC<{
     formState: { errors },
   } = useForm<MarketFormValues>();
 
-  const baseBalance = useMarketAccountBalance(
-    account?.address,
-    marketData.market_id,
-    marketData.base,
-  );
-  const quoteBalance = useMarketAccountBalance(
-    account?.address,
-    marketData.market_id,
-    marketData.quote,
-  );
+  // const baseBalance = useMarketAccountBalance(
+  //   account?.address,
+  //   marketData.market_id,
+  //   marketData.base,
+  // );
+  // const quoteBalance = useMarketAccountBalance(
+  //   account?.address,
+  //   marketData.market_id,
+  //   marketData.quote,
+  // );
 
-  const { data: balance } = useQuery(
-    ["accountBalance", account?.address, marketData.market_id],
-    async () => {
-      try {
-        const response = await fetch(
-          `${API_URL}/rpc/user_balance?user_address=${account?.address}&market=${marketData.market_id}&custodian=${CUSTODIAN_ID}`,
-        );
-        const balance = await response.json();
-        if (balance.length) {
-          return balance[0];
-        }
-
-        return {
-          base_total: 0,
-          base_available: 0,
-          base_ceiling: 0,
-          quote_total: 0,
-          quote_available: 0,
-          quote_ceiling: 0,
-        };
-      } catch (e) {
-        return {
-          base_total: 0,
-          base_available: 0,
-          base_ceiling: 0,
-          quote_total: 0,
-          quote_available: 0,
-          quote_ceiling: 0,
-        };
-      }
-    },
-  );
+  const { balance } = useBalance(marketData);
 
   const watchSize = watch("size", "0.0");
-  const lastPrice = 5; // waiting for last price
+  const {
+    data: { last_price },
+  } = usePriceStats();
   const { data: takerFeeDivisor } = useQuery(["takerFeeDivisor"], async () => {
     try {
       const rs = await aptosClient.view({
@@ -94,21 +67,25 @@ export const MarketOrderEntry: React.FC<{
   });
 
   const estimateFee = useMemo(() => {
-    const totalSize = Number(lastPrice) * Number(watchSize);
+    const totalSize = Number(last_price / 1000) * Number(watchSize);
     if (!takerFeeDivisor || !totalSize) {
       return "--";
     }
     // check order book
-    const sizeApplyFee = Number(totalSize) * 1;
-    return `${(sizeApplyFee * 1) / takerFeeDivisor}`;
-  }, [takerFeeDivisor, lastPrice, watchSize]);
+    const takerSize = Number(totalSize) * 1;
+    return `${(takerSize * 1) / takerFeeDivisor}`;
+  }, [takerFeeDivisor, last_price, watchSize]);
 
   const onSubmit = async ({ size }: MarketFormValues) => {
     if (marketData.base == null) {
       throw new Error("Markets without base coin not supported");
     }
 
-    if (baseBalance.data == null || quoteBalance.data == null) {
+    if (
+      !balance ||
+      balance?.base_available == null ||
+      balance?.base_available == null
+    ) {
       throw new Error("Could not read wallet balances");
     }
 
@@ -127,7 +104,7 @@ export const MarketOrderEntry: React.FC<{
     }
 
     const rawBaseBalance = toRawCoinAmount(
-      baseBalance.data,
+      balance?.base_available,
       marketData.base.decimals,
     );
 
@@ -200,25 +177,21 @@ export const MarketOrderEntry: React.FC<{
         </ConnectedButton>
         <OrderEntryInfo
           label={`${marketData.base?.symbol} AVAILABLE`}
-          value={`${
-            balance?.base_available
-              ? balance?.base_available / 10 ** marketData.base.decimals
-              : "--"
-          } ${marketData.base?.symbol}`}
+          value={`${balance?.base_available ? balance?.base_available : "--"} ${
+            marketData.base?.symbol
+          }`}
           className="cursor-pointer"
           onClick={() => {
             setValue(
               "size",
-              baseBalance.data ? baseBalance.data.toString() : "",
+              balance?.base_available ? balance?.base_available.toString() : "",
             );
           }}
         />
         <OrderEntryInfo
           label={`${marketData.quote?.symbol} AVAILABLE`}
           value={`${
-            balance?.quote_available
-              ? balance.quote_available / 10 ** marketData.quote.decimals
-              : "--"
+            balance?.quote_available ? balance.quote_available : "--"
           } ${marketData.quote?.symbol}`}
         />
       </div>

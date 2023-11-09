@@ -18,9 +18,11 @@ import { OrderEntryInfo } from "./OrderEntryInfo";
 import { OrderEntryInputWrapper } from "./OrderEntryInputWrapper";
 import { useQuery } from "@tanstack/react-query";
 import { toDecimalPrice } from "@/utils/econia";
+import { useBalance } from "@/hooks/useBalance";
+import { usePriceStats } from "@/features/hooks";
 
 type LimitFormValues = {
-  price: string;
+  price: string | undefined;
   size: string;
   totalSize: string;
 };
@@ -31,7 +33,10 @@ export const LimitOrderEntry: React.FC<{
   marketData: ApiMarket;
   side: Side;
 }> = ({ marketData, side }) => {
-  const { price } = useOrderEntry();
+  // const { price } = useOrderEntry();
+  const {
+    data: { last_price },
+  } = usePriceStats();
   const { signAndSubmitTransaction, account, aptosClient } = useAptos();
   const {
     handleSubmit,
@@ -42,7 +47,10 @@ export const LimitOrderEntry: React.FC<{
     setError,
     watch,
   } = useForm<LimitFormValues>({
-    mode: "onBlur",
+    // mode: "onBlur",
+    defaultValues: {
+      price: undefined,
+    },
   });
 
   const { errors } = formState;
@@ -59,41 +67,19 @@ export const LimitOrderEntry: React.FC<{
     }
   });
 
-  const { data: balance } = useQuery(
-    ["accountBalance", account?.address, marketData.market_id],
-    async () => {
-      try {
-        const response = await fetch(
-          `${API_URL}/rpc/user_balance?user_address=${account?.address}&market=${marketData.market_id}&custodian=${CUSTODIAN_ID}`,
-        );
-        const balance = await response.json();
-        if (balance.length) {
-          return balance[0];
-        }
+  const { balance } = useBalance(marketData);
+  const watchPrice = watch("price", undefined);
 
-        return {
-          base_total: 0,
-          base_available: 0,
-          base_ceiling: 0,
-          quote_total: 0,
-          quote_available: 0,
-          quote_ceiling: 0,
-        };
-      } catch (e) {
-        return {
-          base_total: 0,
-          base_available: 0,
-          base_ceiling: 0,
-          quote_total: 0,
-          quote_available: 0,
-          quote_ceiling: 0,
-        };
+  const watchSize = watch("size");
+
+  useEffect(() => {
+    if (last_price) {
+      if (watchPrice === "" || watchPrice === undefined) {
+        setValue("price", (last_price / 1000).toString());
       }
-    },
-  );
+    }
+  }, [last_price]);
 
-  const watchPrice = watch("price", "0.0");
-  const watchSize = watch("size", "0.0");
   const estimateFee = useMemo(() => {
     const totalSize = Number(watchPrice) * Number(watchSize);
     if (!takerFeeDivisor || !totalSize) {
@@ -104,29 +90,33 @@ export const LimitOrderEntry: React.FC<{
     return `${(sizeApplyFee * 1) / takerFeeDivisor}`;
   }, [takerFeeDivisor, watchPrice, watchSize]);
 
-  useEffect(() => {
-    if (price != null) {
-      setValue("price", price);
-    }
-  }, [price, setValue]);
+  // useEffect(() => {
+  //   if (price != null) {
+  //     setValue("price", price);
+  //   }
+  // }, [price, setValue]);
 
-  const baseBalance = useMarketAccountBalance(
-    account?.address,
-    marketData.market_id,
-    marketData.base,
-  );
-  const quoteBalance = useMarketAccountBalance(
-    account?.address,
-    marketData.market_id,
-    marketData.quote,
-  );
+  // const baseBalance = useMarketAccountBalance(
+  //   account?.address,
+  //   marketData.market_id,
+  //   marketData.base,
+  // );
+  // const quoteBalance = useMarketAccountBalance(
+  //   account?.address,
+  //   marketData.market_id,
+  //   marketData.quote,
+  // );
 
   const onSubmit = async ({ price, size }: LimitFormValues) => {
     if (marketData.base == null) {
       throw new Error("Markets without base coin not supported");
     }
 
-    if (baseBalance.data == null || quoteBalance.data == null) {
+    if (
+      !balance ||
+      balance.quote_available === null ||
+      balance.base_available === null
+    ) {
       throw new Error("Could not read wallet balances");
     }
 
@@ -149,7 +139,7 @@ export const LimitOrderEntry: React.FC<{
     }
 
     const rawPrice = toDecimalPrice({
-      price: toRawCoinAmount(price, marketData.quote.decimals),
+      price: toRawCoinAmount(Number(price), marketData.quote.decimals),
       lotSize: BigNumber(marketData.lot_size),
       tickSize: BigNumber(marketData.tick_size),
       baseCoinDecimals: BigNumber(marketData.base?.decimals || 0),
@@ -164,12 +154,12 @@ export const LimitOrderEntry: React.FC<{
     }
 
     const rawBaseBalance = toRawCoinAmount(
-      baseBalance.data,
+      balance.base_available,
       marketData.base.decimals,
     );
 
     const rawQuoteBalance = toRawCoinAmount(
-      quoteBalance.data,
+      balance.quote_available,
       marketData.quote.decimals,
     );
 
@@ -316,25 +306,21 @@ export const LimitOrderEntry: React.FC<{
         </ConnectedButton>
         <OrderEntryInfo
           label={`${marketData.base?.symbol} AVAILABLE`}
-          value={`${
-            balance?.base_available
-              ? balance?.base_available / 10 ** marketData.base.decimals
-              : "--"
-          } ${marketData.base?.symbol}`}
+          value={`${balance?.base_available ? balance?.base_available : "--"} ${
+            marketData.base?.symbol
+          }`}
           className="cursor-pointer"
           onClick={() => {
             setValue(
               "size",
-              baseBalance.data ? baseBalance.data.toString() : "",
+              balance?.base_available ? balance?.base_available.toString() : "",
             );
           }}
         />
         <OrderEntryInfo
           label={`${marketData.quote?.symbol} AVAILABLE`}
           value={`${
-            balance?.quote_available
-              ? balance.quote_available / 10 ** marketData.quote.decimals
-              : "--"
+            balance?.quote_available ? balance.quote_available : "--"
           } ${marketData.quote?.symbol}`}
         />
       </div>
