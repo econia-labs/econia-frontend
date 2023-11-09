@@ -148,6 +148,7 @@ export type ApiPriceLevel = {
   side: Side;
   price: number;
   size: number;
+  version: number;
 };
 
 export interface APITickerExchange {

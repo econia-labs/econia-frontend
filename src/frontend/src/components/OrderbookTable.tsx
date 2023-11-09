@@ -3,11 +3,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useOrderEntry } from "@/contexts/OrderEntryContext";
 import { type ApiMarket } from "@/types/api";
-import { type Orderbook, type PriceLevel } from "@/types/global";
+import { Precision, type Orderbook, type PriceLevel } from "@/types/global";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 import { averageOrOtherPriceLevel } from "@/utils/formatter";
 import Skeleton from "react-loading-skeleton";
-import { mockOrderbook } from "@/mockdata/orderBook";
+// import { Listbox } from "@headlessui/react";
+// import ChevronDownIcon from "@heroicons/react/24/outline/ChevronDownIcon";
+// import CheckIcon from "@heroicons/react/24/outline/CheckIcon";
 
 // const precisionOptions: Precision[] = [
 //   "0.01",
@@ -122,20 +124,20 @@ export function OrderbookTable({
   }, [isFetching]);
 
   const midPrice: PriceLevel | undefined = useMemo(() => {
-    if (mockOrderbook == null) {
+    if (data == null) {
       return undefined;
     }
     return averageOrOtherPriceLevel(
-      mockOrderbook.asks ? mockOrderbook.asks[0] : undefined,
-      mockOrderbook.bids ? mockOrderbook.bids[0] : undefined,
+      data.asks ? data.asks[0] : undefined,
+      data.bids ? data.bids[0] : undefined,
     );
-  }, [mockOrderbook]);
+  }, [data]);
 
   const highestSize = useMemo(() => {
-    if (!mockOrderbook) return 0;
+    if (!data) return 0;
 
-    const asks = mockOrderbook.asks || [];
-    const bids = mockOrderbook.bids || [];
+    const asks = data.asks || [];
+    const bids = data.bids || [];
 
     const askSizes = asks.map((order) => order.size);
     const bidSizes = bids.map((order) => order.size);
@@ -143,7 +145,7 @@ export function OrderbookTable({
     const allSizes = [...askSizes, ...bidSizes];
 
     return Math.max(...allSizes);
-  }, [mockOrderbook]);
+  }, [data]);
 
   return (
     <div className="flex grow flex-col">
@@ -214,7 +216,7 @@ export function OrderbookTable({
         ) : (
           <div className="absolute w-full">
             {/* ASK */}
-            {mockOrderbook?.asks
+            {data?.asks
               ?.slice()
               .reverse()
               .map((level) => (
@@ -224,7 +226,7 @@ export function OrderbookTable({
                   key={`ask-${level.price}-${level.size}`}
                   highestSize={highestSize}
                   marketData={marketData}
-                  updatedLevel={mockOrderbook.updatedLevel}
+                  updatedLevel={data.updatedLevel}
                 />
               ))}
             {/* SPREAD */}
@@ -246,14 +248,14 @@ export function OrderbookTable({
               </div>
             </div>
             {/* BID */}
-            {mockOrderbook?.bids?.map((level) => (
+            {data?.bids?.map((level) => (
               <Row
                 level={level}
                 type={"bid"}
                 key={`bid-${level.price}-${level.size}`}
                 highestSize={highestSize}
                 marketData={marketData}
-                updatedLevel={mockOrderbook.updatedLevel}
+                updatedLevel={data.updatedLevel}
               />
             ))}
           </div>
