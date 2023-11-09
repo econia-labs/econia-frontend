@@ -1,3 +1,4 @@
+import { ApiMarket } from "@/types/api";
 import BigNumber from "bignumber.js";
 
 const TEN = new BigNumber(10);
@@ -24,19 +25,19 @@ export const fromDecimalPrice = ({
 
 export const toDecimalPrice = ({
   price,
-  lotSize,
-  tickSize,
-  baseCoinDecimals,
-  quoteCoinDecimals,
+  marketData,
 }: {
-  price: BigNumber;
-  lotSize: BigNumber;
-  tickSize: BigNumber;
-  baseCoinDecimals: BigNumber;
-  quoteCoinDecimals: BigNumber;
+  price: number | BigNumber;
+  marketData: ApiMarket;
 }) => {
+  const bigNumberPrice = typeof price === "number" ? new BigNumber(price) : price;
+  const lotSize = BigNumber(marketData?.lot_size);
+  const tickSize = BigNumber(marketData?.tick_size);
+  const baseCoinDecimals = BigNumber(marketData.base?.decimals || 0);
+  const quoteCoinDecimals = BigNumber(marketData.quote?.decimals || 0);
+
   const lotsPerUnit = TEN.exponentiatedBy(baseCoinDecimals).div(lotSize);
-  const pricePerLot = price
+  const pricePerLot = bigNumberPrice
     .multipliedBy(tickSize)
     .div(TEN.exponentiatedBy(quoteCoinDecimals));
   return pricePerLot.multipliedBy(lotsPerUnit);
@@ -59,14 +60,17 @@ export const fromDecimalSize = ({
 
 export const toDecimalSize = ({
   size,
-  lotSize,
-  baseCoinDecimals,
+  marketData,
 }: {
-  size: BigNumber;
-  lotSize: BigNumber;
-  baseCoinDecimals: BigNumber;
+  size: number | BigNumber;
+  marketData: ApiMarket;
 }) => {
-  return size.multipliedBy(lotSize).div(TEN.exponentiatedBy(baseCoinDecimals));
+  const bigNumberSize = typeof size === "number" ? new BigNumber(size) : size;
+  const lotSize = BigNumber(marketData?.lot_size);
+  const baseCoinDecimals = BigNumber(marketData.base?.decimals || 0);
+  return bigNumberSize
+    .multipliedBy(lotSize)
+    .div(TEN.exponentiatedBy(baseCoinDecimals));
 };
 
 export const toDecimalQuote = ({

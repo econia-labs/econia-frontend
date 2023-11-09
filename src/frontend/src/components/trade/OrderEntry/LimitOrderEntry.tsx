@@ -140,10 +140,7 @@ export const LimitOrderEntry: React.FC<{
 
     const rawPrice = toDecimalPrice({
       price: toRawCoinAmount(Number(price), marketData.quote.decimals),
-      lotSize: BigNumber(marketData.lot_size),
-      tickSize: BigNumber(marketData.tick_size),
-      baseCoinDecimals: BigNumber(marketData.base?.decimals || 0),
-      quoteCoinDecimals: BigNumber(marketData.quote?.decimals || 0),
+      marketData,
     });
     // const rawPrice = toRawCoinAmount(price, marketData.quote.decimals);
 

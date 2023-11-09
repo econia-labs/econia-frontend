@@ -103,17 +103,13 @@ export const StatsBar: React.FC<{
             acc[key] = priceStats[key];
           } else if (key.includes("price")) {
             acc[key] = toDecimalPrice({
-              price: new BigNumber(priceStats[key]),
-              lotSize: BigNumber(selectedMarket.lot_size),
-              tickSize: BigNumber(selectedMarket.tick_size),
-              baseCoinDecimals: BigNumber(selectedMarket.base?.decimals || 0),
-              quoteCoinDecimals: BigNumber(selectedMarket.quote?.decimals || 0),
+              price: priceStats[key],
+              marketData: selectedMarket,
             }).toNumber();
           } else {
             acc[key] = toDecimalSize({
-              size: new BigNumber(priceStats[key]),
-              lotSize: BigNumber(selectedMarket.lot_size),
-              baseCoinDecimals: BigNumber(selectedMarket.base?.decimals || 0),
+              size: priceStats[key],
+              marketData: selectedMarket,
             }).toNumber();
           }
           return acc;

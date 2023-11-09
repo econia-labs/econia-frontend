@@ -45,17 +45,13 @@ const Row: React.FC<{
   }, [type, updatedLevel, level.price]);
 
   const price = toDecimalPrice({
-    price: new BigNumber(level.price),
-    lotSize: BigNumber(marketData.lot_size),
-    tickSize: BigNumber(marketData.tick_size),
-    baseCoinDecimals: BigNumber(marketData.base?.decimals || 0),
-    quoteCoinDecimals: BigNumber(marketData.quote?.decimals || 0),
+    price: level.price,
+    marketData,
   }).toNumber();
 
   const size = toDecimalSize({
-    size: new BigNumber(level.size),
-    lotSize: BigNumber(marketData.lot_size),
-    baseCoinDecimals: BigNumber(marketData.base?.decimals || 0),
+    size: level.size,
+    marketData: marketData,
   });
 
   const barPercentage = (level.size * 100) / highestSize;
@@ -236,11 +232,8 @@ export function OrderbookTable({
             >
               <div className="z-10 ml-4 text-right font-roboto-mono text-xs text-white">
                 {toDecimalPrice({
-                  price: new BigNumber(midPrice?.price || 0),
-                  lotSize: BigNumber(marketData.lot_size),
-                  tickSize: BigNumber(marketData.tick_size),
-                  baseCoinDecimals: BigNumber(marketData.base?.decimals || 0),
-                  quoteCoinDecimals: BigNumber(marketData.quote?.decimals || 0),
+                  price: midPrice?.price || 0,
+                  marketData,
                 }).toNumber()}
               </div>
               <div className="mr-4 font-roboto-mono text-white">
