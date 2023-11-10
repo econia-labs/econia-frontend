@@ -338,7 +338,7 @@ export default function Market({ allMarketData, marketData }: Props) {
       <Head>
         <title>{`${marketData.name} | Econia`}</title>
       </Head>
-      <div className="flex min-h-screen flex-col">
+      <div className="flex max-h-screen flex-col">
         <Header
           logoHref={`${allMarketData[0].name}`}
           onDepositWithdrawClick={() => setDepositWithdrawModalOpen(true)}
@@ -381,7 +381,7 @@ export default function Market({ allMarketData, marketData }: Props) {
             <div className="border border-neutral-600">
               <OrderEntry marketData={marketData} />
             </div>
-            <div className="scrollbar-none mt-3 h-full max-h-[calc(100vh-658px)] min-h-[160px] overflow-auto border border-neutral-600">
+            <div className="scrollbar-none mt-3 h-full max-h-full overflow-auto min-h-[160px] border border-neutral-600">
               <p className="sticky top-0 bg-neutral-800 bg-noise py-3 pl-4 font-jost font-bold text-white">
                 Trade History
               </p>
