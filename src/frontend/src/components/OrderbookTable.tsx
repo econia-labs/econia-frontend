@@ -146,8 +146,8 @@ export function OrderbookTable({
   return (
     <div className="flex grow flex-col">
       {/* title row */}
-      <div className="border-b border-neutral-600 px-4 py-3">
-        <div className="flex justify-between">
+      <div className="border-b border-neutral-600 px-3 py-3">
+        <div className="flex justify-center">
           <p className="font-jost text-base font-bold text-white">
             Price Levels
           </p>

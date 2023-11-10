@@ -20,10 +20,10 @@ export const useOrderBook = (
     async () => {
       const fetchPromises = [
         fetch(
-          `${API_URL}/price_levels?market_id=eq.${market_id}&side=eq.bid&limit=${depth}`,
+          `${API_URL}/price_levels?market_id=eq.${market_id}&side=eq.bid&order=price.desc&limit=${depth}`,
         ),
         fetch(
-          `${API_URL}/price_levels?market_id=eq.${market_id}&side=eq.ask&limit=${depth}`,
+          `${API_URL}/price_levels?market_id=eq.${market_id}&side=eq.ask&order=price.asc&limit=${depth}`,
         ),
       ];
       const [response1, response2] = await Promise.all(fetchPromises);

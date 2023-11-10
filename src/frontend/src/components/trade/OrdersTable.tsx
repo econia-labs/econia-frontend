@@ -42,7 +42,7 @@ export const OrdersTable: React.FC<{
       if (!account) return [];
       const limit = 100;
       const response = await fetch(
-        `${API_URL}/orders?order_status=eq.open&select=*,average_execution_price&user=eq.${account.address}&market_id=eq.${market_id}&limit=${limit}`,
+        `${API_URL}/orders?select=*,average_execution_price&user=eq.${account.address}&market_id=eq.${market_id}&limit=${limit}`,
       );
       const orders = await response.json();
       return orders;
