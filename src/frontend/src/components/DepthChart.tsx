@@ -71,8 +71,7 @@ export const DepthChart: React.FC<{
         if (askAcc.gt(0))
           askData[i] = toDecimalSize({
             size: askAcc,
-            lotSize: BigNumber(marketData.lot_size),
-            baseCoinDecimals: BigNumber(baseCoinInfo?.decimals || 0),
+            marketData,
           }).toNumber();
       }
 
@@ -85,18 +84,14 @@ export const DepthChart: React.FC<{
         if (bidAcc.gt(0))
           bidData[i] = toDecimalSize({
             size: bidAcc,
-            lotSize: BigNumber(marketData.lot_size),
-            baseCoinDecimals: BigNumber(baseCoinInfo?.decimals || 0),
+            marketData,
           }).toNumber();
       }
 
       labels.forEach((price, i) => {
         labels[i] = toDecimalPrice({
-          price: new BigNumber(price),
-          lotSize: BigNumber(marketData.lot_size),
-          tickSize: BigNumber(marketData.tick_size),
-          baseCoinDecimals: BigNumber(baseCoinInfo?.decimals || 0),
-          quoteCoinDecimals: BigNumber(quoteCoinInfo?.decimals || 0),
+          price,
+          marketData,
         }).toNumber();
       });
     }
@@ -105,18 +100,12 @@ export const DepthChart: React.FC<{
       bidData,
       askData,
       minPrice: toDecimalPrice({
-        price: new BigNumber(minPrice),
-        lotSize: BigNumber(marketData.lot_size),
-        tickSize: BigNumber(marketData.tick_size),
-        baseCoinDecimals: BigNumber(baseCoinInfo?.decimals || 0),
-        quoteCoinDecimals: BigNumber(quoteCoinInfo?.decimals || 0),
+        price: minPrice,
+        marketData,
       }),
       maxPrice: toDecimalPrice({
-        price: new BigNumber(maxPrice),
-        lotSize: BigNumber(marketData.lot_size),
-        tickSize: BigNumber(marketData.tick_size),
-        baseCoinDecimals: BigNumber(baseCoinInfo?.decimals || 0),
-        quoteCoinDecimals: BigNumber(quoteCoinInfo?.decimals || 0),
+        price: maxPrice,
+        marketData,
       }),
     };
   }, [marketData, baseCoinInfo, quoteCoinInfo, data, isFetching]);

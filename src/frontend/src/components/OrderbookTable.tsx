@@ -45,17 +45,13 @@ const Row: React.FC<{
   }, [type, updatedLevel, level.price]);
 
   const price = toDecimalPrice({
-    price: new BigNumber(level.price),
-    lotSize: BigNumber(marketData.lot_size),
-    tickSize: BigNumber(marketData.tick_size),
-    baseCoinDecimals: BigNumber(marketData.base?.decimals || 0),
-    quoteCoinDecimals: BigNumber(marketData.quote?.decimals || 0),
+    price: level.price,
+    marketData,
   }).toNumber();
 
   const size = toDecimalSize({
-    size: new BigNumber(level.size),
-    lotSize: BigNumber(marketData.lot_size),
-    baseCoinDecimals: BigNumber(marketData.base?.decimals || 0),
+    size: level.size,
+    marketData: marketData,
   });
 
   const barPercentage = (level.size * 100) / highestSize;
@@ -150,9 +146,11 @@ export function OrderbookTable({
   return (
     <div className="flex grow flex-col">
       {/* title row */}
-      <div className="border-b border-neutral-600 px-4 py-3">
-        <div className="flex justify-between">
-          <p className="font-jost text-base font-bold text-white">Order Book</p>
+      <div className="border-b border-neutral-600 px-3 py-3">
+        <div className="flex justify-center">
+          <p className="font-jost text-base font-bold text-white">
+            Price Levels
+          </p>
           {/* select */}
           {/* TODO: SHOW WHEN API IS UP */}
           {/* <Listbox value={precision} onChange={setPrecision}>
@@ -183,7 +181,7 @@ export function OrderbookTable({
             PRICE ({marketData.quote.symbol})
           </p>
           <p className="font-roboto-mono text-xs text-neutral-500">
-            SIZE ({marketData.base?.symbol})
+            TOTAL SIZE ({marketData.base?.symbol})
           </p>
         </div>
       </div>
@@ -236,11 +234,8 @@ export function OrderbookTable({
             >
               <div className="z-10 ml-4 text-right font-roboto-mono text-xs text-white">
                 {toDecimalPrice({
-                  price: new BigNumber(midPrice?.price || 0),
-                  lotSize: BigNumber(marketData.lot_size),
-                  tickSize: BigNumber(marketData.tick_size),
-                  baseCoinDecimals: BigNumber(marketData.base?.decimals || 0),
-                  quoteCoinDecimals: BigNumber(marketData.quote?.decimals || 0),
+                  price: midPrice?.price || 0,
+                  marketData,
                 }).toNumber()}
               </div>
               <div className="mr-4 font-roboto-mono text-white">
