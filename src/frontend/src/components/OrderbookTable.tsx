@@ -148,9 +148,7 @@ export function OrderbookTable({
       {/* title row */}
       <div className="border-b border-neutral-600 px-3 py-3">
         <div className="flex justify-center">
-          <p className="font-jost text-base font-bold text-white">
-            Price Levels
-          </p>
+          <p className="font-jost text-base font-bold text-white">Order Book</p>
           {/* select */}
           {/* TODO: SHOW WHEN API IS UP */}
           {/* <Listbox value={precision} onChange={setPrecision}>
