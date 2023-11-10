@@ -381,7 +381,7 @@ export default function Market({ allMarketData, marketData }: Props) {
             <div className="border border-neutral-600">
               <OrderEntry marketData={marketData} />
             </div>
-            <div className="scrollbar-none mt-3 h-full max-h-full overflow-auto min-h-[160px] border border-neutral-600">
+            <div className="scrollbar-none mt-3 h-full max-h-full min-h-[160px] overflow-auto border border-neutral-600">
               <p className="sticky top-0 bg-neutral-800 bg-noise py-3 pl-4 font-jost font-bold text-white">
                 Trade History
               </p>
