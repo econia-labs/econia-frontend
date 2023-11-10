@@ -149,7 +149,7 @@ export function OrderbookTable({
       <div className="border-b border-neutral-600 px-3 py-3">
         <div className="flex justify-center">
           <p className="font-jost text-base font-bold text-white">
-            Price Levels
+            Order Book
           </p>
           {/* select */}
           {/* TODO: SHOW WHEN API IS UP */}
