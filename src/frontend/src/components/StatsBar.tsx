@@ -63,7 +63,6 @@ export const StatsBar: React.FC<{
 }> = ({ allMarketData, selectedMarket }) => {
   const dispatch = useDispatch();
   const { market_id: marketId, base, quote } = selectedMarket;
-  const nominal = 3;
   const baseSymbol = base?.symbol;
   const quoteSymbol = quote?.symbol;
   const router = useRouter();
@@ -96,7 +95,6 @@ export const StatsBar: React.FC<{
       const data = await response.json();
       const priceStats = data[0];
       dispatch(setPriceStats(data[0]));
-      // for each value of the price stats except for price_change_percentage, convert it to nominal by dividing by 10^nominal
       const formattedPriceStats = Object.keys(priceStats).reduce(
         (acc: any, key) => {
           if (key === "price_change_percentage") {

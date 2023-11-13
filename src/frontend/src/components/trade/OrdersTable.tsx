@@ -18,6 +18,7 @@ import { type ApiMarket, type ApiOrder } from "@/types/api";
 import bg from "../../../public/bg.png";
 import { ConnectedButton } from "../ConnectedButton";
 import { API_URL } from "@/env";
+import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 
 const columnHelper = createColumnHelper<ApiOrder>();
 
@@ -26,7 +27,6 @@ export const OrdersTable: React.FC<{
   market_id: number;
   marketData: ApiMarket;
 }> = ({ className, market_id, marketData }) => {
-  const nominal = 3;
   const { base, quote } = marketData;
   const { decimals: baseDecimals, symbol: baseSymbol } = base;
   const { decimals: quoteDecimals, symbol: quoteSymbol } = quote;
@@ -97,7 +97,10 @@ export const OrdersTable: React.FC<{
         cell: (info) => {
           const price = info.getValue();
           if (price) {
-            return `${price / Math.pow(10, nominal)} ${quoteSymbol}`;
+            return `${toDecimalPrice({
+              price,
+              marketData,
+            }).toNumber()} ${quoteSymbol}`;
           } else {
             return "N/A";
           }
@@ -105,19 +108,37 @@ export const OrdersTable: React.FC<{
       }),
       columnHelper.accessor("average_execution_price", {
         header: "AVG EXECUTION PRICE",
-        cell: (info) => info.getValue() || "N/A",
+        cell: (info) => {
+          const avg = info.getValue();
+          if (avg) {
+            return `${toDecimalPrice({
+              price: avg,
+              marketData,
+            }).toNumber()} ${quoteSymbol}`;
+          } else {
+            return "N/A";
+          }
+        },
       }),
       columnHelper.accessor("remaining_size", {
         header: "Remaining size",
-        cell: (info) =>
-          `${info.getValue() / Math.pow(10, nominal)} ${baseSymbol}`,
+        cell: (info) => {
+          const remaining = info.getValue();
+          return `${toDecimalSize({
+            size: remaining,
+            marketData,
+          }).toNumber()} ${baseSymbol}`;
+        },
       }),
       columnHelper.accessor("total_filled", {
         header: "Total",
         cell: (info) => {
           const total = info.getValue();
           return total
-            ? `${total / Math.pow(10, nominal)} ${quoteSymbol}`
+            ? `${toDecimalSize({
+                size: total,
+                marketData,
+              }).toNumber()} ${baseSymbol}`
             : "N/A";
         },
       }),
@@ -128,7 +149,10 @@ export const OrdersTable: React.FC<{
           const { total_filled, average_execution_price } = row;
           const totalVolume = total_filled * average_execution_price;
           return totalVolume
-            ? `${totalVolume / Math.pow(10, nominal)} ${quoteSymbol}`
+            ? `${toDecimalPrice({
+                price: totalVolume,
+                marketData,
+              }).toNumber()} ${quoteSymbol}`
             : "N/A";
         },
       }),
