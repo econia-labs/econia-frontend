@@ -83,7 +83,7 @@ export const OrdersTable: React.FC<{
       }),
       columnHelper.accessor("order_type", {
         header: "Type",
-        cell: (info) => info.getValue().toUpperCase() || "N/A",
+        cell: (info) => info.getValue().toUpperCase() || "-",
       }),
       columnHelper.accessor("side", {
         cell: (info) => {
@@ -102,7 +102,7 @@ export const OrdersTable: React.FC<{
               marketData,
             }).toNumber()} ${quoteSymbol}`;
           } else {
-            return "N/A";
+            return "-";
           }
         },
       }),
@@ -116,7 +116,7 @@ export const OrdersTable: React.FC<{
               marketData,
             }).toNumber()} ${quoteSymbol}`;
           } else {
-            return "N/A";
+            return "-";
           }
         },
       }),
@@ -139,7 +139,7 @@ export const OrdersTable: React.FC<{
                 size: total,
                 marketData,
               }).toNumber()} ${baseSymbol}`
-            : "N/A";
+            : "-";
         },
       }),
       columnHelper.display({
@@ -147,13 +147,17 @@ export const OrdersTable: React.FC<{
         cell: (info) => {
           const row = info.row.original;
           const { total_filled, average_execution_price } = row;
-          const totalVolume = total_filled * average_execution_price;
-          return totalVolume
-            ? `${toDecimalPrice({
-                price: totalVolume,
-                marketData,
-              }).toNumber()} ${quoteSymbol}`
-            : "N/A";
+          if (!total_filled || !average_execution_price) return "-";
+          const convertedAvgPrice = toDecimalPrice({
+            price: average_execution_price,
+            marketData,
+          }).toNumber();
+          const convertedTotalFilled = toDecimalSize({
+            size: total_filled,
+            marketData,
+          }).toNumber();
+          const totalVolume = convertedTotalFilled * convertedAvgPrice;
+          return `${totalVolume} ${quoteSymbol}`;
         },
       }),
       columnHelper.accessor("order_status", {
