@@ -17,7 +17,7 @@ import { TypeTag } from "@/utils/TypeTag";
 import { OrderEntryInfo } from "./OrderEntryInfo";
 import { OrderEntryInputWrapper } from "./OrderEntryInputWrapper";
 import { useQuery } from "@tanstack/react-query";
-import { toDecimalPrice } from "@/utils/econia";
+import { fromDecimalPrice, toDecimalPrice } from "@/utils/econia";
 import { useBalance } from "@/hooks/useBalance";
 import { useOrderBookData, usePriceStats } from "@/features/hooks";
 
@@ -154,10 +154,21 @@ export const LimitOrderEntry: React.FC<{
       return;
     }
 
-    const rawPrice = toDecimalPrice({
-      price: toRawCoinAmount(Number(price), marketData.quote.decimals),
-      marketData,
+    // const rawPrice = toDecimalPrice({
+    //   price: toRawCoinAmount(Number(price), marketData.quote.decimals),
+    //   marketData,
+    // });
+    const rawPrice = fromDecimalPrice({
+      price: Number(price),
+      lotSize: marketData.lot_size,
+      tickSize: marketData.tick_size,
+      baseCoinDecimals: marketData.base.decimals,
+      quoteCoinDecimals: marketData.quote.decimals,
     });
+    console.log(
+      "🚀 ~ file: LimitOrderEntry.tsx:168 ~ onSubmit ~ rawPrice:",
+      rawPrice,
+    );
     // const rawPrice = toRawCoinAmount(price, marketData.quote.decimals);
 
     // validate tick size

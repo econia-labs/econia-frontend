@@ -52,6 +52,10 @@ export const SelectMarketContent: React.FC<{
   allMarketData: ApiMarket[];
   onSelectMarket?: (marketId: number, name?: string) => void;
 }> = ({ allMarketData, onSelectMarket }) => {
+  console.log(
+    "🚀 ~ file: SelectMarketContent.tsx:55 ~ allMarketData:",
+    allMarketData,
+  );
   const router = useRouter();
   const { data: marketStats } = useAllMarketStats();
   const [filter, setFilter] = useState("");

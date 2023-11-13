@@ -13,7 +13,7 @@ type Props = {
 export default function Trade({ allMarketData }: Props) {
   const router = useRouter();
   if (typeof window !== "undefined" && allMarketData.length > 0) {
-    router.push(`/trade/${allMarketData[0].name}`);
+    router.push(`/trade/${allMarketData[0].market_id}`);
   }
 
   // TODO: Better empty message

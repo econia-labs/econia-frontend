@@ -146,7 +146,7 @@ export const TVChartContainer: React.FC<
               description: market.name as string,
               exchange: "Econia",
               full_name: `Econia:${market.base?.symbol}`,
-              symbol: market.name,
+              symbol: `${market.market_id}:${market.name}`,
               ticker: market.name,
               type: "crypto",
             };
@@ -167,7 +167,12 @@ export const TVChartContainer: React.FC<
         extension,
       ) => {
         if (props.symbol !== symbolName) {
-          router.push(`/trade/${symbolName}`);
+          const market = props.allMarketData.find(
+            (market) => market.name === symbolName,
+          );
+          if (market) {
+            router.push(`/trade/${market.market_id}`);
+          }
         }
         const symbol = `${symbolName}`;
         const symbolInfo: LibrarySymbolInfo = {
