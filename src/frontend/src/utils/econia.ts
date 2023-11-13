@@ -10,7 +10,7 @@ export const fromDecimalPrice = ({
   baseCoinDecimals,
   quoteCoinDecimals,
 }: {
-  price: BigNumber.Value;
+  price: BigNumber.Value | number;
   lotSize: BigNumber.Value;
   tickSize: BigNumber.Value;
   baseCoinDecimals: BigNumber.Value;

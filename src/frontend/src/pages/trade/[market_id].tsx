@@ -51,7 +51,7 @@ type Props = {
 };
 
 type PathParams = {
-  market_name: string;
+  market_id: string;
 };
 
 export default function Market({ allMarketData, marketData }: Props) {
@@ -425,9 +425,9 @@ export const getStaticPaths: GetStaticPaths<PathParams> = async () => {
   // const res = await fetch(new URL("markets", API_URL).href);
   // const allMarketData: ApiMarket[] = await res.json();
   // TODO: Working API
-  const allMarketData = MOCK_MARKETS;
-  const paths = allMarketData.map((market) => ({
-    params: { market_name: market.name },
+  const allMarketData = await getAllMarket();
+  const paths = allMarketData.map((market: ApiMarket) => ({
+    params: { market_id: `${market.market_id}` },
   }));
   return { paths, fallback: false };
 };
@@ -436,7 +436,9 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   if (!params) throw new Error("No params");
   const allMarketData = await getAllMarket();
   const marketData =
-    allMarketData?.find((market) => market.name === params.market_name) || null;
+    allMarketData?.find(
+      (market) => `${market.market_id}` === params.market_id,
+    ) || null;
 
   return {
     props: {

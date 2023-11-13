@@ -7,6 +7,7 @@ export type ApiCoin = {
   symbol: string;
   name: string;
   decimals: number;
+  logo_url?: string;
 };
 
 export type ApiMarket = {
