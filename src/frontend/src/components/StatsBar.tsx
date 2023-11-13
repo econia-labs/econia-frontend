@@ -169,8 +169,7 @@ export const StatsBar: React.FC<{
           <div className="block md:hidden">
             <p className="font-roboto-mono font-light">
               <span className="inline-block min-w-[4em] text-xl text-white">
-                {data?.last_price && "$"}
-                {formatNumber(data?.last_price, 2) ?? <Skeleton />}
+                {data?.last_price ? `$${data.last_price}` : <Skeleton />}
               </span>
               <span
                 className={`ml-1 inline-block min-w-[6em] text-base ${
@@ -179,9 +178,7 @@ export const StatsBar: React.FC<{
                     : "text-green"
                 }`}
               >
-                {formatNumber(data?.price_change_nominal, 2, "always") ?? (
-                  <Skeleton />
-                )}
+                {data?.price_change_nominal ?? <Skeleton />}
               </span>
             </p>
           </div>
@@ -191,8 +188,7 @@ export const StatsBar: React.FC<{
               LAST PRICE
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
-              {data?.last_price && "$"}
-              {formatNumber(data?.last_price, 2) ?? <Skeleton />}
+              {data?.last_price ? `$${data.last_price}` : <Skeleton />}
             </p>
           </div>
           {/* 24 hr */}
@@ -202,9 +198,13 @@ export const StatsBar: React.FC<{
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
               <span className="inline-block min-w-[70px] text-white">
-                {formatNumber(data?.price_change_nominal, 2) ?? <Skeleton />}
+                {data?.price_change_nominal ? (
+                  Math.abs(data.price_change_nominal)
+                ) : (
+                  <Skeleton />
+                )}
               </span>
-              {data?.price_change_percentage && (
+              {data?.price_change_percentage !== undefined && (
                 <span
                   className={`ml-2 ${
                     (data?.price_change_percentage || 0) < 0
@@ -212,10 +212,11 @@ export const StatsBar: React.FC<{
                       : "text-green"
                   }`}
                 >
-                  {formatNumber(data?.price_change_percentage, 2, "always") ?? (
+                  {data?.price_change_percentage ? (
+                    data?.price_change_percentage + "%"
+                  ) : (
                     <Skeleton />
                   )}
-                  %
                 </span>
               )}
             </p>
@@ -226,7 +227,7 @@ export const StatsBar: React.FC<{
               24h high
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
-              {formatNumber(data?.high_price, 2) ?? <Skeleton />}
+              {data?.high_price ?? <Skeleton />}
             </p>
           </div>
           {/* 24 hr low */}
@@ -235,7 +236,7 @@ export const StatsBar: React.FC<{
               24h low
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
-              {formatNumber(data?.low_price, 2) ?? <Skeleton />}
+              {data?.low_price ?? <Skeleton />}
             </p>
           </div>
           {/* 24 hr main */}
@@ -244,7 +245,11 @@ export const StatsBar: React.FC<{
               24H VOLUME ({baseSymbol || "-"})
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
-              {formatNumber(data?.base_volume, 2) ?? <Skeleton />}
+              {data?.base_volume ? (
+                data.base_volume.toLocaleString()
+              ) : (
+                <Skeleton />
+              )}
             </p>
           </div>
           {/* 24 hr pair */}
@@ -253,7 +258,11 @@ export const StatsBar: React.FC<{
               24H VOLUME ({quoteSymbol || "-"})
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
-              {formatNumber(data?.quote_volume, 2) ?? <Skeleton />}
+              {data?.quote_volume ? (
+                data.quote_volume.toLocaleString()
+              ) : (
+                <Skeleton />
+              )}
             </p>
           </div>
         </div>
