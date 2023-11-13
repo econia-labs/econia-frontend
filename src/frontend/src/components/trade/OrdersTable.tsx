@@ -205,13 +205,20 @@ export const OrdersTable: React.FC<{
     switch (direction) {
       case "buy":
         side = "bid";
+        break;
       case "sell":
         side = "ask";
+        break;
       default:
         side = direction;
+        break;
     }
     const payload = {
-      arguments: [BigInt(market_id), sideToBoolean(side as Side), BigInt(order_id)],
+      arguments: [
+        BigInt(market_id),
+        sideToBoolean(side as Side),
+        BigInt(order_id),
+      ],
       function: `${ECONIA_ADDR}::market::cancel_order_user`,
       type_arguments: [],
     };
