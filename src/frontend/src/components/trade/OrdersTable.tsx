@@ -1,3 +1,4 @@
+import { entryFunctions } from "@econia-labs/sdk";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import { useQuery } from "@tanstack/react-query";
@@ -17,8 +18,11 @@ import { type ApiMarket, type ApiOrder } from "@/types/api";
 
 import bg from "../../../public/bg.png";
 import { ConnectedButton } from "../ConnectedButton";
-import { API_URL } from "@/env";
+import { API_URL, ECONIA_ADDR } from "@/env";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
+import { Side } from "@econia-labs/sdk/dist/src/order";
+import { useAptos } from "@/contexts/AptosContext";
+import { sideToBoolean } from "@econia-labs/sdk/dist/src/utils";
 
 const columnHelper = createColumnHelper<ApiOrder>();
 
@@ -27,6 +31,7 @@ export const OrdersTable: React.FC<{
   market_id: number;
   marketData: ApiMarket;
 }> = ({ className, market_id, marketData }) => {
+  const { signAndSubmitTransaction } = useAptos();
   const { base, quote } = marketData;
   const { decimals: baseDecimals, symbol: baseSymbol } = base;
   const { decimals: quoteDecimals, symbol: quoteSymbol } = quote;
@@ -36,7 +41,7 @@ export const OrdersTable: React.FC<{
     { id: "created_at", desc: true },
   ]);
 
-  const { data, isLoading } = useQuery<ApiOrder[]>(
+  const { data, isLoading, refetch } = useQuery<ApiOrder[]>(
     ["useUserOrders", account?.address],
     async () => {
       if (!account) return [];
@@ -85,11 +90,17 @@ export const OrdersTable: React.FC<{
         header: "Type",
         cell: (info) => info.getValue().toUpperCase() || "-",
       }),
-      columnHelper.accessor("side", {
+      columnHelper.accessor("direction", {
         cell: (info) => {
-          if (info.getValue()) return info.getValue().toUpperCase();
-          const { direction } = info.row.original;
-          if (direction) return direction === "buy" ? "BID" : "ASK";
+          const direction = info.getValue();
+          switch (direction) {
+            case "buy":
+              return "BID";
+            case "sell":
+              return "ASK";
+            default:
+              return direction.toUpperCase();
+          }
         },
       }),
       columnHelper.accessor("price", {
@@ -171,9 +182,45 @@ export const OrdersTable: React.FC<{
           return value.toUpperCase();
         },
       }),
+      columnHelper.display({
+        header: "Cancel",
+        cell: (info) => {
+          const orderInfo = info.row.original;
+          const { order_status: status } = orderInfo;
+          if (status !== "open") return "N/A";
+          return (
+            <button className="text-red" onClick={() => cancelOrder(orderInfo)}>
+              Cancel
+            </button>
+          );
+        },
+      }),
     ],
     [marketData],
   );
+
+  const cancelOrder = async (orderInfo: ApiOrder) => {
+    const { direction, order_id } = orderInfo;
+    let side = direction;
+    switch (direction) {
+      case "buy":
+        side = "bid";
+      case "sell":
+        side = "ask";
+      default:
+        side = direction;
+    }
+    const payload = {
+      arguments: [BigInt(market_id), sideToBoolean(side as Side), BigInt(order_id)],
+      function: `${ECONIA_ADDR}::market::cancel_order_user`,
+      type_arguments: [],
+    };
+    await signAndSubmitTransaction({
+      type: "entry_function_payload",
+      ...payload,
+    });
+    refetch();
+  };
 
   const table = useReactTable({
     data: data || [],

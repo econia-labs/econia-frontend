@@ -82,8 +82,7 @@ export type ApiOrder = {
   order_type: string;
   price?: number;
   last_increase_stamp?: number;
-  side: "bid" | "ask";
-  direction?: "buy" | "sell";
+  direction: "buy" | "sell" | "bid" | "ask";
 };
 
 export type TradeHistory = {
