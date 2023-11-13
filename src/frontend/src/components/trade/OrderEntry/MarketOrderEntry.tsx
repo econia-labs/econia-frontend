@@ -67,7 +67,9 @@ export const MarketOrderEntry: React.FC<{
   });
 
   const estimateFee = useMemo(() => {
-    const totalSize = toDecimalPrice({ price: Number(last_price), marketData }).toNumber() * Number(watchSize);
+    const totalSize =
+      toDecimalPrice({ price: Number(last_price), marketData }).toNumber() *
+      Number(watchSize);
     if (!takerFeeDivisor || !totalSize) {
       return "--";
     }
@@ -178,8 +180,9 @@ export const MarketOrderEntry: React.FC<{
         </ConnectedButton>
         <OrderEntryInfo
           label={`${marketData.base?.symbol} AVAILABLE`}
-          value={`${balance?.base_available ? balance?.base_available : "--"} ${marketData.base?.symbol
-            }`}
+          value={`${balance?.base_available ? balance?.base_available : "--"} ${
+            marketData.base?.symbol
+          }`}
           className="cursor-pointer"
           onClick={() => {
             setValue(
@@ -190,8 +193,9 @@ export const MarketOrderEntry: React.FC<{
         />
         <OrderEntryInfo
           label={`${marketData.quote?.symbol} AVAILABLE`}
-          value={`${balance?.quote_available ? balance.quote_available : "--"
-            } ${marketData.quote?.symbol}`}
+          value={`${
+            balance?.quote_available ? balance.quote_available : "--"
+          } ${marketData.quote?.symbol}`}
         />
       </div>
     </form>

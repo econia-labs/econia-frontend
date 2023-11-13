@@ -92,8 +92,18 @@ export const LimitOrderEntry: React.FC<{
     // check order book
     let takerWeight = 0;
     if (
-      (side === "buy" && Number(watchPrice) > toDecimalPrice({ price: Number(lowestAsk.price), marketData }).toNumber()) ||
-      (side === "sell" && Number(watchPrice) < toDecimalPrice({ price: Number(highestBid.price), marketData }).toNumber())
+      (side === "buy" &&
+        Number(watchPrice) >
+          toDecimalPrice({
+            price: Number(lowestAsk.price),
+            marketData,
+          }).toNumber()) ||
+      (side === "sell" &&
+        Number(watchPrice) <
+          toDecimalPrice({
+            price: Number(highestBid.price),
+            marketData,
+          }).toNumber())
     ) {
       takerWeight = 1;
     }
@@ -136,7 +146,6 @@ export const LimitOrderEntry: React.FC<{
     }
 
     const rawSize = toRawCoinAmount(size, marketData.base.decimals);
-
 
     // check that size satisfies lot size
     if (!rawSize.modulo(marketData.lot_size).eq(0)) {
@@ -323,8 +332,9 @@ export const LimitOrderEntry: React.FC<{
         </ConnectedButton>
         <OrderEntryInfo
           label={`${marketData.base?.symbol} AVAILABLE`}
-          value={`${balance?.base_available ? balance?.base_available : "--"} ${marketData.base?.symbol
-            }`}
+          value={`${balance?.base_available ? balance?.base_available : "--"} ${
+            marketData.base?.symbol
+          }`}
           className="cursor-pointer"
           onClick={() => {
             setValue(
@@ -335,8 +345,9 @@ export const LimitOrderEntry: React.FC<{
         />
         <OrderEntryInfo
           label={`${marketData.quote?.symbol} AVAILABLE`}
-          value={`${balance?.quote_available ? balance.quote_available : "--"
-            } ${marketData.quote?.symbol}`}
+          value={`${
+            balance?.quote_available ? balance.quote_available : "--"
+          } ${marketData.quote?.symbol}`}
         />
       </div>
     </form>
