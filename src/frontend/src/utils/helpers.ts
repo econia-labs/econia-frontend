@@ -1,9 +1,10 @@
 import { toast } from "react-toastify";
 
 import { ApiMarket, type MarketData, type MarketRes } from "@/types/api";
-import { MOCK_MARKETS } from "@/mockdata/markets";
+// import { MOCK_MARKETS } from "@/mockdata/markets";
 import { Timezone } from "../../public/static/charting_library";
 import { API_URL } from "@/env";
+import { getTokenInfo } from "./hippo-coin";
 
 // Makes requests to Coingecko API
 export async function makeApiRequest(path: string) {
@@ -19,52 +20,74 @@ export async function makeApiRequest(path: string) {
   }
 }
 
-export async function getAllMarket(fullVersion: boolean = false) {
+export async function getAllMarket() {
   try {
     const res = await fetch(`${API_URL}/market_registration_events`);
     const data = await res.json();
-    const allMarketData: ApiMarket[] = data.map((item: any) => {
-      const [preBase, postBase] = item.base_module_name.split("_");
-      const baseSymbol = postBase
-        ? `${preBase.slice(0, 1).toLowerCase()}${postBase.toUpperCase()}`
-        : preBase;
-      const [preQuote, postQuote] = item.quote_module_name.split("_");
-      const quoteSymbol = postQuote
-        ? `${preQuote.slice(0, 1).toLowerCase()}${postQuote.toUpperCase()}`
-        : preQuote;
+    const allMarketData: ApiMarket[] = data
+      .map((item: any) => {
+        const [preBase, postBase] = item.base_module_name.split("_");
+        const baseSymbol = postBase
+          ? `${preBase.slice(0, 1).toLowerCase()}${postBase.toUpperCase()}`
+          : preBase;
+        const [preQuote, postQuote] = item.quote_module_name.split("_");
+        const quoteSymbol = postQuote
+          ? `${preQuote.slice(0, 1).toLowerCase()}${postQuote.toUpperCase()}`
+          : preQuote;
 
-      return {
-        market_id: item.market_id,
-        name: `${baseSymbol}-${quoteSymbol}`,
-        base_name_generic: item.base_name_generic,
-        base: {
-          account_address: item.base_account_address,
-          module_name: item.base_module_name,
-          struct_name: item.base_struct_name,
-          symbol: baseSymbol,
-          name: item.base_name_generic || item.base_struct_name,
-          decimals: 8, // Assuming a default value, you may need to adjust this based on your data
-        },
-        quote: {
-          account_address: item.quote_account_address,
-          module_name: item.quote_module_name,
-          struct_name: item.quote_struct_name,
-          symbol: quoteSymbol,
-          name: item.quote_struct_name,
-          decimals: 6, // Assuming a default value, you may need to adjust this based on your data
-        },
-        lot_size: item.lot_size,
-        tick_size: item.tick_size,
-        min_size: item.min_size,
-        underwriter_id: item.underwriter_id,
-        created_at: item.time,
-        recognized: true, // You may need to adjust this based on your criteria
-      };
-    });
-    if (fullVersion) {
-      // fetch name and name from contract or hippo coin list
-    }
+        return {
+          market_id: item.market_id,
+          name: `${baseSymbol}-${quoteSymbol}`,
+          base_name_generic: item.base_name_generic,
+          base: {
+            account_address: item.base_account_address,
+            module_name: item.base_module_name,
+            struct_name: item.base_struct_name,
+            symbol: baseSymbol,
+            name: item.base_name_generic || item.base_struct_name,
+            decimals: 8, // Assuming a default value, you may need to adjust this based on your data
+          },
+          quote: {
+            account_address: item.quote_account_address,
+            module_name: item.quote_module_name,
+            struct_name: item.quote_struct_name,
+            symbol: quoteSymbol,
+            name: item.quote_struct_name,
+            decimals: 6, // Assuming a default value, you may need to adjust this based on your data
+          },
+          lot_size: item.lot_size,
+          tick_size: item.tick_size,
+          min_size: item.min_size,
+          underwriter_id: item.underwriter_id,
+          created_at: item.time,
+          recognized: true, // You may need to adjust this based on your criteria
+        };
+      })
+      .map((m: ApiMarket) => {
+        const baseTokenInfo = getTokenInfo(
+          `${m.base.account_address}::${m.base.module_name}::${m.base.struct_name}`,
+        );
+        if (baseTokenInfo) {
+          m.base.decimals = baseTokenInfo.decimals;
+          m.base.symbol = baseTokenInfo.symbol;
+          m.base.name = baseTokenInfo.name;
+          m.base.logo_url = baseTokenInfo.logo_url;
+        }
 
+        const quoteTokenInfo = getTokenInfo(
+          `${m.quote.account_address}::${m.quote.module_name}::${m.quote.struct_name}`,
+        );
+        if (quoteTokenInfo) {
+          m.quote.decimals = quoteTokenInfo.decimals;
+          m.quote.symbol = quoteTokenInfo.symbol;
+          m.quote.name = quoteTokenInfo.name;
+          m.quote.logo_url = quoteTokenInfo.logo_url;
+        }
+        if (quoteTokenInfo && baseTokenInfo) {
+          m.name = `${baseTokenInfo.symbol}-${quoteTokenInfo.symbol}`;
+        }
+        return m;
+      });
     return allMarketData;
   } catch (error) {
     console.log("🚀 ~ file: helpers.ts:70 ~ getAllMarket ~ error:", error);

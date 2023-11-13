@@ -434,7 +434,7 @@ export const getStaticPaths: GetStaticPaths<PathParams> = async () => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   if (!params) throw new Error("No params");
-  const allMarketData = await getAllMarket(true);
+  const allMarketData = await getAllMarket();
   const marketData =
     allMarketData?.find(
       (market) => `${market.market_id}` === params.market_id,
