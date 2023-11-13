@@ -67,6 +67,7 @@ export async function getAllMarket(fullVersion: boolean = false) {
 
     return allMarketData;
   } catch (error) {
+    console.log("🚀 ~ file: helpers.ts:70 ~ getAllMarket ~ error:", error);
     throw error;
   }
 }

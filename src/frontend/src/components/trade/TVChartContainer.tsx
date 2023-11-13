@@ -119,7 +119,7 @@ async function getAllSymbols(exchange: string) {
 
 type TVChartContainerProps = {
   selectedMarket: MarketData | ApiMarket;
-  allMarketData: MarketData[] | ApiMarket[];
+  allMarketData: ApiMarket[];
 };
 
 export const TVChartContainer: React.FC<
@@ -167,8 +167,8 @@ export const TVChartContainer: React.FC<
         extension,
       ) => {
         if (props.symbol !== symbolName) {
-          const market = props.allMarketData.find(
-            (market) => market.name === symbolName,
+          const market = props.allMarketData?.find(
+            (market: ApiMarket | MarketData) => market.name == symbolName,
           );
           if (market) {
             router.push(`/trade/${market.market_id}`);
