@@ -17,7 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useBalance } from "@/hooks/useBalance";
 import { usePriceStats } from "@/features/hooks";
-
+import { toDecimalPrice } from "@/utils/econia";
 type MarketFormValues = {
   size: string;
 };
@@ -67,7 +67,7 @@ export const MarketOrderEntry: React.FC<{
   });
 
   const estimateFee = useMemo(() => {
-    const totalSize = Number(last_price / 1000) * Number(watchSize);
+    const totalSize = toDecimalPrice({ price: Number(last_price), marketData }).toNumber() * Number(watchSize);
     if (!takerFeeDivisor || !totalSize) {
       return "--";
     }
@@ -138,6 +138,7 @@ export const MarketOrderEntry: React.FC<{
       type: "entry_function_payload",
       ...payload,
     });
+    // toast('Success')
   };
 
   return (
@@ -152,7 +153,7 @@ export const MarketOrderEntry: React.FC<{
             step="any"
             placeholder="0.00"
             {...register("size", {
-              required: "REQUIRED",
+              required: "please input amount",
               min: 0,
             })}
             className="z-30 w-full bg-transparent pb-3 pl-14 pr-14 pt-3 text-right font-roboto-mono text-xs font-light text-neutral-400 outline-none"
@@ -177,9 +178,8 @@ export const MarketOrderEntry: React.FC<{
         </ConnectedButton>
         <OrderEntryInfo
           label={`${marketData.base?.symbol} AVAILABLE`}
-          value={`${balance?.base_available ? balance?.base_available : "--"} ${
-            marketData.base?.symbol
-          }`}
+          value={`${balance?.base_available ? balance?.base_available : "--"} ${marketData.base?.symbol
+            }`}
           className="cursor-pointer"
           onClick={() => {
             setValue(
@@ -190,9 +190,8 @@ export const MarketOrderEntry: React.FC<{
         />
         <OrderEntryInfo
           label={`${marketData.quote?.symbol} AVAILABLE`}
-          value={`${
-            balance?.quote_available ? balance.quote_available : "--"
-          } ${marketData.quote?.symbol}`}
+          value={`${balance?.quote_available ? balance.quote_available : "--"
+            } ${marketData.quote?.symbol}`}
         />
       </div>
     </form>
