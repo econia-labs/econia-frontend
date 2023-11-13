@@ -10,6 +10,7 @@ import React from "react";
 import { type TradeHistory, type ApiMarket } from "@/types/api";
 import Skeleton from "react-loading-skeleton";
 import { API_URL } from "@/env";
+import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 
 const columnHelper = createColumnHelper<TradeHistory>();
 
@@ -18,10 +19,6 @@ export const TradeHistoryTable: React.FC<{
   marketData: ApiMarket;
   marketId: number;
 }> = ({ className, marketData, marketId }) => {
-  const nominal = 3;
-  const { base, quote } = marketData;
-  const baseDecimals = base.decimals;
-  const quoteDecimals = quote.decimals;
   const { data, isLoading } = useQuery<TradeHistory[]>(
     ["useTradeHistory", marketData.market_id],
     async () => {
@@ -35,11 +32,23 @@ export const TradeHistoryTable: React.FC<{
   const table = useReactTable({
     columns: [
       columnHelper.accessor("price", {
-        cell: (info) => info.getValue() / Math.pow(10, nominal),
+        cell: (info) => {
+          const price = info.getValue();
+          return toDecimalPrice({
+            price,
+            marketData,
+          }).toNumber();
+        },
         header: () => "PRICE",
       }),
       columnHelper.accessor("size", {
-        cell: (info) => info.getValue() / Math.pow(10, nominal),
+        cell: (info) => {
+          const size = info.getValue();
+          return toDecimalSize({
+            size,
+            marketData,
+          }).toNumber();
+        },
         header: () => "AMOUNT",
       }),
       columnHelper.accessor("time", {

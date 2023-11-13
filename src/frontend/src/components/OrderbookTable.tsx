@@ -5,7 +5,7 @@ import { useOrderEntry } from "@/contexts/OrderEntryContext";
 import { type ApiMarket } from "@/types/api";
 import { Precision, type Orderbook, type PriceLevel } from "@/types/global";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
-import { averageOrOtherPriceLevel } from "@/utils/formatter";
+import { averageOrOtherPriceLevel, calculateSpread } from "@/utils/formatter";
 import Skeleton from "react-loading-skeleton";
 // import { Listbox } from "@headlessui/react";
 // import ChevronDownIcon from "@heroicons/react/24/outline/ChevronDownIcon";
@@ -129,6 +129,15 @@ export function OrderbookTable({
     );
   }, [data]);
 
+  const spread: PriceLevel | undefined = useMemo(() => {
+    if (data == null) {
+      return undefined;
+    }
+    const minAsk = data.asks ? data.asks[0] : undefined;
+    const maxBid = data.bids ? data.bids[0] : undefined;
+    return calculateSpread(minAsk, maxBid);
+  }, [data]);
+
   const highestSize = useMemo(() => {
     if (!data) return 0;
 
@@ -232,12 +241,12 @@ export function OrderbookTable({
             >
               <div className="z-10 ml-4 text-right font-roboto-mono text-xs text-white">
                 {toDecimalPrice({
-                  price: midPrice?.price || 0,
+                  price: spread?.price || 0,
                   marketData,
                 }).toNumber()}
               </div>
               <div className="mr-4 font-roboto-mono text-white">
-                {midPrice?.size || "-"}
+                {spread?.size || "-"}
               </div>
             </div>
             {/* BID */}

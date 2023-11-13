@@ -80,6 +80,23 @@ export const averageOrOtherPriceLevel = (
   return { price: 0, size: 0 };
 };
 
+export const calculateSpread = (
+  minAsk: PriceLevel | undefined,
+  maxBid: PriceLevel | undefined,
+): PriceLevel | undefined => {
+  if (minAsk !== undefined && maxBid !== undefined) {
+    return { price: minAsk.price - maxBid.price, size: 0 };
+  }
+  if (maxBid == undefined) {
+    return minAsk;
+  }
+  if (minAsk == undefined) {
+    return maxBid;
+  }
+  // no prices (orderbook empty) maybe should get the last sale price then?
+  return { price: 0, size: 0 };
+};
+
 export function shorten(str: string | undefined, maxLen = 10) {
   if (str == undefined) return "";
   if (str.length <= maxLen) return str;
