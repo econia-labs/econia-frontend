@@ -9,6 +9,7 @@ import { SyncIcon } from "@/components/icons/SyncIcon";
 import { Input } from "@/components/Input";
 import { MOCK_MARKETS } from "@/mockdata/markets";
 import { type ApiMarket } from "@/types/api";
+import { getAllMarket } from "@/utils/helpers";
 
 type Props = {
   allMarketData: ApiMarket[];
@@ -81,7 +82,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   //   new URL("markets", API_URL).href
   // ).then((res) => res.json());
   // TODO
-  const allMarketData = MOCK_MARKETS;
+  const allMarketData = await getAllMarket();
 
   return {
     props: {

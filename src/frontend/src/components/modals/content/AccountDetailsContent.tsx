@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/Button";
 import { MOCK_MARKETS } from "@/mockdata/markets";
 import { MarketData, type ApiMarket } from "@/types/api";
+import { getAllMarket } from "@/utils/helpers";
 
 const MarketCard = ({
   market,
@@ -48,9 +49,10 @@ export const AccountDetailsContent: React.FC<AccountDetailsContentProps> = ({
   const { account, disconnect } = useWallet();
   const { data: registeredMarkets } = useQuery(
     ["userMarketAccounts", account?.address],
-    () => {
+    async () => {
       // TODO pull registered markets from SDK (ECO-355)
-      return MOCK_MARKETS;
+      const allMarketData = await getAllMarket();
+      return allMarketData;
     },
   );
   return (

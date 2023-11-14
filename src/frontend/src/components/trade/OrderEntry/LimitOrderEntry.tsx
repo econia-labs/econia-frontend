@@ -89,17 +89,18 @@ export const LimitOrderEntry: React.FC<{
     if (watchPrice === undefined || !lowestAsk || !highestBid) {
       return "--";
     }
+
     // check order book
     let takerWeight = 0;
     if (
       (side === "buy" &&
-        Number(watchPrice) >
+        Number(watchPrice) >=
           toDecimalPrice({
             price: Number(lowestAsk.price),
             marketData,
           }).toNumber()) ||
       (side === "sell" &&
-        Number(watchPrice) <
+        Number(watchPrice) <=
           toDecimalPrice({
             price: Number(highestBid.price),
             marketData,
