@@ -52,7 +52,7 @@ export const useOrderBook = (
       return orderBookData as Orderbook;
     },
     {
-      keepPreviousData: true,
+      keepPreviousData: false,
       refetchOnWindowFocus: false,
       refetchInterval: 10 * 1000,
     },
