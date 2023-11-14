@@ -13,13 +13,14 @@ import { useMemo, useState } from "react";
 import { NotRecognizedIcon } from "@/components/icons/NotRecognizedIcon";
 import { RecognizedIcon } from "@/components/icons/RecognizedIcon";
 import { MarketIconPair } from "@/components/MarketIconPair";
+import { useAptos } from "@/contexts/AptosContext";
 import { type ApiMarket, type MarketSelectData } from "@/types/api";
 import { toDecimalPrice } from "@/utils/econia";
 import { plusMinus } from "@/utils/formatter";
+import { TypeTag } from "@/utils/TypeTag";
 
 import { useAllMarketsData } from ".";
 
-const DEFAULT_TOKEN_ICON = "/tokenImages/default.png";
 const colWidths = [260, undefined, undefined, 120, 130] as const;
 
 const columnHelper = createColumnHelper<MarketSelectData>();
@@ -34,12 +35,33 @@ export const SelectMarketContent: React.FC<{
   const router = useRouter();
   const { data: marketsData } = useAllMarketsData();
   const [filter, setFilter] = useState("");
+  const { coinListClient } = useAptos();
 
   const [selectedTab, setSelectedTab] = useState(0);
 
   const marketDataWithNames: MarketSelectData[] = useMemo(() => {
     if (!marketsData) return [];
     return marketsData.map((market) => {
+      const {
+        base_account_address,
+        base_module_name,
+        base_struct_name,
+        quote_account_address,
+        quote_module_name,
+        quote_struct_name,
+      } = market;
+
+      const baseAssetIcon = coinListClient.getCoinInfoByFullName(
+        TypeTag.fromString(
+          `${base_account_address}::${base_module_name}::${base_struct_name}`,
+        ).toString(),
+      )?.logo_url;
+      const quoteAssetIcon = coinListClient.getCoinInfoByFullName(
+        TypeTag.fromString(
+          `${quote_account_address}::${quote_module_name}::${quote_struct_name}`,
+        ).toString(),
+      )?.logo_url;
+
       const marketWithNames = allMarketData.find(
         ({ market_id }) => market_id === market.market_id,
       );
@@ -49,22 +71,25 @@ export const SelectMarketContent: React.FC<{
         return {
           ...market,
           name: marketWithNames.name,
+          baseAssetIcon,
+          quoteAssetIcon,
         };
       }
     });
-  }, [allMarketData, marketsData]);
+  }, [allMarketData, coinListClient, marketsData]);
 
   const columns = useMemo(
     () => [
       columnHelper.accessor("name", {
         header: () => <div className="pl-8">Name</div>,
         cell: (info) => {
+          const { baseAssetIcon, quoteAssetIcon } = info.row.original;
           return (
             <div className="flex pl-8">
               <MarketIconPair
                 zIndex={1}
-                quoteAssetIcon={DEFAULT_TOKEN_ICON} // Market data from API doesn't have quote asset icon
-                baseAssetIcon={DEFAULT_TOKEN_ICON} // Market data from API doesn't have base asset icon
+                baseAssetIcon={baseAssetIcon}
+                quoteAssetIcon={quoteAssetIcon}
               />
               <p className="my-auto ml-2">{info.getValue()}</p>
             </div>
