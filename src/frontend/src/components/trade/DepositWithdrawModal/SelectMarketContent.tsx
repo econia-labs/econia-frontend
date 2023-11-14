@@ -171,8 +171,8 @@ export const SelectMarketContent: React.FC<{
         </div>
 
         <Tab.Panels className="scrollbar-none w-full overflow-y-scroll">
-          <table className="mt-4 w-full table-fixed">
-            <thead className="sticky top-0 z-10 h-12 bg-[#020202] pt-4">
+          <table className="w-full table-fixed">
+            <thead className="sticky top-0 z-10 h-16 bg-neutral-800 bg-noise pt-4">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr className="h-8 pt-4" key={headerGroup.id}>
                   {headerGroup.headers.map((header, i) => {
