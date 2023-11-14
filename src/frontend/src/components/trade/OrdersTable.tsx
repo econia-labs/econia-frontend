@@ -42,7 +42,7 @@ export const OrdersTable: React.FC<{
   ]);
 
   const { data, isLoading, refetch } = useQuery<ApiOrder[]>(
-    ["useUserOrders", account?.address],
+    ["useUserOrders", market_id, account?.address],
     async () => {
       if (!account) return [];
       const limit = 100;
@@ -51,6 +51,11 @@ export const OrdersTable: React.FC<{
       );
       const orders = await response.json();
       return orders;
+    },
+    {
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+      refetchInterval: 10 * 1000,
     },
   );
 

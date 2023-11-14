@@ -13,37 +13,16 @@ import { useMemo, useState } from "react";
 import { NotRecognizedIcon } from "@/components/icons/NotRecognizedIcon";
 import { RecognizedIcon } from "@/components/icons/RecognizedIcon";
 import { MarketIconPair } from "@/components/MarketIconPair";
-import { useAptos } from "@/contexts/AptosContext";
-import { type ApiMarket } from "@/types/api";
-import {
-  formatNumber,
-  plusMinus,
-  priceFormatter,
-  volFormatter,
-} from "@/utils/formatter";
-import { TypeTag } from "@/utils/TypeTag";
-import Skeleton from "react-loading-skeleton";
+import { type ApiMarket, type MarketSelectData } from "@/types/api";
+import { toDecimalPrice } from "@/utils/econia";
+import { plusMinus } from "@/utils/formatter";
 
-import { useAllMarketStats } from ".";
+import { useAllMarketsData } from ".";
 
 const DEFAULT_TOKEN_ICON = "/tokenImages/default.png";
 const colWidths = [260, undefined, undefined, 120, 130] as const;
 
-type MarketWithStats = {
-  marketId: number;
-  baseSymbol?: string;
-  quoteSymbol: string;
-  baseAssetIcon: string;
-  quoteAssetIcon: string;
-  name: string;
-  price?: number;
-  baseVolume?: number;
-  quoteVolume?: number;
-  twentyFourHourChange?: number;
-  recognized?: boolean;
-};
-
-const columnHelper = createColumnHelper<MarketWithStats>();
+const columnHelper = createColumnHelper<MarketSelectData>();
 
 /**
  * @param onSelectMarket - if provided, will call this function instead of routing to the market page
@@ -52,132 +31,86 @@ export const SelectMarketContent: React.FC<{
   allMarketData: ApiMarket[];
   onSelectMarket?: (marketId: number, name?: string) => void;
 }> = ({ allMarketData, onSelectMarket }) => {
-  console.log(
-    "🚀 ~ file: SelectMarketContent.tsx:55 ~ allMarketData:",
-    allMarketData,
-  );
   const router = useRouter();
-  const { data: marketStats } = useAllMarketStats();
+  const { data: marketsData } = useAllMarketsData();
   const [filter, setFilter] = useState("");
-  const { coinListClient } = useAptos();
 
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const marketDataWithStats: MarketWithStats[] = useMemo(() => {
-    const marketsWithNoStats = allMarketData.map((market): MarketWithStats => {
-      const baseAssetIcon = market.base
-        ? coinListClient.getCoinInfoByFullName(
-            TypeTag.fromApiCoin(market.base).toString(),
-          )?.logo_url ?? DEFAULT_TOKEN_ICON
-        : DEFAULT_TOKEN_ICON;
-      const quoteAssetIcon =
-        coinListClient.getCoinInfoByFullName(
-          TypeTag.fromApiCoin(market.quote).toString(),
-        )?.logo_url ?? DEFAULT_TOKEN_ICON;
-
-      const baseSymbol =
-        market.base != null
-          ? market.base.symbol
-          : market.base_name_generic ?? undefined;
-
-      return {
-        marketId: market.market_id,
-        baseSymbol,
-        quoteSymbol: market.quote.symbol,
-        baseAssetIcon,
-        quoteAssetIcon,
-        name: market.name,
-        price: undefined,
-        baseVolume: undefined,
-        quoteVolume: undefined,
-        twentyFourHourChange: undefined,
-        recognized: market.recognized,
-      };
-    });
-    if (marketStats == null) {
-      return marketsWithNoStats;
-    }
-    return marketsWithNoStats.map((market): MarketWithStats => {
-      const stats = marketStats.find(
-        ({ market_id }) => market_id === market.marketId,
+  const marketDataWithNames: MarketSelectData[] = useMemo(() => {
+    if (!marketsData) return [];
+    return marketsData.map((market) => {
+      const marketWithNames = allMarketData.find(
+        ({ market_id }) => market_id === market.market_id,
       );
-      if (stats == null) {
+      if (marketWithNames == null) {
         return market;
+      } else {
+        return {
+          ...market,
+          name: marketWithNames.name,
+        };
       }
-      return {
-        ...market,
-        price: stats.close,
-        baseVolume: stats.volume,
-        quoteVolume: undefined, // TODO
-        twentyFourHourChange: stats.change,
-      };
     });
-  }, [allMarketData, coinListClient, marketStats]);
+  }, [allMarketData, marketsData]);
 
   const columns = useMemo(
     () => [
       columnHelper.accessor("name", {
         header: () => <div className="pl-8">Name</div>,
         cell: (info) => {
-          const { baseAssetIcon, quoteAssetIcon } = info.row.original;
           return (
             <div className="flex pl-8">
               <MarketIconPair
                 zIndex={1}
-                quoteAssetIcon={quoteAssetIcon}
-                baseAssetIcon={baseAssetIcon}
+                quoteAssetIcon={DEFAULT_TOKEN_ICON} // Market data from API doesn't have quote asset icon
+                baseAssetIcon={DEFAULT_TOKEN_ICON} // Market data from API doesn't have base asset icon
               />
               <p className="my-auto ml-2">{info.getValue()}</p>
             </div>
           );
         },
       }),
-      columnHelper.accessor("price", {
+      columnHelper.accessor("last_fill_price_24hr", {
+        header: "price",
         cell: (info) => {
           const price = info.getValue();
-          if (price == null) {
-            return "-";
-          }
-
-          const priceStr =
-            price < 10_000
-              ? price.toLocaleString("en", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })
-              : priceFormatter.format(price).replace("K", "k");
-          const { quoteSymbol } = info.row.original;
-
-          return `${priceStr} ${quoteSymbol}`;
+          const quoteSymbol = info.row.original.name?.split("-")[1] ?? "-";
+          if (price == null) return `- ${quoteSymbol}`;
+          const selectedMarket = allMarketData.find(
+            ({ market_id }) => market_id === info.row.original.market_id,
+          );
+          if (selectedMarket == null) return `- ${quoteSymbol}`;
+          const priceToDecimal = toDecimalPrice({
+            price,
+            marketData: selectedMarket,
+          }).toNumber();
+          return `${priceToDecimal} ${quoteSymbol}`;
         },
       }),
-      columnHelper.accessor("baseVolume", {
+      columnHelper.display({
         header: "volume",
         cell: (info) => {
-          // TODO: add quote volume
-          const volume = info.getValue();
-          const { baseSymbol } = info.row.original;
-          return `${
-            volume != null ? volFormatter.format(volume).replace("K", "k") : "-"
-          } ${baseSymbol}`;
+          const volume = "-"; // API doesn't return volume
+          const baseSymbol = info.row.original.name?.split("-")[0] ?? "-";
+          // return `${volFormatter.format(volume)} ${baseSymbol}`;
+          return `${volume} ${baseSymbol}`;
         },
       }),
-      columnHelper.accessor("twentyFourHourChange", {
+      columnHelper.accessor("percent_change_24h", {
         header: "24h change",
         cell: (info) => {
           const change = info.getValue();
-          if (change == null) {
-            return "-";
-          }
+          if (change == null) return "-";
           return (
             <p className={change < 0 ? "text-red" : "text-green"}>
               {plusMinus(change)}
-              {formatNumber(change * 100, 2)}%
+              {change.toLocaleString(undefined, { maximumFractionDigits: 6 })}%
             </p>
           );
         },
       }),
-      columnHelper.accessor("recognized", {
+      columnHelper.accessor("is_recognized", {
         header: () => <div className="pr-8 text-right">Recognized</div>,
         cell: (info) => {
           const isRecognized = info.getValue();
@@ -193,12 +126,12 @@ export const SelectMarketContent: React.FC<{
         },
       }),
     ],
-    [],
+    [allMarketData],
   );
 
   const table = useReactTable({
     columns,
-    data: marketDataWithStats || [],
+    data: marketDataWithNames || [],
     getFilteredRowModel: getFilteredRowModel(),
     getCoreRowModel: getCoreRowModel(),
   });
@@ -259,7 +192,7 @@ export const SelectMarketContent: React.FC<{
                     }
 
                     // recognized
-                    if (header.id === "recognized") {
+                    if (header.id === "is_recognized") {
                       if (
                         selectedTab === 0 &&
                         header.column.getFilterValue() == undefined
@@ -306,11 +239,11 @@ export const SelectMarketContent: React.FC<{
                     className="h-24 cursor-pointer hover:bg-neutral-700"
                     key={row.id}
                     onClick={() => {
+                      const marketId = row.original.market_id;
                       if (onSelectMarket != null) {
-                        const marketId = row.original.marketId;
-                        onSelectMarket(marketId, row.getValue("name"));
+                        onSelectMarket(marketId, marketId.toString());
                       }
-                      router.push(`/trade/${row.getValue("name")}`);
+                      router.push(`/trade/${marketId}`);
                     }}
                   >
                     {row.getVisibleCells().map((cell) => (
