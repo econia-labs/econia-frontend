@@ -80,7 +80,7 @@ export const cancelOrderUser = (
 ): Types.EntryFunctionPayload => ({
   function: `${econiaAddress}::market::cancel_order_user`,
   type_arguments: [],
-  arguments: [marketId, sideToNumber(side), marketOrderId],
+  arguments: [marketId, sideToBoolean(side), marketOrderId],
 });
 
 export const changeOrderSizeUser = (
