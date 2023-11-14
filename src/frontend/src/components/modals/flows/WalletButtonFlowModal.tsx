@@ -10,6 +10,7 @@ import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { MOCK_MARKETS } from "@/mockdata/markets";
 import { toast } from "react-toastify";
 import { AccountDetailsModal } from "@/components/AccountDetailsModal";
+import { getAllMarket } from "@/utils/helpers";
 
 type Props = {
   selectedMarket: ApiMarket;
@@ -53,9 +54,9 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
   // TODO: change this after merge with ECO-319
   const { data: registeredMarkets } = useQuery(
     ["userMarketAccounts", account?.address],
-    () => {
+    async () => {
       // TODO pull registered markets from SDK (ECO-355)
-      return MOCK_MARKETS;
+      return await getAllMarket();
     },
   );
 

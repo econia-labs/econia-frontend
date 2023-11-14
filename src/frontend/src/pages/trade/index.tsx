@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { Header } from "@/components/Header";
 import { MOCK_MARKETS } from "@/mockdata/markets";
 import { type ApiMarket } from "@/types/api";
+import { getAllMarket } from "@/utils/helpers";
 
 type Props = {
   allMarketData: ApiMarket[];
@@ -34,7 +35,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   // const res = await fetch(new URL("markets", API_URL).href);
   // const marketData: ApiMarket[] = await res.json();
   // TODO: Working API
-  const allMarketData = MOCK_MARKETS;
+  const allMarketData = await getAllMarket();
   return {
     props: {
       allMarketData,

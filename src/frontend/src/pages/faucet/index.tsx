@@ -16,6 +16,7 @@ import { MOCK_MARKETS } from "@/mockdata/markets";
 import { type ApiMarket } from "@/types/api";
 import { fromRawCoinAmount } from "@/utils/coin";
 import { TypeTag } from "@/utils/TypeTag";
+import { getAllMarket } from "@/utils/helpers";
 
 const TYPE_TAGS = [
   new TypeTag(FAUCET_ADDR, "example_apt", "ExampleAPT"),
@@ -149,7 +150,7 @@ export const getStaticProps: GetStaticProps = async () => {
     }),
   );
 
-  const allMarketData = MOCK_MARKETS;
+  const allMarketData = await getAllMarket();
 
   return {
     props: {
