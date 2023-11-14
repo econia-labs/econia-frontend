@@ -1,12 +1,11 @@
-import BigNumber from "bignumber.js";
 import { useEffect, useMemo, useRef, useState } from "react";
+import Skeleton from "react-loading-skeleton";
 
 import { useOrderEntry } from "@/contexts/OrderEntryContext";
 import { type ApiMarket } from "@/types/api";
-import { Precision, type Orderbook, type PriceLevel } from "@/types/global";
+import { type Orderbook, type PriceLevel } from "@/types/global";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
-import { averageOrOtherPriceLevel, calculateSpread } from "@/utils/formatter";
-import Skeleton from "react-loading-skeleton";
+import { calculateSpread } from "@/utils/formatter";
 // import { Listbox } from "@headlessui/react";
 // import ChevronDownIcon from "@heroicons/react/24/outline/ChevronDownIcon";
 // import CheckIcon from "@heroicons/react/24/outline/CheckIcon";
@@ -119,16 +118,6 @@ export function OrderbookTable({
     });
   }, [isFetching]);
 
-  const midPrice: PriceLevel | undefined = useMemo(() => {
-    if (data == null) {
-      return undefined;
-    }
-    return averageOrOtherPriceLevel(
-      data.asks ? data.asks[0] : undefined,
-      data.bids ? data.bids[0] : undefined,
-    );
-  }, [data]);
-
   const spread: PriceLevel | undefined = useMemo(() => {
     if (data == null) {
       return undefined;
@@ -193,7 +182,7 @@ export function OrderbookTable({
         </div>
       </div>
       {/* bids ask spread scrollable container */}
-      <div className="scrollbar-none relative grow overflow-y-auto">
+      <div className="scrollbar-none relative flex grow items-center overflow-y-auto">
         {isLoading ? (
           <div className="absolute w-full">
             {Array.from({ length: 60 }, (_, i) => (
