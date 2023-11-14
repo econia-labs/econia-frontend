@@ -151,6 +151,8 @@ export type MarketSelectData = {
   is_recognized: boolean;
   last_fill_price_24hr: number | null;
   percent_change_24h: number;
+  baseAssetIcon?: string;
+  quoteAssetIcon?: string;
 };
 
 export type MarketStats = {
