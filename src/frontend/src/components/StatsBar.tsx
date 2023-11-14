@@ -2,25 +2,23 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
 import Skeleton from "react-loading-skeleton";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 
 import { useAptos } from "@/contexts/AptosContext";
 import { API_URL } from "@/env";
-import { type ApiMarket } from "@/types/api";
-import { formatNumber } from "@/utils/formatter";
-import { TypeTag } from "@/utils/TypeTag";
 import { setPriceStats } from "@/features/priceStatsSlice";
+import { type ApiMarket } from "@/types/api";
+import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
+import { TypeTag } from "@/utils/TypeTag";
 
-import { BaseModal } from "./modals/BaseModal";
 import { DiscordIcon } from "./icons/DiscordIcon";
 import { MediumIcon } from "./icons/MediumIcon";
 import { TwitterIcon } from "./icons/TwitterIcon";
 import { MarketIconPair } from "./MarketIconPair";
+import { BaseModal } from "./modals/BaseModal";
 import { SelectMarketContent } from "./trade/DepositWithdrawModal/SelectMarketContent";
-import { toast } from "react-toastify";
-import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
-import BigNumber from "bignumber.js";
 
 const DEFAULT_TOKEN_ICON = "/tokenImages/default.png";
 
@@ -87,7 +85,7 @@ export const StatsBar: React.FC<{
   );
 
   const { data } = useQuery(
-    ["marketStats", selectedMarket],
+    ["marketStats", marketId],
     async () => {
       const response = await fetch(
         `${API_URL}/rpc/market_aggregated_info?market=${marketId}&seconds=86400`,
@@ -117,7 +115,7 @@ export const StatsBar: React.FC<{
       return formattedPriceStats;
     },
     {
-      keepPreviousData: true,
+      keepPreviousData: false,
       refetchOnWindowFocus: false,
       refetchInterval: 10 * 1000,
     },

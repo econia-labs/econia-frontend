@@ -1,5 +1,6 @@
-import { entryFunctions } from "@econia-labs/sdk";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import { type Side } from "@econia-labs/sdk/dist/src/order";
+import { sideToBoolean } from "@econia-labs/sdk/dist/src/utils";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -14,15 +15,13 @@ import {
 import { type ReactNode, useMemo, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 
+import { useAptos } from "@/contexts/AptosContext";
+import { API_URL, ECONIA_ADDR } from "@/env";
 import { type ApiMarket, type ApiOrder } from "@/types/api";
+import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 
 import bg from "../../../public/bg.png";
 import { ConnectedButton } from "../ConnectedButton";
-import { API_URL, ECONIA_ADDR } from "@/env";
-import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
-import { Side } from "@econia-labs/sdk/dist/src/order";
-import { useAptos } from "@/contexts/AptosContext";
-import { sideToBoolean } from "@econia-labs/sdk/dist/src/utils";
 
 const columnHelper = createColumnHelper<ApiOrder>();
 
@@ -33,8 +32,8 @@ export const OrdersTable: React.FC<{
 }> = ({ className, market_id, marketData }) => {
   const { signAndSubmitTransaction } = useAptos();
   const { base, quote } = marketData;
-  const { decimals: baseDecimals, symbol: baseSymbol } = base;
-  const { decimals: quoteDecimals, symbol: quoteSymbol } = quote;
+  const { symbol: baseSymbol } = base;
+  const { symbol: quoteSymbol } = quote;
   const { connected, account } = useWallet();
 
   const [sorting, setSorting] = useState<SortingState>([
