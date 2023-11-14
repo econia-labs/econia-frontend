@@ -1,12 +1,21 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
+import { useDispatch } from "react-redux";
 
 import { API_URL } from "@/env";
-import { type Orderbook, type Precision } from "@/types/global";
-import { useDispatch } from "react-redux";
 import { setOrderBook } from "@/features/orderBookSlice";
+import { type Orderbook, type Precision } from "@/types/global";
 
 // TODO: precision not yet implemented in API yet, so does nothing as of now
 // TODO update to include precision when backend is updated (ECO-199)
+
+type OrderBookResponse = {
+  market_id: number;
+  direction: "bid" | "ask";
+  price: number;
+  total_size?: number;
+  size?: number;
+  version: number;
+};
 
 export const useOrderBook = (
   market_id: number,
@@ -30,11 +39,11 @@ export const useOrderBook = (
       const bids = await response1.json();
       const asks = await response2.json();
       // change value total_size to size to match the rest of the app
-      bids.forEach((bid: any) => {
+      bids.forEach((bid: OrderBookResponse) => {
         bid.size = bid.total_size;
         delete bid.total_size;
       });
-      asks.forEach((ask: any) => {
+      asks.forEach((ask: OrderBookResponse) => {
         ask.size = ask.total_size;
         delete ask.total_size;
       });
@@ -42,6 +51,10 @@ export const useOrderBook = (
       dispatch(setOrderBook(orderBookData));
       return orderBookData as Orderbook;
     },
-    { keepPreviousData: true, refetchOnWindowFocus: false },
+    {
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+      refetchInterval: 10 * 1000,
+    },
   );
 };

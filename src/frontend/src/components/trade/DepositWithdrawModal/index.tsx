@@ -1,17 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { API_URL } from "@/env";
-import { type ApiStats } from "@/types/api";
-enum Step {
-  Initial,
-  SelectMarket,
-  DepositWithdraw,
-}
+import { type MarketSelectData } from "@/types/api";
 
-export const useAllMarketStats = () => {
-  return useQuery<ApiStats[]>(["allMarketStats"], async () => {
-    return fetch(new URL("stats?resolution=1d", API_URL).href).then((res) => {
-      return res.json();
-    });
+export const useAllMarketsData = () => {
+  return useQuery<MarketSelectData[]>(["marketsData"], async () => {
+    const response = await fetch(`${API_URL}/markets`);
+    const data = await response.json();
+    return data;
   });
 };

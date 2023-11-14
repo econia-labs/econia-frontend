@@ -133,6 +133,26 @@ export type ApiStats = {
   volume: number;
 };
 
+export type MarketSelectData = {
+  name?: string;
+  market_id: number;
+  registration_time: string;
+  base_account_address: string;
+  base_module_name: string;
+  base_struct_name: string;
+  base_name_generic: string | null;
+  quote_account_address: string;
+  quote_module_name: string;
+  quote_struct_name: string;
+  lot_size: number;
+  tick_size: number;
+  min_size: number;
+  underwriter_id: number;
+  is_recognized: boolean;
+  last_fill_price_24hr: number | null;
+  percent_change_24h: number;
+};
+
 export type MarketStats = {
   last_price: number;
   price_change_percentage: number;
