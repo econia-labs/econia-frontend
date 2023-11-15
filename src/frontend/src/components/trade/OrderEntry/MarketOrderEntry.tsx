@@ -110,10 +110,27 @@ export const MarketOrderEntry: React.FC<{
       marketData.base.decimals,
     );
 
+    const rawQuoteBalance = toRawCoinAmount(
+      balance?.quote_available,
+      marketData.quote.decimals,
+    );
+
     // market sell -- make sure user has enough base balance
     if (side === "sell") {
       // check that user has sufficient base coins on ask
       if (rawBaseBalance.lt(rawSize)) {
+        setError("size", { message: "INSUFFICIENT BALANCE" });
+        return;
+      }
+    }
+
+    if (side === "buy") {
+      const totalSize = toRawCoinAmount(
+        toDecimalPrice({ price: Number(last_price), marketData }).toNumber() *
+          Number(size),
+        marketData.quote.decimals,
+      );
+      if (rawQuoteBalance.lt(totalSize)) {
         setError("size", { message: "INSUFFICIENT BALANCE" });
         return;
       }
