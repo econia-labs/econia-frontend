@@ -12,7 +12,7 @@ import {
   type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { type ReactNode, useMemo, useState } from "react";
+import { type ReactNode, useCallback, useMemo, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 
 import { useAptos } from "@/contexts/AptosContext";
@@ -48,7 +48,10 @@ export const OrdersTable: React.FC<{
       const response = await fetch(
         `${API_URL}/orders?user=eq.${account.address}&market_id=eq.${market_id}&limit=${limit}`,
       );
-      const orders = await response.json();
+      const responseText = await response.text();
+      const orders = JSON.parse(
+        responseText.replace(/"order_id":(\d+)/g, '"order_id":"$1"'), // convert order_id to string to avoid precision loss
+      );
       return orders;
     },
     {
@@ -71,6 +74,40 @@ export const OrdersTable: React.FC<{
     );
     return map;
   }, []);
+
+  const cancelOrder = useCallback(
+    async (orderInfo: ApiOrder) => {
+      const { direction, order_id } = orderInfo;
+      let side = direction;
+      switch (direction) {
+        case "buy":
+          side = "bid";
+          break;
+        case "sell":
+          side = "ask";
+          break;
+        default:
+          side = direction;
+          break;
+      }
+
+      const payload = {
+        arguments: [
+          market_id.toString(),
+          sideToBoolean(side as Side),
+          order_id,
+        ],
+        function: `${ECONIA_ADDR}::market::cancel_order_user`,
+        type_arguments: [],
+      };
+      await signAndSubmitTransaction({
+        type: "entry_function_payload",
+        ...payload,
+      });
+      refetch();
+    },
+    [market_id, refetch, signAndSubmitTransaction],
+  );
 
   const columns = useMemo(
     () => [
@@ -200,38 +237,8 @@ export const OrdersTable: React.FC<{
         },
       }),
     ],
-    [marketData],
+    [baseSymbol, cancelOrder, marketData, quoteSymbol],
   );
-
-  const cancelOrder = async (orderInfo: ApiOrder) => {
-    const { direction, order_id } = orderInfo;
-    let side = direction;
-    switch (direction) {
-      case "buy":
-        side = "bid";
-        break;
-      case "sell":
-        side = "ask";
-        break;
-      default:
-        side = direction;
-        break;
-    }
-    const payload = {
-      arguments: [
-        BigInt(market_id),
-        sideToBoolean(side as Side),
-        BigInt(order_id),
-      ],
-      function: `${ECONIA_ADDR}::market::cancel_order_user`,
-      type_arguments: [],
-    };
-    await signAndSubmitTransaction({
-      type: "entry_function_payload",
-      ...payload,
-    });
-    refetch();
-  };
 
   const table = useReactTable({
     data: data || [],
