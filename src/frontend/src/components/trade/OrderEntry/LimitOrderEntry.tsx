@@ -134,6 +134,10 @@ export const LimitOrderEntry: React.FC<{
   // );
 
   const onSubmit = async ({ price, size }: LimitFormValues) => {
+    console.log(
+      "🚀 ~ file: LimitOrderEntry.tsx:137 ~ onSubmit ~ price:",
+      price,
+    );
     if (marketData.base == null) {
       throw new Error("Markets without base coin not supported");
     }
@@ -145,13 +149,20 @@ export const LimitOrderEntry: React.FC<{
     ) {
       throw new Error("Could not read wallet balances");
     }
-
-    const rawSize = toRawCoinAmount(size, marketData.base.decimals);
-
-    // check that size satisfies lot size
+    let rawSize = toRawCoinAmount(size, marketData.base.decimals);
+    // check that size satisfies lot sizes
     if (!rawSize.modulo(marketData.lot_size).eq(0)) {
-      setError("size", { message: "INVALID LOT SIZE" });
-      return;
+      rawSize = rawSize.minus(rawSize.modulo(marketData.lot_size));
+      setTimeout(() => {
+        setValue(
+          "size",
+          `${new BigNumber(rawSize)
+            .div(10 ** marketData.base.decimals)
+            .toNumber()}`,
+        );
+      }, 0);
+      // setError("size", { message: "INVALID LOT SIZE" });
+      // return;
     }
 
     // check that size satisfies min size
@@ -164,7 +175,7 @@ export const LimitOrderEntry: React.FC<{
     //   price: toRawCoinAmount(Number(price), marketData.quote.decimals),
     //   marketData,
     // });
-    const rawPrice = fromDecimalPrice({
+    let rawPrice = fromDecimalPrice({
       price: Number(price),
       lotSize: marketData.lot_size,
       tickSize: marketData.tick_size,
@@ -176,8 +187,10 @@ export const LimitOrderEntry: React.FC<{
 
     // validate tick size
     if (!rawPrice.modulo(marketData.tick_size).eq(0)) {
-      setError("price", { message: "INVALID TICK SIZE" });
-      return;
+      rawPrice = rawPrice.minus(rawPrice.modulo(marketData.tick_size));
+      setValue("price", `${toDecimalPrice({ price: rawPrice, marketData })}`);
+      // setError("price", { message: "INVALID TICK SIZE" });
+      // return;
     }
 
     const rawBaseBalance = toRawCoinAmount(
@@ -189,12 +202,11 @@ export const LimitOrderEntry: React.FC<{
       balance.quote_available,
       marketData.quote.decimals,
     );
-
     if (
       (side === "buy" &&
         rawQuoteBalance.lt(
           rawSize
-            .times(rawPrice)
+            .times(toRawCoinAmount(Number(price), marketData.quote.decimals))
             .div(new BigNumber(10).pow(marketData.base.decimals)),
         )) ||
       (side === "sell" && rawBaseBalance.lt(rawSize))
@@ -218,7 +230,7 @@ export const LimitOrderEntry: React.FC<{
       orderSide,
       BigInt(rawSize.div(marketData.lot_size).toString()),
       BigInt(rawPrice.div(marketData.tick_size).toString()),
-      "immediateOrCancel", // TODO don't hardcode
+      "noRestriction", // TODO don't hardcode
       "abort", // don't hardcode this either
     );
     await signAndSubmitTransaction({
@@ -285,8 +297,8 @@ export const LimitOrderEntry: React.FC<{
             placeholder="0.00"
             {...register("size", {
               required: "please input amount",
-              min: 1,
-              max: HI_PRICE,
+              min: 0,
+              // max: HI_PRICE,
               // TODO: check that size does not exceed base currency balance for asks
               onChange: (e) => {
                 const price = Number(getValues("price"));
