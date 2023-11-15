@@ -134,10 +134,6 @@ export const LimitOrderEntry: React.FC<{
   // );
 
   const onSubmit = async ({ price, size }: LimitFormValues) => {
-    console.log(
-      "🚀 ~ file: LimitOrderEntry.tsx:137 ~ onSubmit ~ price:",
-      price,
-    );
     if (marketData.base == null) {
       throw new Error("Markets without base coin not supported");
     }
