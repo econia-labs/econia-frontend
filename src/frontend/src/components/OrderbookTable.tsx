@@ -182,7 +182,13 @@ export function OrderbookTable({
         </div>
       </div>
       {/* bids ask spread scrollable container */}
-      <div className="scrollbar-none relative flex grow items-center overflow-y-auto">
+      <div
+        className={`scrollbar-none relative grow overflow-y-auto ${
+          (data?.asks?.length ?? 0) < 12 || (data?.bids?.length ?? 0) < 14
+            ? "flex items-center"
+            : ""
+        }`}
+      >
         {isLoading ? (
           <div className="absolute w-full">
             {Array.from({ length: 60 }, (_, i) => (
