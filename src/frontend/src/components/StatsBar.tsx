@@ -1,7 +1,7 @@
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
@@ -60,12 +60,17 @@ export const StatsBar: React.FC<{
   selectedMarket: ApiMarket;
 }> = ({ allMarketData, selectedMarket }) => {
   const dispatch = useDispatch();
+  const [isFirstFetch, setIsFirstFetch] = useState(true);
   const { market_id: marketId, base, quote } = selectedMarket;
   const baseSymbol = base?.symbol;
   const quoteSymbol = quote?.symbol;
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { coinListClient } = useAptos();
+
+  useEffect(() => {
+    setIsFirstFetch(true);
+  }, [selectedMarket]);
 
   const { data: iconData } = useQuery(
     ["iconData", selectedMarket],
@@ -84,7 +89,7 @@ export const StatsBar: React.FC<{
     },
   );
 
-  const { data } = useQuery(
+  const { data: priceInfo, isFetching: isFetchingPriceInfo } = useQuery(
     ["marketStats", marketId],
     async () => {
       const response = await fetch(
@@ -112,6 +117,7 @@ export const StatsBar: React.FC<{
         },
         {},
       );
+      setIsFirstFetch(false);
       return formattedPriceStats;
     },
     {
@@ -120,6 +126,10 @@ export const StatsBar: React.FC<{
       refetchInterval: 10 * 1000,
     },
   );
+
+  useEffect(() => {
+    if (!isFetchingPriceInfo) setIsFirstFetch(false);
+  }, [isFetchingPriceInfo]);
 
   return (
     <>
@@ -167,16 +177,26 @@ export const StatsBar: React.FC<{
           <div className="block md:hidden">
             <p className="font-roboto-mono font-light">
               <span className="inline-block min-w-[4em] text-xl text-white">
-                {data?.last_price ? `$${data.last_price}` : <Skeleton />}
+                {isFetchingPriceInfo && isFirstFetch ? (
+                  <Skeleton />
+                ) : priceInfo?.last_price ? (
+                  `$${priceInfo.last_price}`
+                ) : (
+                  "-"
+                )}
               </span>
               <span
                 className={`ml-1 inline-block min-w-[6em] text-base ${
-                  (data?.price_change_nominal || 0) < 0
+                  (priceInfo?.price_change_nominal || 0) < 0
                     ? "text-red"
                     : "text-green"
                 }`}
               >
-                {data?.price_change_nominal ?? <Skeleton />}
+                {isFetchingPriceInfo && isFirstFetch ? (
+                  <Skeleton />
+                ) : (
+                  priceInfo?.price_change_nominal || "-"
+                )}
               </span>
             </p>
           </div>
@@ -186,7 +206,13 @@ export const StatsBar: React.FC<{
               LAST PRICE
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
-              {data?.last_price ? `$${data.last_price}` : <Skeleton />}
+              {isFetchingPriceInfo && isFirstFetch ? (
+                <Skeleton />
+              ) : priceInfo?.last_price ? (
+                `$${priceInfo.last_price}`
+              ) : (
+                "-"
+              )}
             </p>
           </div>
           {/* 24 hr */}
@@ -196,24 +222,28 @@ export const StatsBar: React.FC<{
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
               <span className="inline-block min-w-[70px] text-white">
-                {data?.price_change_nominal ? (
-                  Math.abs(data.price_change_nominal)
-                ) : (
+                {isFetchingPriceInfo && isFirstFetch ? (
                   <Skeleton />
+                ) : priceInfo?.price_change_nominal ? (
+                  Math.abs(priceInfo.price_change_nominal)
+                ) : (
+                  "-"
                 )}
               </span>
-              {data?.price_change_percentage !== undefined && (
+              {priceInfo?.price_change_percentage !== undefined && (
                 <span
                   className={`ml-2 ${
-                    (data?.price_change_percentage || 0) < 0
+                    (priceInfo?.price_change_percentage || 0) < 0
                       ? "text-red"
                       : "text-green"
                   }`}
                 >
-                  {data?.price_change_percentage ? (
-                    data?.price_change_percentage + "%"
-                  ) : (
+                  {isFetchingPriceInfo && isFirstFetch ? (
                     <Skeleton />
+                  ) : priceInfo?.price_change_percentage ? (
+                    priceInfo?.price_change_percentage + "%"
+                  ) : (
+                    "-"
                   )}
                 </span>
               )}
@@ -225,7 +255,11 @@ export const StatsBar: React.FC<{
               24h high
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
-              {data?.high_price ?? <Skeleton />}
+              {isFetchingPriceInfo && isFirstFetch ? (
+                <Skeleton />
+              ) : (
+                priceInfo?.high_price || "-"
+              )}
             </p>
           </div>
           {/* 24 hr low */}
@@ -234,7 +268,11 @@ export const StatsBar: React.FC<{
               24h low
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
-              {data?.low_price ?? <Skeleton />}
+              {isFetchingPriceInfo && isFirstFetch ? (
+                <Skeleton />
+              ) : (
+                priceInfo?.low_price || "-"
+              )}
             </p>
           </div>
           {/* 24 hr main */}
@@ -243,10 +281,12 @@ export const StatsBar: React.FC<{
               24H VOLUME ({baseSymbol || "-"})
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
-              {data?.base_volume ? (
-                data.base_volume.toLocaleString()
-              ) : (
+              {isFetchingPriceInfo && isFirstFetch ? (
                 <Skeleton />
+              ) : priceInfo?.base_volume ? (
+                priceInfo.base_volume.toLocaleString()
+              ) : (
+                "-"
               )}
             </p>
           </div>
@@ -256,10 +296,12 @@ export const StatsBar: React.FC<{
               24H VOLUME ({quoteSymbol || "-"})
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
-              {data?.quote_volume ? (
-                data.quote_volume.toLocaleString()
-              ) : (
+              {isFetchingPriceInfo && isFirstFetch ? (
                 <Skeleton />
+              ) : priceInfo?.quote_volume ? (
+                priceInfo.quote_volume.toLocaleString()
+              ) : (
+                "-"
               )}
             </p>
           </div>
