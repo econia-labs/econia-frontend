@@ -1,13 +1,13 @@
-import { type ApiMarket } from "@/types/api";
-
-import { BaseModal } from "../BaseModal";
-import { DepositWithdrawContent } from "../content/DepositWithdrawContent";
-import { useCallback, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import { useCallback } from "react";
+
 import { useAptos } from "@/contexts/AptosContext";
 import { ECONIA_ADDR } from "@/env";
-import { getAllMarket } from "@/utils/helpers";
+import { type ApiMarket } from "@/types/api";
+
+// import { getAllMarket } from "@/utils/helpers";
+import { BaseModal } from "../BaseModal";
+import { DepositWithdrawContent } from "../content/DepositWithdrawContent";
 
 type Props = {
   selectedMarket: ApiMarket;
@@ -31,13 +31,13 @@ export const DepositWithdrawFlowModal: React.FC<Props> = ({
   const { account, aptosClient } = useAptos();
 
   // TODO: change this after merge with ECO-319
-  const { data: registeredMarkets } = useQuery(
-    ["userMarketAccounts", account?.address],
-    async () => {
-      // TODO pull registered markets from SDK (ECO-355)
-      return await getAllMarket();
-    },
-  );
+  // const { data: registeredMarkets } = useQuery(
+  //   ["userMarketAccounts", account?.address],
+  //   async () => {
+  //     // TODO pull registered markets from SDK (ECO-355)
+  //     return await getAllMarket();
+  //   },
+  // );
 
   const handleCheckRegisteredMarketAccount = useCallback(async () => {
     try {

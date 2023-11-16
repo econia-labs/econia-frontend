@@ -7,7 +7,6 @@ import { ConnectedButton } from "@/components/ConnectedButton";
 import { Header } from "@/components/Header";
 import { SyncIcon } from "@/components/icons/SyncIcon";
 import { Input } from "@/components/Input";
-import { MOCK_MARKETS } from "@/mockdata/markets";
 import { type ApiMarket } from "@/types/api";
 import { getAllMarket } from "@/utils/helpers";
 
@@ -24,7 +23,7 @@ export default function Swap({ allMarketData }: Props) {
         <title>Swap | Econia</title>
       </Head>
       <div className="flex h-screen w-full flex-col font-roboto-mono">
-        <Header logoHref={`/trade/${allMarketData[0].name}`} />
+        <Header logoHref={`/trade/${allMarketData[0].market_id}`} />
         <div className="flex flex-col items-center">
           <div className="mt-8 w-1/4">
             <div className="border p-3 text-center font-roboto-mono text-xs text-gray-300">

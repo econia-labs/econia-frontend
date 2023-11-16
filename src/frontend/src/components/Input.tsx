@@ -8,6 +8,7 @@ export const Input: React.FC<{
   endAdornment?: string;
   disabled?: boolean;
   type: "text" | "number";
+  autoFocus?: boolean;
 }> = ({
   value,
   onChange,
@@ -16,7 +17,16 @@ export const Input: React.FC<{
   endAdornment,
   disabled,
   type,
+  autoFocus,
 }) => {
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (autoFocus) {
+      inputRef.current?.focus();
+    }
+  }, [autoFocus]);
+
   return (
     <div className="flex h-12 w-full items-baseline gap-2 border border-neutral-600 p-4">
       {/* start adornment */}
@@ -24,6 +34,7 @@ export const Input: React.FC<{
         {startAdornment}
       </span>
       <input
+        ref={inputRef}
         className="h-full w-[100px] flex-1 bg-transparent text-right font-roboto-mono font-light text-neutral-400 outline-none"
         value={value}
         placeholder={placeholder}

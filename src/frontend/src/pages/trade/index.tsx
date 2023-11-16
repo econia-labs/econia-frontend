@@ -3,7 +3,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 
 import { Header } from "@/components/Header";
-import { MOCK_MARKETS } from "@/mockdata/markets";
 import { type ApiMarket } from "@/types/api";
 import { getAllMarket } from "@/utils/helpers";
 
@@ -24,7 +23,7 @@ export default function Trade({ allMarketData }: Props) {
         <title>Trade | Econia</title>
       </Head>
       <div className="flex min-h-screen flex-col">
-        <Header logoHref={`${allMarketData[0].name}`} />
+        <Header logoHref={`${allMarketData[0].market_id}`} />
         Market not found.
       </div>
     </>

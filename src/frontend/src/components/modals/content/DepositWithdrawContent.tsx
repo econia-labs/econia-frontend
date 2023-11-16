@@ -1,6 +1,7 @@
 import { entryFunctions } from "@econia-labs/sdk";
 import { Menu, Tab } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useMemo, useState } from "react";
 
 import { Button } from "@/components/Button";
@@ -13,7 +14,6 @@ import { useMarketAccountBalance } from "@/hooks/useMarketAccountBalance";
 import { type ApiCoin, type ApiMarket } from "@/types/api";
 import { toRawCoinAmount } from "@/utils/coin";
 import { TypeTag } from "@/utils/TypeTag";
-import { useQueryClient } from "@tanstack/react-query";
 
 const SelectCoinInput: React.FC<{
   coins: ApiCoin[];
@@ -159,6 +159,7 @@ const DepositWithdrawForm: React.FC<{
             placeholder="0.00"
             startAdornment="AMOUNT"
             type="number"
+            autoFocus={true}
           />
         </div>
         <div className="mt-10 flex w-full justify-between">
