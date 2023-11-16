@@ -79,10 +79,10 @@ const Row: React.FC<{
           type === "ask" ? "text-red" : "text-green"
         }`}
       >
-        {price}
+        {price.toLocaleString()}
       </div>
       <div className="z-10 mr-4 py-0.5 font-roboto-mono text-xs text-white">
-        {size.toPrecision(4)}
+        {Number(size.toPrecision(4)).toLocaleString("fullwide")}
       </div>
       <div
         className={`absolute right-0 z-0 h-full ${
