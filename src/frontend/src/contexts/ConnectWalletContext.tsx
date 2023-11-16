@@ -2,6 +2,7 @@ import {
   useWallet,
   type Wallet,
   WalletReadyState,
+  WalletName,
 } from "@aptos-labs/wallet-adapter-react";
 import Image from "next/image";
 import {
@@ -10,6 +11,7 @@ import {
   type PropsWithChildren,
   useContext,
   useState,
+  useEffect,
 } from "react";
 import { toast } from "react-toastify";
 
@@ -40,7 +42,34 @@ const WalletItem: React.FC<
       {children}
     </button>
   );
+let t: NodeJS.Timeout | null = null;
+const AutoConnect = () => {
+  const { account, connect, ...res } = useWallet();
+  useEffect(() => {
+    if (!account && localStorage.getItem("AptosWalletName")) {
+      const f = async () => {
+        try {
+          await connect(localStorage.getItem("AptosWalletName") as WalletName);
+        } catch (error) {
+          if (t) {
+            clearInterval(t);
+          }
+        }
+      };
+      f();
+      t = setInterval(f, 100);
+    } else if (t) {
+      clearInterval(t);
+    }
+    return () => {
+      if (t) {
+        clearInterval(t);
+      }
+    };
+  }, [account]);
 
+  return null;
+};
 export function ConnectWalletContextProvider({ children }: PropsWithChildren) {
   const { connect, wallets } = useWallet();
   const [open, setOpen] = useState<boolean>(false);
@@ -50,6 +79,7 @@ export function ConnectWalletContextProvider({ children }: PropsWithChildren) {
 
   return (
     <ConnectWalletContext.Provider value={value}>
+      <AutoConnect />
       {children}
       <BaseModal
         isOpen={open}
