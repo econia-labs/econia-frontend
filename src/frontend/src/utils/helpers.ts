@@ -1,10 +1,9 @@
 import { toast } from "react-toastify";
 
-import { ApiMarket, type MarketData, type MarketRes } from "@/types/api";
-// import { MOCK_MARKETS } from "@/mockdata/markets";
-import { Timezone } from "../../public/static/charting_library";
 import { API_URL } from "@/env";
-import { getTokenInfo } from "./hippo-coin";
+import { type ApiMarket } from "@/types/api";
+
+import { type Timezone } from "../../public/static/charting_library";
 import { getCoinInfo } from "./coin";
 import { TypeTag } from "./TypeTag";
 

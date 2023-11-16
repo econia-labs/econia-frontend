@@ -12,11 +12,10 @@ import { useAptos } from "@/contexts/AptosContext";
 import { FAUCET_ADDR, RPC_NODE_URL } from "@/env";
 import { type CoinStore } from "@/hooks/useCoinBalance";
 import { type CoinInfo } from "@/hooks/useCoinInfo";
-import { MOCK_MARKETS } from "@/mockdata/markets";
 import { type ApiMarket } from "@/types/api";
 import { fromRawCoinAmount } from "@/utils/coin";
-import { TypeTag } from "@/utils/TypeTag";
 import { getAllMarket } from "@/utils/helpers";
+import { TypeTag } from "@/utils/TypeTag";
 
 const TYPE_TAGS = [
   new TypeTag(FAUCET_ADDR, "example_apt", "ExampleAPT"),
@@ -101,7 +100,7 @@ export default function Faucet({
         <title>Faucet | Econia</title>
       </Head>
       <div className="flex h-screen flex-col">
-        <Header logoHref={`/trade/${allMarketData[0].name}`} />
+        <Header logoHref={`/trade/${allMarketData[0].market_id}`} />
         <main className="flex h-full w-full">
           <div className="m-auto flex flex-wrap justify-center gap-8">
             {TYPE_TAGS.map((typeTag, i) => (

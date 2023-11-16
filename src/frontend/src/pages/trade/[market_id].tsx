@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { type MaybeHexString } from "aptos";
 import type { GetStaticPaths, GetStaticProps } from "next";
 import dynamic from "next/dynamic";
@@ -18,24 +18,16 @@ import { OrdersTable } from "@/components/trade/OrdersTable";
 import { TradeHistoryTable } from "@/components/trade/TradeHistoryTable";
 import { useAptos } from "@/contexts/AptosContext";
 import { OrderEntryContextProvider } from "@/contexts/OrderEntryContext";
-import { API_URL, WS_URL } from "@/env";
-import { MOCK_MARKETS } from "@/mockdata/markets";
-import type {
-  ApiMarket,
-  ApiOrder,
-  ApiPriceLevel,
-  MarketData,
-} from "@/types/api";
+import { WS_URL } from "@/env";
+import { useOrderBook } from "@/hooks/useOrderbook";
+import type { ApiMarket, ApiOrder, ApiPriceLevel } from "@/types/api";
 import { type Orderbook } from "@/types/global";
+import { getAllMarket } from "@/utils/helpers";
 
 import {
   type ResolutionString,
   type ThemeName,
 } from "../../../public/static/charting_library";
-import { getAllMarket } from "@/utils/helpers";
-import { useOrderBook } from "@/hooks/useOrderbook";
-
-const ORDERBOOK_DEPTH = 60;
 
 const TVChartContainer = dynamic(
   () =>
@@ -300,7 +292,7 @@ export default function Market({ allMarketData, marketData }: Props) {
     isLoading: orderbookIsLoading,
   } = useOrderBook(marketData.market_id);
 
-  const libraryPath = "/static/charting_library/";
+  // const libraryPath = "/static/charting_library/";
 
   const defaultTVChartProps = useMemo(() => {
     return {
@@ -316,7 +308,7 @@ export default function Market({ allMarketData, marketData }: Props) {
       theme: "Dark" as ThemeName,
       // antipattern if we render market not found? need ! for typescript purposes
       selectedMarket: marketData as ApiMarket,
-      allMarketData: allMarketData as any,
+      allMarketData: allMarketData as ApiMarket[],
     };
   }, [marketData, allMarketData]);
 
@@ -327,7 +319,7 @@ export default function Market({ allMarketData, marketData }: Props) {
           <title>Not Found</title>
         </Head>
         <div className="flex min-h-screen flex-col">
-          <Header logoHref={`${allMarketData[0]?.name}`} />
+          <Header logoHref={`${allMarketData[0]?.market_id}`} />
           Market not found.
         </div>
       </>
@@ -340,7 +332,7 @@ export default function Market({ allMarketData, marketData }: Props) {
       </Head>
       <div className="flex max-h-screen flex-col">
         <Header
-          logoHref={`${allMarketData[0].name}`}
+          logoHref={`${allMarketData[0].market_id}`}
           onDepositWithdrawClick={() => setDepositWithdrawModalOpen(true)}
           onWalletButtonClick={() => setWalletButtonModalOpen(true)}
         />

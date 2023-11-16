@@ -5,12 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { type MouseEventHandler, type PropsWithChildren } from "react";
 
-import { AccountDetailsModal } from "./AccountDetailsModal";
-// import { BaseModal } from "./BaseModal";
+import { shorten } from "@/utils/formatter";
+
 import { Button } from "./Button";
 import { ConnectedButton } from "./ConnectedButton";
-// import { DepositWithdrawModal } from "./trade/DepositWithdrawModal";
-import { shorten } from "@/utils/formatter";
 
 const NavItem: React.FC<
   PropsWithChildren<{
