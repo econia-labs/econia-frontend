@@ -6,10 +6,10 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import React from "react";
-
-import { type TradeHistory, type ApiMarket } from "@/types/api";
 import Skeleton from "react-loading-skeleton";
+
 import { API_URL } from "@/env";
+import { type ApiMarket, type TradeHistory } from "@/types/api";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 
 const columnHelper = createColumnHelper<TradeHistory>();
@@ -19,6 +19,10 @@ export const TradeHistoryTable: React.FC<{
   marketData: ApiMarket;
   marketId: number;
 }> = ({ className, marketData, marketId }) => {
+  const { base, quote } = marketData;
+  const baseSymbol = base?.symbol;
+  const quoteSymbol = quote?.symbol;
+
   const { data, isLoading } = useQuery<TradeHistory[]>(
     ["useTradeHistory", marketData.market_id],
     async () => {
@@ -39,7 +43,7 @@ export const TradeHistoryTable: React.FC<{
             marketData,
           }).toNumber();
         },
-        header: () => "PRICE",
+        header: () => `PRICE (${quoteSymbol || "-"})`,
       }),
       columnHelper.accessor("size", {
         cell: (info) => {
@@ -49,16 +53,40 @@ export const TradeHistoryTable: React.FC<{
             marketData,
           }).toNumber();
         },
-        header: () => "AMOUNT",
+        header: () => `AMOUNT (${baseSymbol || "-"})`,
       }),
       columnHelper.accessor("time", {
-        cell: (info) =>
-          new Date(info.getValue()).toLocaleString("en-US", {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: true,
-          }),
+        cell: (info) => {
+          const timestampString = info.getValue();
+          const timestamp = new Date(timestampString);
+          const currentTime = new Date();
+          const timeDifference = currentTime.getTime() - timestamp.getTime();
+          const hoursDifference = timeDifference / (1000 * 60 * 60);
+          // If the trade is from more than 24 hours ago, show the date
+          return (
+            <span className={hoursDifference < 24 ? "whitespace-nowrap" : ""}>
+              {new Date(timestampString).toLocaleString(
+                "en-US",
+                hoursDifference > 24
+                  ? {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                      hour12: false,
+                    }
+                  : {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                      hour12: true,
+                    },
+              )}
+            </span>
+          );
+        },
         header: () => "TIME",
       }),
     ],
@@ -67,9 +95,7 @@ export const TradeHistoryTable: React.FC<{
   });
 
   return (
-    <table
-      className={"w-full table-fixed" + (className ? ` ${className}` : "")}
-    >
+    <table className={`w-full table-fixed ${className || ""}`}>
       <thead className="sticky top-12 bg-neutral-800 bg-noise">
         {table.getHeaderGroups().map((headerGroup) => (
           <tr
@@ -99,7 +125,7 @@ export const TradeHistoryTable: React.FC<{
         ))}
       </thead>
       <tbody>
-        <tr className="sticky top-[66px] bg-neutral-800 bg-noise">
+        <tr className="sticky top-[82px] bg-neutral-800 bg-noise">
           <td colSpan={7} className="py-2">
             <div className="h-[1px] bg-neutral-600"></div>
           </td>
@@ -147,7 +173,7 @@ export const TradeHistoryTable: React.FC<{
                       ? "pl-4 text-left"
                       : i === 1
                       ? "text-left"
-                      : "whitespace-nowrap pr-4 text-right"
+                      : "pr-4 text-right"
                   }`}
                   key={cell.id}
                 >
