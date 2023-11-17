@@ -130,8 +130,10 @@ export const OrdersTable: React.FC<{
       columnHelper.accessor("order_type", {
         header: "Type",
         cell: (info) => info.getValue().toUpperCase() || "-",
+        size: 60,
       }),
       columnHelper.accessor("direction", {
+        header: "Side",
         cell: (info) => {
           const direction = info.getValue();
           switch (direction) {
@@ -143,6 +145,7 @@ export const OrdersTable: React.FC<{
               return direction.toUpperCase();
           }
         },
+        size: 50,
       }),
       columnHelper.accessor("price", {
         header: "Limit price",
@@ -209,7 +212,9 @@ export const OrdersTable: React.FC<{
             marketData,
           }).toNumber();
           const totalVolume = convertedTotalFilled * convertedAvgPrice;
-          return `${totalVolume} ${quoteSymbol}`;
+          return `${totalVolume.toLocaleString(undefined, {
+            maximumFractionDigits: 5,
+          })} ${quoteSymbol}`;
         },
       }),
       columnHelper.accessor("order_status", {
@@ -222,6 +227,7 @@ export const OrdersTable: React.FC<{
           // TODO colors for other order statuses?
           return value.toUpperCase();
         },
+        size: 80,
       }),
       columnHelper.display({
         header: "Cancel",
@@ -235,6 +241,7 @@ export const OrdersTable: React.FC<{
             </button>
           );
         },
+        size: 60,
       }),
     ],
     [baseSymbol, cancelOrder, marketData, quoteSymbol],
@@ -252,9 +259,9 @@ export const OrdersTable: React.FC<{
   });
 
   return (
-    <div className="scrollbar-none h-[200px] overflow-y-auto">
+    <div className="scrollbar-none h-[200px] overflow-auto">
       <table
-        className={"w-full table-auto" + (className ? ` ${className}` : "")}
+        className={"w-full table-fixed" + (className ? ` ${className}` : "")}
       >
         <thead
           className="sticky top-0 h-8  bg-[#020202] shadow-[inset_0_-1px_0_theme(colors.neutral.600)]"
@@ -268,6 +275,9 @@ export const OrdersTable: React.FC<{
                 className="cursor-pointer select-none py-0.5 text-left font-roboto-mono text-sm font-light uppercase text-neutral-500 shadow-[inset_0_-1px_0_theme(colors.neutral.600)]"
                 key={header.id}
                 onClick={header.column.getToggleSortingHandler()}
+                style={{
+                  width: header.getSize(),
+                }}
               >
                 {header.isPlaceholder
                   ? null
