@@ -6,7 +6,7 @@ const nextConfig = {
     return [
       {
         source: "/",
-        destination: "/trade",
+        destination: "/market",
         permanent: false,
       },
       // TODO: Enable swap
