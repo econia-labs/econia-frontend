@@ -114,7 +114,7 @@ export const SelectMarketContent: React.FC<{
         },
       }),
       columnHelper.display({
-        header: "volume",
+        header: "24h volume",
         cell: (info) => {
           const volume = "-"; // API doesn't return volume
           const baseSymbol = info.row.original.name?.split("-")[0] ?? "-";
@@ -130,13 +130,13 @@ export const SelectMarketContent: React.FC<{
           return (
             <p className={change < 0 ? "text-red" : "text-green"}>
               {plusMinus(change)}
-              {change.toLocaleString(undefined, { maximumFractionDigits: 6 })}%
+              {change.toLocaleString(undefined, { maximumFractionDigits: 2 })}%
             </p>
           );
         },
       }),
       columnHelper.accessor("is_recognized", {
-        header: () => <div className="pr-8 text-right">Recognized</div>,
+        header: "Recognized",
         cell: (info) => {
           const isRecognized = info.getValue();
           return (
@@ -146,6 +146,17 @@ export const SelectMarketContent: React.FC<{
               ) : (
                 <NotRecognizedIcon className="m-auto h-5 w-5" />
               )}
+            </div>
+          );
+        },
+      }),
+      columnHelper.accessor("market_id", {
+        header: () => <div className="pr-8 text-right">Market ID</div>,
+        cell: (info) => {
+          const marketId = info.getValue();
+          return (
+            <div className="flex pr-6">
+              <span className="m-auto">{marketId}</span>
             </div>
           );
         },
