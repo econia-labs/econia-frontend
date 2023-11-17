@@ -82,7 +82,7 @@ export const LimitOrderEntry: React.FC<{
   const { highestBid, lowestAsk } = useOrderBookData();
 
   const estimateFee = useMemo(() => {
-    const totalSize = Number(watchPrice) * Number(watchSize);
+    let totalSize = Number(watchPrice) * Number(watchSize);
     if (!takerFeeDivisor || !totalSize) {
       return "--";
     }
@@ -93,19 +93,35 @@ export const LimitOrderEntry: React.FC<{
     // check order book
     let takerWeight = 0;
     if (
-      (side === "buy" &&
-        Number(watchPrice) >=
-          toDecimalPrice({
-            price: Number(lowestAsk.price),
-            marketData,
-          }).toNumber()) ||
-      (side === "sell" &&
-        Number(watchPrice) <=
-          toDecimalPrice({
-            price: Number(highestBid.price),
-            marketData,
-          }).toNumber())
+      side === "buy" &&
+      Number(watchPrice) >=
+        toDecimalPrice({
+          price: Number(lowestAsk.price),
+          marketData,
+        }).toNumber()
     ) {
+      totalSize =
+        toDecimalPrice({
+          price: Number(lowestAsk.price),
+          marketData,
+        }).toNumber() * Number(watchSize);
+      takerWeight = 1;
+    }
+
+    if (
+      side === "sell" &&
+      Number(watchPrice) <=
+        toDecimalPrice({
+          price: Number(highestBid.price),
+          marketData,
+        }).toNumber()
+    ) {
+      totalSize =
+        toDecimalPrice({
+          price: Number(highestBid.price),
+          marketData,
+        }).toNumber() * Number(watchSize);
+
       takerWeight = 1;
     }
 
@@ -113,7 +129,7 @@ export const LimitOrderEntry: React.FC<{
       takerWeight = 1;
     }
     const sizeApplyFee = Number(totalSize) * takerWeight;
-    return `${(sizeApplyFee * 1) / takerFeeDivisor}`;
+    return `${Number(((sizeApplyFee * 1) / takerFeeDivisor).toFixed(4))}`;
   }, [takerFeeDivisor, watchPrice, watchSize]);
 
   // useEffect(() => {
@@ -329,7 +345,10 @@ export const LimitOrderEntry: React.FC<{
       </div>
       <hr className="my-4 border-neutral-600" />
       <div className="mx-4 mb-4 flex flex-col gap-4">
-        <OrderEntryInfo label="EST. FEE" value={estimateFee} />
+        <OrderEntryInfo
+          label={`EST. FEE (${marketData.quote.symbol})`}
+          value={estimateFee}
+        />
         <ConnectedButton className="w-full">
           <Button
             type="submit"

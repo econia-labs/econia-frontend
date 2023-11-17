@@ -75,7 +75,7 @@ export const MarketOrderEntry: React.FC<{
     }
     // check order book
     const takerSize = Number(totalSize) * 1;
-    return `${(takerSize * 1) / takerFeeDivisor}`;
+    return `${Number(((takerSize * 1) / takerFeeDivisor).toFixed(4))}`;
   }, [takerFeeDivisor, last_price, watchSize]);
 
   const onSubmit = async ({ size }: MarketFormValues) => {
@@ -186,7 +186,10 @@ export const MarketOrderEntry: React.FC<{
       </div>
       <hr className="my-4 border-neutral-600" />
       <div className="mx-4 mb-4 flex flex-col gap-4">
-        <OrderEntryInfo label="EST. FEE" value={estimateFee} />
+        <OrderEntryInfo
+          label={`EST. FEE (${marketData.quote.symbol})`}
+          value={estimateFee}
+        />
         <ConnectedButton className="w-full">
           <Button
             variant={side === "buy" ? "green" : "red"}
