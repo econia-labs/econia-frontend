@@ -15,13 +15,23 @@ import { RecognizedIcon } from "@/components/icons/RecognizedIcon";
 import { MarketIconPair } from "@/components/MarketIconPair";
 import { useAptos } from "@/contexts/AptosContext";
 import { type ApiMarket, type MarketSelectData } from "@/types/api";
-import { toDecimalPrice } from "@/utils/econia";
+import {
+  toDecimalPrice,
+  //  toDecimalSize
+} from "@/utils/econia";
 import { plusMinus } from "@/utils/formatter";
 import { TypeTag } from "@/utils/TypeTag";
 
 import { useAllMarketsData } from ".";
 
-const colWidths = [260, undefined, undefined, 120, 130] as const;
+const colWidths = [
+  230,
+  undefined,
+  200,
+  undefined,
+  undefined,
+  undefined,
+] as const;
 
 const columnHelper = createColumnHelper<MarketSelectData>();
 
@@ -113,16 +123,24 @@ export const SelectMarketContent: React.FC<{
           return `${priceToDecimal} ${quoteSymbol}`;
         },
       }),
-      columnHelper.display({
+      columnHelper.accessor("base_volume_24h", {
         header: "24h volume",
         cell: (info) => {
-          const volume = "-"; // API doesn't return volume
+          // const marketData = info.row.original;
+          const baseVolume = info.getValue();
           const baseSymbol = info.row.original.name?.split("-")[0] ?? "-";
-          // return `${volFormatter.format(volume)} ${baseSymbol}`;
-          return `${volume} ${baseSymbol}`;
+          if (baseVolume == null) return `- ${baseSymbol}`;
+          // const volume = toDecimalSize({
+          //   size: baseVolume,
+          //   marketData,
+          // }).toNumber();
+          const volume = baseVolume / (10 ^ 3);
+          return `${volume.toLocaleString(undefined, {
+            maximumFractionDigits: volume < 10000 ? 2 : 0,
+          })} ${baseSymbol}`;
         },
       }),
-      columnHelper.accessor("percent_change_24h", {
+      columnHelper.accessor("price_change_as_percent_24hr", {
         header: "24h change",
         cell: (info) => {
           const change = info.getValue();
