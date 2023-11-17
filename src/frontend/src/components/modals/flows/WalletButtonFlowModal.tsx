@@ -1,16 +1,16 @@
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+
+import { AccountDetailsModal } from "@/components/AccountDetailsModal";
+import { SelectMarketContent } from "@/components/trade/DepositWithdrawModal/SelectMarketContent";
 import { type ApiMarket } from "@/types/api";
+import { getAllMarket } from "@/utils/helpers";
 
 import { BaseModal } from "../BaseModal";
 import { DepositWithdrawContent } from "../content/DepositWithdrawContent";
-import { useEffect, useState } from "react";
 import { RegisterAccountContent } from "../content/RegisterAccountContent";
-import { SelectMarketContent } from "@/components/trade/DepositWithdrawModal/SelectMarketContent";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useWallet } from "@aptos-labs/wallet-adapter-react";
-import { MOCK_MARKETS } from "@/mockdata/markets";
-import { toast } from "react-toastify";
-import { AccountDetailsModal } from "@/components/AccountDetailsModal";
-import { getAllMarket } from "@/utils/helpers";
 
 type Props = {
   selectedMarket: ApiMarket;
