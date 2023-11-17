@@ -429,7 +429,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const allMarketData = await getAllMarket();
   const marketData =
     allMarketData?.find(
-      (market) => `${market.market_id}` === params.market_id,
+      (market) => `${market?.market_id}` === params.market_id,
     ) || null;
 
   return {
