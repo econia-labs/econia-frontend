@@ -11,6 +11,7 @@ import { API_URL } from "@/env";
 import { setPriceStats } from "@/features/priceStatsSlice";
 import { type ApiMarket } from "@/types/api";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
+import { plusMinus } from "@/utils/formatter";
 import { TypeTag } from "@/utils/TypeTag";
 
 import { DiscordIcon } from "./icons/DiscordIcon";
@@ -150,7 +151,7 @@ export const StatsBar: React.FC<{
               toast.error("Selected market is undefined, please try again.");
               return;
             }
-            router.push(`/trade/${name}`);
+            router.push(`/market/${name}`);
           }}
         />
       </BaseModal>
@@ -195,7 +196,8 @@ export const StatsBar: React.FC<{
                 {isFetchingPriceInfo && isFirstFetch ? (
                   <Skeleton />
                 ) : (
-                  priceInfo?.price_change_nominal || "-"
+                  plusMinus(priceInfo.price_change_nominal) +
+                    priceInfo.price_change_nominal || "-"
                 )}
               </span>
             </p>
@@ -203,15 +205,13 @@ export const StatsBar: React.FC<{
           {/* price */}
           <div className="hidden md:block">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
-              LAST PRICE
+              LAST PRICE ({quoteSymbol || "-"})
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
               {isFetchingPriceInfo && isFirstFetch ? (
                 <Skeleton />
-              ) : priceInfo?.last_price ? (
-                `$${priceInfo.last_price}`
               ) : (
-                "-"
+                priceInfo.last_price || "-"
               )}
             </p>
           </div>
@@ -225,7 +225,8 @@ export const StatsBar: React.FC<{
                 {isFetchingPriceInfo && isFirstFetch ? (
                   <Skeleton />
                 ) : priceInfo?.price_change_nominal ? (
-                  Math.abs(priceInfo.price_change_nominal)
+                  plusMinus(priceInfo.price_change_nominal) +
+                  priceInfo.price_change_nominal
                 ) : (
                   "-"
                 )}
@@ -241,7 +242,9 @@ export const StatsBar: React.FC<{
                   {isFetchingPriceInfo && isFirstFetch ? (
                     <Skeleton />
                   ) : priceInfo?.price_change_percentage ? (
-                    priceInfo?.price_change_percentage + "%"
+                    plusMinus(priceInfo.price_change_percentage) +
+                    priceInfo.price_change_percentage.toFixed(2) +
+                    "%"
                   ) : (
                     "-"
                   )}
@@ -284,7 +287,10 @@ export const StatsBar: React.FC<{
               {isFetchingPriceInfo && isFirstFetch ? (
                 <Skeleton />
               ) : priceInfo?.base_volume ? (
-                priceInfo.base_volume.toLocaleString()
+                priceInfo.base_volume.toLocaleString(
+                  undefined,
+                  priceInfo.base_volume > 10000 && { maximumFractionDigits: 0 },
+                )
               ) : (
                 "-"
               )}
@@ -299,7 +305,12 @@ export const StatsBar: React.FC<{
               {isFetchingPriceInfo && isFirstFetch ? (
                 <Skeleton />
               ) : priceInfo?.quote_volume ? (
-                priceInfo.quote_volume.toLocaleString()
+                priceInfo.quote_volume.toLocaleString(
+                  undefined,
+                  priceInfo.quote_volume > 10000 && {
+                    maximumFractionDigits: 0,
+                  },
+                )
               ) : (
                 "-"
               )}

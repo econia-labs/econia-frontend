@@ -268,7 +268,7 @@ export const SelectMarketContent: React.FC<{
                       if (onSelectMarket != null) {
                         onSelectMarket(marketId, marketId.toString());
                       }
-                      router.push(`/trade/${marketId}`);
+                      router.push(`/market/${marketId}`);
                     }}
                   >
                     {row.getVisibleCells().map((cell) => (

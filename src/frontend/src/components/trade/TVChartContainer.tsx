@@ -171,7 +171,7 @@ export const TVChartContainer: React.FC<
             (market: ApiMarket | MarketData) => market.name == symbolName,
           );
           if (market) {
-            router.push(`/trade/${market.market_id}`);
+            router.push(`/market/${market.market_id}`);
           }
         }
         const symbol = `${symbolName}`;

@@ -88,7 +88,10 @@ export function Header({
             Swap
           </NavItem>
           <NavItemDivider /> */}
-          <NavItem href="/trade" active={router.pathname.startsWith("/trade")}>
+          <NavItem
+            href="/market"
+            active={router.pathname.startsWith("/market")}
+          >
             Trade
           </NavItem>
           <NavItemDivider />
