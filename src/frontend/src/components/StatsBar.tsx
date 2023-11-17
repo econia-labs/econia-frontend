@@ -195,9 +195,11 @@ export const StatsBar: React.FC<{
               >
                 {isFetchingPriceInfo && isFirstFetch ? (
                   <Skeleton />
-                ) : (
+                ) : priceInfo?.price_change_nominal ? (
                   plusMinus(priceInfo.price_change_nominal) +
-                    priceInfo.price_change_nominal || "-"
+                  priceInfo.price_change_nominal
+                ) : (
+                  "-"
                 )}
               </span>
             </p>
