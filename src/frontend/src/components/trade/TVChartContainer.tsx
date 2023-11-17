@@ -32,6 +32,7 @@ import {
 import { white } from "tailwindcss/colors";
 import { API_URL } from "@/env";
 import { useRouter } from "next/router";
+import { fromDecimalSize, toDecimalPrice, toDecimalSize } from "@/utils/econia";
 
 const DAY_BY_RESOLUTION: { [key: string]: string } = {
   "1D": "86400",
@@ -118,7 +119,7 @@ async function getAllSymbols(exchange: string) {
 }
 
 type TVChartContainerProps = {
-  selectedMarket: MarketData | ApiMarket;
+  selectedMarket: ApiMarket;
   allMarketData: ApiMarket[];
 };
 
@@ -247,11 +248,26 @@ export const TVChartContainer: React.FC<
                 index: number,
               ): Bar => ({
                 time: new Date(bar.start_time).getTime(),
-                open: bar.open / 1000,
-                high: bar.high / 1000,
-                low: bar.low / 1000,
-                close: bar.close / 1000,
-                volume: bar.volume,
+                open: toDecimalPrice({
+                  price: bar.open,
+                  marketData: props.selectedMarket,
+                }).toNumber(),
+                high: toDecimalPrice({
+                  price: bar.high,
+                  marketData: props.selectedMarket,
+                }).toNumber(),
+                low: toDecimalPrice({
+                  price: bar.low,
+                  marketData: props.selectedMarket,
+                }).toNumber(),
+                close: toDecimalPrice({
+                  price: bar.close,
+                  marketData: props.selectedMarket,
+                }).toNumber(),
+                volume: toDecimalSize({
+                  size: bar.volume,
+                  marketData: props.selectedMarket,
+                }).toNumber(),
               }),
             )
             .filter(
