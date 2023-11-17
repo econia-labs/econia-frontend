@@ -180,10 +180,8 @@ export const StatsBar: React.FC<{
               <span className="inline-block min-w-[4em] text-xl text-white">
                 {isFetchingPriceInfo && isFirstFetch ? (
                   <Skeleton />
-                ) : priceInfo?.last_price ? (
-                  `$${priceInfo.last_price}`
                 ) : (
-                  "-"
+                  priceInfo?.last_price || "-"
                 )}
               </span>
               <span
@@ -213,7 +211,7 @@ export const StatsBar: React.FC<{
               {isFetchingPriceInfo && isFirstFetch ? (
                 <Skeleton />
               ) : (
-                priceInfo.last_price || "-"
+                priceInfo?.last_price || "-"
               )}
             </p>
           </div>
