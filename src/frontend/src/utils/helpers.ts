@@ -23,7 +23,7 @@ export async function makeApiRequest(path: string) {
 
 export async function getAllMarket() {
   try {
-    const res = await fetch(`${API_URL}/market_registration_events`);
+    const res = await fetch(`${API_URL}/markets`);
     const data = await res.json();
     const allMarketData: ApiMarket[] = data.map((item: any) => {
       const [preBase, postBase] = item.base_module_name.split("_");
@@ -59,8 +59,8 @@ export async function getAllMarket() {
         tick_size: item.tick_size,
         min_size: item.min_size,
         underwriter_id: item.underwriter_id,
-        created_at: item.time,
-        recognized: true, // You may need to adjust this based on your criteria
+        created_at: item.registration_time,
+        recognized: item.is_recognized, // You may need to adjust this based on your criteria
       };
     });
     // .map((m: ApiMarket) => {

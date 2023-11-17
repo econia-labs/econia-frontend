@@ -70,6 +70,12 @@ export const StatsBar: React.FC<{
   const { coinListClient } = useAptos();
 
   useEffect(() => {
+    if (router.asPath.includes("?recognized=false")) {
+      setIsModalOpen(true);
+    }
+  }, []);
+
+  useEffect(() => {
     setIsFirstFetch(true);
   }, [selectedMarket]);
 
