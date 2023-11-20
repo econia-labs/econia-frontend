@@ -9,7 +9,7 @@ import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 import { formatNumber } from "@/utils/formatter";
 
 export const ZERO_BIGNUMBER = new BigNumber(0);
-
+export const OFFSET = 0.25;
 export const DepthChart: React.FC<{
   marketData: ApiMarket;
 }> = ({ marketData }) => {
@@ -18,97 +18,123 @@ export const DepthChart: React.FC<{
 
   const { data, isFetching } = useOrderBook(marketData.market_id);
 
-  const { labels, bidData, askData, minPrice, maxPrice } = useMemo(() => {
-    const labels: number[] = [];
-    const bidData: (number | undefined)[] = [];
-    const askData: (number | undefined)[] = [];
-    let minPrice = Infinity;
-    let maxPrice = -Infinity;
-    if (!isFetching && data?.bids) {
-      // Get min and max price to set a range
-      for (const order of data.bids.concat(data.asks)) {
-        if (order.price < minPrice) {
-          minPrice = order.price;
+  const { labels, midMarket, bidData, askData, minPrice, maxPrice } =
+    useMemo(() => {
+      const labels: number[] = [];
+      const bidData: (number | undefined)[] = [];
+      const askData: (number | undefined)[] = [];
+      let minPrice = Infinity;
+      let maxPrice = -Infinity;
+      if (!isFetching && data?.bids) {
+        // Get min and max price to set a range
+        for (const order of data.bids.concat(data.asks)) {
+          if (order.price < minPrice) {
+            minPrice = order.price;
+          }
+          if (order.price > maxPrice) {
+            maxPrice = order.price;
+          }
         }
-        if (order.price > maxPrice) {
-          maxPrice = order.price;
-        }
-      }
 
-      // Append prices in ascending order to `labels`
-      data.bids
-        .slice()
-        .concat(data.asks.slice())
-        .sort((a, b) => a.price - b.price)
-        .forEach((o) => {
-          labels.push(o.price);
-          bidData.push(undefined);
-          askData.push(undefined);
+        // Append prices in ascending order to `labels`
+        data.bids
+          .slice()
+          .concat(data.asks.slice())
+          .sort((a, b) => a.price - b.price)
+          .forEach((o) => {
+            labels.push(o.price);
+            bidData.push(undefined);
+            askData.push(undefined);
+          });
+
+        const bidPriceToSize = new Map<number, number>();
+        const askPriceToSize = new Map<number, number>();
+        for (const { price, size } of data.bids) {
+          const priceKey = price;
+          if (!bidPriceToSize.has(priceKey)) {
+            bidPriceToSize.set(priceKey, 0);
+          }
+          bidPriceToSize.set(priceKey, bidPriceToSize.get(priceKey)! + size);
+        }
+        for (const { price, size } of data.asks) {
+          const priceKey = price;
+          if (!askPriceToSize.has(priceKey)) {
+            askPriceToSize.set(priceKey, 0);
+          }
+          askPriceToSize.set(priceKey, askPriceToSize.get(priceKey)! + size);
+        }
+
+        let askAcc = ZERO_BIGNUMBER;
+        for (let i = 0; i < labels.length; i++) {
+          const price = labels[i];
+          if (askPriceToSize.has(price))
+            askAcc = askAcc.plus(askPriceToSize.get(price)!);
+          if (askAcc.gt(0))
+            askData[i] = toDecimalSize({
+              size: askAcc,
+              marketData,
+            }).toNumber();
+        }
+
+        // We go in reverse order to get the accumulated bid size
+        let bidAcc = ZERO_BIGNUMBER;
+        for (let i = labels.length - 1; i >= 0; i--) {
+          const price = labels[i];
+          if (bidPriceToSize.has(price))
+            bidAcc = bidAcc.plus(bidPriceToSize.get(price)!);
+          if (bidAcc.gt(0))
+            bidData[i] = toDecimalSize({
+              size: bidAcc,
+              marketData,
+            }).toNumber();
+        }
+
+        labels.forEach((price, i) => {
+          labels[i] = toDecimalPrice({
+            price,
+            marketData,
+          }).toNumber();
         });
-
-      const bidPriceToSize = new Map<number, number>();
-      const askPriceToSize = new Map<number, number>();
-      for (const { price, size } of data.bids) {
-        const priceKey = price;
-        if (!bidPriceToSize.has(priceKey)) {
-          bidPriceToSize.set(priceKey, 0);
+      }
+      const midMarket = (() => {
+        if (labels.length === 0) {
+          return 0;
         }
-        bidPriceToSize.set(priceKey, bidPriceToSize.get(priceKey)! + size);
-      }
-      for (const { price, size } of data.asks) {
-        const priceKey = price;
-        if (!askPriceToSize.has(priceKey)) {
-          askPriceToSize.set(priceKey, 0);
+        if (labels.length === 1) {
+          return labels[0];
         }
-        askPriceToSize.set(priceKey, askPriceToSize.get(priceKey)! + size);
-      }
+        if (labels.length % 2 === 0) {
+          return (
+            (labels[labels.length / 2] + labels[labels.length / 2 - 1]) / 2
+          );
+        }
 
-      let askAcc = ZERO_BIGNUMBER;
-      for (let i = 0; i < labels.length; i++) {
-        const price = labels[i];
-        if (askPriceToSize.has(price))
-          askAcc = askAcc.plus(askPriceToSize.get(price)!);
-        if (askAcc.gt(0))
-          askData[i] = toDecimalSize({
-            size: askAcc,
-            marketData,
-          }).toNumber();
-      }
+        return labels[(labels.length - 1) / 2];
+      })();
 
-      // We go in reverse order to get the accumulated bid size
-      let bidAcc = ZERO_BIGNUMBER;
-      for (let i = labels.length - 1; i >= 0; i--) {
-        const price = labels[i];
-        if (bidPriceToSize.has(price))
-          bidAcc = bidAcc.plus(bidPriceToSize.get(price)!);
-        if (bidAcc.gt(0))
-          bidData[i] = toDecimalSize({
-            size: bidAcc,
-            marketData,
-          }).toNumber();
-      }
-
-      labels.forEach((price, i) => {
-        labels[i] = toDecimalPrice({
-          price,
+      return {
+        labels: labels.filter(
+          (l) => l >= (1 - OFFSET) * midMarket && l <= (1 + OFFSET) * midMarket,
+        ),
+        bidData: bidData.filter((b, i) => {
+          const l = labels[i];
+          return l >= (1 - OFFSET) * midMarket && l <= (1 + OFFSET) * midMarket;
+        }),
+        askData: askData.filter((a, i) => {
+          const l = labels[i];
+          return l >= (1 - OFFSET) * midMarket && l <= (1 + OFFSET) * midMarket;
+        }),
+        minPrice: toDecimalPrice({
+          price: minPrice,
           marketData,
-        }).toNumber();
-      });
-    }
-    return {
-      labels,
-      bidData,
-      askData,
-      minPrice: toDecimalPrice({
-        price: minPrice,
-        marketData,
-      }),
-      maxPrice: toDecimalPrice({
-        price: maxPrice,
-        marketData,
-      }),
-    };
-  }, [marketData, baseCoinInfo, quoteCoinInfo, data, isFetching]);
+        }),
+        maxPrice: toDecimalPrice({
+          price: maxPrice,
+          marketData,
+        }),
+        midMarket,
+      };
+    }, [marketData, baseCoinInfo, quoteCoinInfo, data, isFetching]);
 
   return (
     <>
@@ -150,17 +176,10 @@ export const DepthChart: React.FC<{
               },
               title: {
                 display: true,
-                text: `MID MARKET $${
+                text: `MID MARKET ${
                   // labels length should never be odd
-                  labels.length % 2 === 0
-                    ? formatNumber(
-                        (labels[labels.length / 2] +
-                          labels[labels.length / 2 - 1]) /
-                          2,
-                        2,
-                      ) ?? "-"
-                    : formatNumber(labels[labels.length / 2], 2) ?? "-"
-                }`,
+                  formatNumber(midMarket, 2) ?? "-"
+                } ${marketData.quote.symbol}`,
                 color: "white",
               },
               animation: {
@@ -192,14 +211,17 @@ export const DepthChart: React.FC<{
                 ticks: {
                   maxRotation: 0,
                   color: "white",
-                  autoSkip: false,
+                  autoSkip: true,
                   padding: 0,
                   minRotation: 0,
                   callback: function (value, index, values) {
                     // show 1/3 and 2/3 of the way through
                     if (
-                      index === Math.floor(values.length / 4) ||
-                      index === Math.floor((3 * values.length) / 4)
+                      // index === Math.floor(values.length / 4) ||
+                      // index === Math.floor(values.length / 5) ||
+                      // index === Math.floor((3 * values.length) / 4)
+                      index % 3 ===
+                      2
                     ) {
                       return formatNumber(labels[index], 2) ?? "-";
                     } else {
@@ -245,7 +267,7 @@ export const DepthChart: React.FC<{
               {
                 fill: true,
                 label: "Size",
-                data: bidData,
+                data: bidData, //.slice(bidData.length - Math.min(bidData.length, askData.length), bidData.length),
                 borderColor: "rgba(110, 213, 163, 1)",
                 backgroundColor: "rgba(110, 213, 163, 0.3)",
                 stepped: true,
@@ -253,7 +275,7 @@ export const DepthChart: React.FC<{
               {
                 fill: true,
                 label: "Size",
-                data: askData,
+                data: askData, //.slice(askData.length - Math.min(bidData.length, askData.length), askData.length),
                 borderColor: "rgba(213, 110, 110, 1)",
                 backgroundColor: "rgba(213, 110, 110, 0.3)",
                 stepped: true,
