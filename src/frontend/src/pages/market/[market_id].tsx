@@ -53,7 +53,9 @@ export default function Market({ allMarketData, marketData }: Props) {
   const queryClient = useQueryClient();
   const ws = useRef<WebSocket | undefined>(undefined);
   const prevAddress = useRef<MaybeHexString | undefined>(undefined);
-  const [tab, setTab] = useState<'orders' | 'order-book' | 'trade-histories'>('orders')
+  const [tab, setTab] = useState<"orders" | "order-book" | "trade-histories">(
+    "orders",
+  );
   const [depositWithdrawModalOpen, setDepositWithdrawModalOpen] =
     useState<boolean>(false);
   const [walletButtonModalOpen, setWalletButtonModalOpen] =
@@ -353,44 +355,60 @@ export default function Market({ allMarketData, marketData }: Props) {
               </div>
             </div>
             <div className="border border-neutral-600">
-              <div className="bg-transparent py-3 pl-4 flex gap-4">
-                <div className="bg-transparent py-3 pl-4 flex gap-4">
-                  <p onClick={() => setTab('orders')} className={`font-jost font-bold cursor-pointer ${tab === 'orders' ? 'text-white' : 'text-neutral-600'}`}>Orders</p>
-                  <p onClick={() => setTab('order-book')} className={`font-jost font-bold cursor-pointer md:hidden ${tab === 'order-book' ? 'text-white' : 'text-neutral-600'}`}>Order Book</p>
-                  <p onClick={() => setTab('trade-histories')} className={`font-jost font-bold cursor-pointer md:hidden ${tab === 'trade-histories' ? 'text-white' : 'text-neutral-600'}`}>Trade History</p>
+              <div className="flex gap-4 bg-transparent py-3 pl-4">
+                <div className="flex gap-4 bg-transparent py-3 pl-4">
+                  <p
+                    onClick={() => setTab("orders")}
+                    className={`cursor-pointer font-jost font-bold ${
+                      tab === "orders" ? "text-white" : "text-neutral-600"
+                    }`}
+                  >
+                    Orders
+                  </p>
+                  <p
+                    onClick={() => setTab("order-book")}
+                    className={`cursor-pointer font-jost font-bold md:hidden ${
+                      tab === "order-book" ? "text-white" : "text-neutral-600"
+                    }`}
+                  >
+                    Order Book
+                  </p>
+                  <p
+                    onClick={() => setTab("trade-histories")}
+                    className={`cursor-pointer font-jost font-bold md:hidden ${
+                      tab === "trade-histories"
+                        ? "text-white"
+                        : "text-neutral-600"
+                    }`}
+                  >
+                    Trade History
+                  </p>
                 </div>
               </div>
 
-              {
-                tab === 'orders' && (
-                  <OrdersTable
-                    market_id={marketData.market_id}
-                    marketData={marketData}
-                  />
-                )
-              }
-              {
-                tab === 'trade-histories' && (
-                  <TradeHistoryTable
-                    marketData={marketData}
-                    marketId={marketData?.market_id}
-                  />
-                )
-              }
-              {
-                tab === 'order-book' && (
-                  <OrderbookTable
-                    marketData={marketData}
-                    data={orderbookData}
-                    isFetching={orderbookIsFetching}
-                    isLoading={orderbookIsLoading}
-                  />
-                )
-              }
-
+              {tab === "orders" && (
+                <OrdersTable
+                  market_id={marketData.market_id}
+                  marketData={marketData}
+                />
+              )}
+              {tab === "trade-histories" && (
+                <TradeHistoryTable
+                  marketData={marketData}
+                  marketId={marketData?.market_id}
+                />
+              )}
+              {tab === "order-book" && (
+                <OrderbookTable
+                  marketData={marketData}
+                  data={orderbookData}
+                  isFetching={orderbookIsFetching}
+                  isLoading={orderbookIsLoading}
+                />
+              )}
             </div>
           </div>
-          <div className="md:flex hidden min-w-[268px] py-3 pr-3">
+          <div className="hidden min-w-[268px] py-3 pr-3 md:flex">
             <div className="flex w-full flex-col border border-neutral-600">
               <OrderbookTable
                 marketData={marketData}
@@ -400,7 +418,7 @@ export default function Market({ allMarketData, marketData }: Props) {
               />
             </div>
           </div>
-          <div className="hidden md:flex md:min-w-[296px] md:max-w-[296px] flex-col py-3 pr-3 px-3 min-w-full">
+          <div className="hidden min-w-full flex-col px-3 py-3 pr-3 md:flex md:min-w-[296px] md:max-w-[296px]">
             <div className="border border-neutral-600">
               <OrderEntry marketData={marketData} />
             </div>

@@ -1,46 +1,58 @@
-import { BaseModal } from '@/components/modals/BaseModal'
-import React, { useState } from 'react'
-import { OrderEntry } from '../OrderEntry'
-import { ApiMarket } from '@/types/api'
+import { BaseModal } from "@/components/modals/BaseModal";
+import React, { useState } from "react";
+import { OrderEntry } from "../OrderEntry";
+import { ApiMarket } from "@/types/api";
 
 const MobileOrderEntry = ({ marketData }: { marketData: ApiMarket }) => {
-    const [modal, setModal] = useState<{
-        side: 'buy' | 'sell',
-        isOpen: boolean
-    }>({
-        side: 'buy',
-        isOpen: false
-    })
+  const [modal, setModal] = useState<{
+    side: "buy" | "sell";
+    isOpen: boolean;
+  }>({
+    side: "buy",
+    isOpen: false,
+  });
 
-    const openModal = (side: 'buy' | 'sell') => () => {
-        setModal({
-            isOpen: true,
-            side: side
-        })
-    }
+  const openModal = (side: "buy" | "sell") => () => {
+    setModal({
+      isOpen: true,
+      side: side,
+    });
+  };
 
-    const closeModal = () => {
-        setModal({
-            ...modal,
-            isOpen: false
-        })
-    }
-    return (
-        <div className='md:hidden'>
-            <div className="flex fixed bottom-0 left-0 px-6 py-4 bg-fade gap-6 w-full">
-                <button onClick={openModal('buy')}
-                    className="bg-green text-neutral-800 text-center w-[calc(50%-12px)] font-medium h-9 cursor-pointer">Buy</button>
-                <button onClick={openModal('sell')}
-                    className="bg-red text-neutral-800 text-center w-[calc(50%-12px)] font-medium h-9 cursor-pointer">Sell</button>
-            </div>
+  const closeModal = () => {
+    setModal({
+      ...modal,
+      isOpen: false,
+    });
+  };
+  return (
+    <div className="md:hidden">
+      <div className="fixed bottom-0 left-0 flex w-full gap-6 bg-fade px-6 py-4">
+        <button
+          onClick={openModal("buy")}
+          className="h-9 w-[calc(50%-12px)] cursor-pointer bg-green text-center font-medium text-neutral-800"
+        >
+          Buy
+        </button>
+        <button
+          onClick={openModal("sell")}
+          className="h-9 w-[calc(50%-12px)] cursor-pointer bg-red text-center font-medium text-neutral-800"
+        >
+          Sell
+        </button>
+      </div>
 
-            <div className="">
-                <BaseModal isOpen={modal.isOpen} onClose={closeModal} className="max-w-[284px] w-full !p-3 ">
-                    <OrderEntry defaultSide={modal.side} marketData={marketData} />
-                </BaseModal>
-            </div>
-        </div>
-    )
-}
+      <div className="">
+        <BaseModal
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          className="w-full max-w-[284px] !p-3 "
+        >
+          <OrderEntry defaultSide={modal.side} marketData={marketData} />
+        </BaseModal>
+      </div>
+    </div>
+  );
+};
 
-export default MobileOrderEntry
+export default MobileOrderEntry;
