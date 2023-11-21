@@ -4,7 +4,7 @@ import type { GetStaticPaths, GetStaticProps } from "next";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import Script from "next/script";
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
 import { DepthChart } from "@/components/DepthChart";
@@ -28,6 +28,8 @@ import {
   type ResolutionString,
   type ThemeName,
 } from "../../../public/static/charting_library";
+import { BaseModal } from "@/components/modals/BaseModal";
+import MobileOrderEntry from "@/components/trade/MobileOrderEntry";
 
 const TVChartContainer = dynamic(
   () =>
@@ -51,7 +53,9 @@ export default function Market({ allMarketData, marketData }: Props) {
   const queryClient = useQueryClient();
   const ws = useRef<WebSocket | undefined>(undefined);
   const prevAddress = useRef<MaybeHexString | undefined>(undefined);
-
+  const [tab, setTab] = useState<"orders" | "order-book" | "trade-histories">(
+    "orders",
+  );
   const [depositWithdrawModalOpen, setDepositWithdrawModalOpen] =
     useState<boolean>(false);
   const [walletButtonModalOpen, setWalletButtonModalOpen] =
@@ -312,6 +316,8 @@ export default function Market({ allMarketData, marketData }: Props) {
     };
   }, [marketData, allMarketData]);
 
+  // const isNotSmDevice = useMediaQuery("(min-width: 768px)");
+
   if (!marketData)
     return (
       <>
@@ -337,10 +343,10 @@ export default function Market({ allMarketData, marketData }: Props) {
           onWalletButtonClick={() => setWalletButtonModalOpen(true)}
         />
         <StatsBar allMarketData={allMarketData} selectedMarket={marketData} />
-        <main className="flex h-full min-h-[680px] w-full grow">
+        <main className="flex h-full min-h-[680px] w-full grow flex-col md:flex-row">
           <div className="flex grow flex-col p-3">
             <div className="mb-3 flex grow flex-col border border-neutral-600">
-              <div className="flex h-full">
+              <div className="flex h-full min-h-[400px]">
                 {isScriptReady && <TVChartContainer {...defaultTVChartProps} />}
               </div>
 
@@ -349,17 +355,60 @@ export default function Market({ allMarketData, marketData }: Props) {
               </div>
             </div>
             <div className="border border-neutral-600">
-              <div className="bg-transparent py-3 pl-4">
-                <p className="font-jost font-bold text-white">Your Orders</p>
+              <div className="flex gap-4 bg-transparent py-3 pl-4">
+                <div className="flex gap-4 bg-transparent py-3 pl-4">
+                  <p
+                    onClick={() => setTab("orders")}
+                    className={`cursor-pointer font-jost font-bold ${
+                      tab === "orders" ? "text-white" : "text-neutral-600"
+                    }`}
+                  >
+                    Orders
+                  </p>
+                  <p
+                    onClick={() => setTab("order-book")}
+                    className={`cursor-pointer font-jost font-bold md:hidden ${
+                      tab === "order-book" ? "text-white" : "text-neutral-600"
+                    }`}
+                  >
+                    Order Book
+                  </p>
+                  <p
+                    onClick={() => setTab("trade-histories")}
+                    className={`cursor-pointer font-jost font-bold md:hidden ${
+                      tab === "trade-histories"
+                        ? "text-white"
+                        : "text-neutral-600"
+                    }`}
+                  >
+                    Trade History
+                  </p>
+                </div>
               </div>
 
-              <OrdersTable
-                market_id={marketData.market_id}
-                marketData={marketData}
-              />
+              {tab === "orders" && (
+                <OrdersTable
+                  market_id={marketData.market_id}
+                  marketData={marketData}
+                />
+              )}
+              {tab === "trade-histories" && (
+                <TradeHistoryTable
+                  marketData={marketData}
+                  marketId={marketData?.market_id}
+                />
+              )}
+              {tab === "order-book" && (
+                <OrderbookTable
+                  marketData={marketData}
+                  data={orderbookData}
+                  isFetching={orderbookIsFetching}
+                  isLoading={orderbookIsLoading}
+                />
+              )}
             </div>
           </div>
-          <div className="flex min-w-[268px] py-3 pr-3">
+          <div className="hidden min-w-[268px] py-3 pr-3 md:flex">
             <div className="flex w-full flex-col border border-neutral-600">
               <OrderbookTable
                 marketData={marketData}
@@ -369,7 +418,7 @@ export default function Market({ allMarketData, marketData }: Props) {
               />
             </div>
           </div>
-          <div className="flex min-w-[296px] max-w-[296px] flex-col py-3 pr-3">
+          <div className="hidden min-w-full flex-col px-3 py-3 pr-3 md:flex md:min-w-[296px] md:max-w-[296px]">
             <div className="border border-neutral-600">
               <OrderEntry marketData={marketData} />
             </div>
@@ -383,6 +432,7 @@ export default function Market({ allMarketData, marketData }: Props) {
               />
             </div>
           </div>
+          <MobileOrderEntry marketData={marketData} />
         </main>
       </div>
       {/* temp */}

@@ -7,14 +7,15 @@ import { type Side } from "@/types/global";
 import { LimitOrderEntry } from "./LimitOrderEntry";
 import { MarketOrderEntry } from "./MarketOrderEntry";
 
-export const OrderEntry: React.FC<{ marketData: ApiMarket }> = ({
-  marketData,
-}) => {
-  const [side, setSide] = useState<Side>("buy");
+export const OrderEntry: React.FC<{
+  marketData: ApiMarket;
+  defaultSide?: "buy" | "sell";
+}> = ({ marketData, defaultSide = "buy" }) => {
+  const [side, setSide] = useState<Side>(defaultSide);
 
   return (
     <div>
-      <div className="m-4 flex gap-2">
+      <div className="flex gap-2 md:m-4">
         <button
           onClick={() => setSide("buy")}
           className={`w-full border-2 py-2 font-jost font-bold ${

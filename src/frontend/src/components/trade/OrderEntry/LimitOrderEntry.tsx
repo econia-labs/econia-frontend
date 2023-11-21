@@ -253,7 +253,7 @@ export const LimitOrderEntry: React.FC<{
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="mx-4">
+      <div className="md:mx-4">
         <OrderEntryInputWrapper
           startAdornment="Price"
           endAdornment={marketData.quote.symbol}
@@ -296,7 +296,7 @@ export const LimitOrderEntry: React.FC<{
         </div>
       </div>
       <hr className="border-neutral-600" />
-      <div className="mx-4 mt-4">
+      <div className="mt-4 md:mx-4">
         <OrderEntryInputWrapper
           startAdornment="Amount"
           endAdornment={marketData.base?.symbol}
@@ -344,7 +344,7 @@ export const LimitOrderEntry: React.FC<{
         </OrderEntryInputWrapper>
       </div>
       <hr className="my-4 border-neutral-600" />
-      <div className="mx-4 mb-4 flex flex-col gap-4">
+      <div className="flex flex-col gap-4 md:mx-4 md:mb-4">
         <OrderEntryInfo
           label={`EST. FEE (${marketData.quote.symbol})`}
           value={estimateFee}
