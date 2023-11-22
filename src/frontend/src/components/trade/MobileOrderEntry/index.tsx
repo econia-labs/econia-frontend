@@ -26,7 +26,7 @@ const MobileOrderEntry = ({ marketData }: { marketData: ApiMarket }) => {
     });
   };
   return (
-    <div className="md:hidden">
+    <div className="z-20 md:hidden">
       <div className="fixed bottom-0 left-0 flex w-full gap-6 bg-fade px-6 py-4">
         <button
           onClick={openModal("buy")}
