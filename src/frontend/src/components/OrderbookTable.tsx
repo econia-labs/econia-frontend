@@ -74,11 +74,7 @@ const Row: React.FC<{
       //   )`,
       // }}
     >
-      <div
-        className={`flex w-full justify-between ${
-          type === "ask" ? "" : "flex-row-reverse lg:flex-row"
-        } lg:flex-row`}
-      >
+      <div className={`flex w-full justify-between  lg:flex-row`}>
         <div
           className={`z-10  text-right font-roboto-mono text-xs ${
             type === "ask" ? "text-red" : "text-green"
@@ -190,16 +186,23 @@ export function OrderbookTable({
         </div>
       </div>
       {/* bids ask spread scrollable container */}
-      <div className="flex justify-between border-b border-neutral-600 px-4 pb-[10px] lg:mb-2 lg:hidden">
-        <p className="font-roboto-mono text-xs text-neutral-500">
-          TOTAL SIZE ({marketData.base?.symbol})
-        </p>
-        <p className="font-roboto-mono text-xs text-neutral-500">
-          PRICE ({marketData.quote.symbol})
-        </p>
-        <p className="font-roboto-mono text-xs text-neutral-500">
-          TOTAL SIZE ({marketData.base?.symbol})
-        </p>
+      <div className="flex justify-between border-b border-neutral-600 pb-[10px] lg:mb-2 lg:hidden">
+        <div className="flex w-[50%] justify-between px-3">
+          <p className="font-roboto-mono text-xs text-neutral-500">
+            BID ({marketData.quote?.symbol})
+          </p>
+          <p className="font-roboto-mono text-xs text-neutral-500">
+            AMOUNT ({marketData.base.symbol})
+          </p>
+        </div>
+        <div className="flex w-[50%] justify-between px-3">
+          <p className="font-roboto-mono text-xs text-neutral-500">
+            ASK ({marketData.quote?.symbol})
+          </p>
+          <p className="font-roboto-mono text-xs text-neutral-500">
+            AMOUNT ({marketData.base.symbol})
+          </p>
+        </div>
       </div>
       <div
         className={`scrollbar-none relative flex h-[173px] grow overflow-y-auto lg:flex-col ${
