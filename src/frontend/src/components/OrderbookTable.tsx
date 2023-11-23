@@ -53,9 +53,9 @@ const Row: React.FC<{
     marketData: marketData,
   });
 
-  const barPercentage = (level.size * 100) / highestSize;
-  const barColor =
-    type === "bid" ? "rgba(110, 213, 163, 30%)" : "rgba(213, 110, 110, 30%)";
+  // const barPercentage = (level.size * 100) / highestSize;
+  // const barColor =
+  //   type === "bid" ? "rgba(110, 213, 163, 30%)" : "rgba(213, 110, 110, 30%)";
 
   return (
     <div
@@ -120,9 +120,9 @@ export function OrderbookTable({
   const centerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    centerRef.current?.scrollIntoView({
+    centerRef.current?.scrollTo({
       behavior: "smooth",
-      block: "center",
+      top: 10000,
     });
   }, [isFetching]);
 
@@ -234,9 +234,12 @@ export function OrderbookTable({
             ))}
           </div>
         ) : (
-          <div className="absolute flex w-full flex-row-reverse lg:block">
+          <div className="absolute flex h-auto w-full flex-row-reverse lg:block lg:h-full">
             {/* ASK */}
-            <div className="flex w-[calc(50%-0.5px)] grow flex-col-reverse pl-[1px] lg:block lg:w-auto lg:pl-0">
+            <div
+              className="scrollbar-none flex h-[calc((100%-26px)/2)] w-[calc(50%-0.5px)] grow flex-col-reverse overflow-auto lg:w-auto lg:flex-col"
+              ref={centerRef}
+            >
               {data?.asks
                 ?.slice()
                 .reverse()
@@ -252,10 +255,7 @@ export function OrderbookTable({
                 ))}
             </div>
             {/* SPREAD */}
-            <div
-              className="hidden items-center justify-between border-y border-neutral-600 lg:flex"
-              ref={centerRef}
-            >
+            <div className="hidden items-center justify-between border-y border-neutral-600 lg:flex">
               <div className="z-10 ml-4 text-right font-roboto-mono text-xs text-white">
                 {toDecimalPrice({
                   price: spread?.price || 0,
@@ -267,7 +267,7 @@ export function OrderbookTable({
               </div>
             </div>
             {/* BID */}
-            <div className="w-[calc(50%+0.5px)] grow border-r border-neutral-600 pr-[1px] lg:w-auto lg:border-0 lg:pr-0">
+            <div className="scrollbar-none flex h-[calc((100%-26px)/2)] w-[calc(50%+0.5px)] grow flex-col overflow-auto lg:w-auto">
               {data?.bids?.map((level) => (
                 <Row
                   level={level}
