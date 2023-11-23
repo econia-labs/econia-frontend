@@ -59,7 +59,7 @@ const Row: React.FC<{
 
   return (
     <div
-      className={`flash-bg-once ${flash} relative flex h-6 cursor-pointer items-center justify-between py-[1px] hover:ring-1 hover:ring-neutral-600`}
+      className={` flash-bg-once px-3 ${flash} relative flex h-6 cursor-pointer items-center justify-between py-[1px] hover:ring-1 hover:ring-neutral-600`}
       onClick={() => {
         setPrice(price.toString());
       }}
@@ -75,18 +75,26 @@ const Row: React.FC<{
       // }}
     >
       <div
-        className={`z-10 ml-4 text-right font-roboto-mono text-xs ${
-          type === "ask" ? "text-red" : "text-green"
-        }`}
+        className={`flex w-full justify-between ${
+          type === "ask" ? "" : "flex-row-reverse lg:flex-row"
+        } lg:flex-row`}
       >
-        {price.toLocaleString()}
-      </div>
-      <div className="z-10 mr-4 py-0.5 font-roboto-mono text-xs text-white">
-        {Number(size.toPrecision(4)).toLocaleString("fullwide")}
+        <div
+          className={`z-10  text-right font-roboto-mono text-xs ${
+            type === "ask" ? "text-red" : "text-green"
+          }`}
+        >
+          {price.toLocaleString()}
+        </div>
+        <div className={`z-10  py-0.5 font-roboto-mono text-xs text-white `}>
+          {Number(size.toPrecision(4)).toLocaleString("fullwide")}
+        </div>
       </div>
       <div
-        className={`absolute right-0 z-0 h-full ${
-          type === "ask" ? "bg-red/30" : "bg-green/30"
+        className={`absolute  z-0 h-full ${
+          type === "ask"
+            ? "left-0 bg-red/30 lg:left-[unset] lg:right-0"
+            : "right-0 bg-green/30"
         }`}
         // dynamic taillwind?
 
@@ -144,7 +152,7 @@ export function OrderbookTable({
   return (
     <div className="flex grow flex-col">
       {/* title row */}
-      <div className="border-b border-neutral-600 px-3 py-3">
+      <div className="hidden border-b border-neutral-600 px-3 py-3 lg:block">
         <div className="flex justify-center">
           <p className="font-jost text-base font-bold text-white">Order Book</p>
           {/* select */}
@@ -182,15 +190,27 @@ export function OrderbookTable({
         </div>
       </div>
       {/* bids ask spread scrollable container */}
+      <div className="flex justify-between border-b border-neutral-600 px-4 pb-[10px] lg:mb-2 lg:hidden">
+        <p className="font-roboto-mono text-xs text-neutral-500">
+          TOTAL SIZE ({marketData.base?.symbol})
+        </p>
+        <p className="font-roboto-mono text-xs text-neutral-500">
+          PRICE ({marketData.quote.symbol})
+        </p>
+        <p className="font-roboto-mono text-xs text-neutral-500">
+          TOTAL SIZE ({marketData.base?.symbol})
+        </p>
+      </div>
       <div
-        className={`scrollbar-none relative grow overflow-y-auto ${
+        className={`scrollbar-none relative flex h-[173px] grow overflow-y-auto lg:flex-col ${
           (data?.asks?.length ?? 0) < 12 || (data?.bids?.length ?? 0) < 14
             ? "flex items-center"
             : ""
         }`}
       >
+        {/* hgyugyiuhi oihioho */}
         {isLoading ? (
-          <div className="absolute w-full">
+          <div className="absolute  w-full">
             {Array.from({ length: 60 }, (_, i) => (
               <div
                 className="relative flex h-6 w-full cursor-pointer items-center justify-between py-[1px] hover:ring-1 hover:ring-neutral-600"
@@ -214,24 +234,26 @@ export function OrderbookTable({
             ))}
           </div>
         ) : (
-          <div className="absolute w-full">
+          <div className="absolute flex w-full flex-row-reverse lg:block">
             {/* ASK */}
-            {data?.asks
-              ?.slice()
-              .reverse()
-              .map((level) => (
-                <Row
-                  level={level}
-                  type={"ask"}
-                  key={`ask-${level.price}-${level.size}`}
-                  highestSize={highestSize}
-                  marketData={marketData}
-                  updatedLevel={data.updatedLevel}
-                />
-              ))}
+            <div className="flex w-[calc(50%-0.5px)] grow flex-col-reverse pl-[1px] lg:block lg:w-auto lg:pl-0">
+              {data?.asks
+                ?.slice()
+                .reverse()
+                .map((level) => (
+                  <Row
+                    level={level}
+                    type={"ask"}
+                    key={`ask-${level.price}-${level.size}`}
+                    highestSize={highestSize}
+                    marketData={marketData}
+                    updatedLevel={data.updatedLevel}
+                  />
+                ))}
+            </div>
             {/* SPREAD */}
             <div
-              className="flex items-center justify-between border-y border-neutral-600"
+              className="hidden items-center justify-between border-y border-neutral-600 lg:flex"
               ref={centerRef}
             >
               <div className="z-10 ml-4 text-right font-roboto-mono text-xs text-white">
@@ -245,16 +267,18 @@ export function OrderbookTable({
               </div>
             </div>
             {/* BID */}
-            {data?.bids?.map((level) => (
-              <Row
-                level={level}
-                type={"bid"}
-                key={`bid-${level.price}-${level.size}`}
-                highestSize={highestSize}
-                marketData={marketData}
-                updatedLevel={data.updatedLevel}
-              />
-            ))}
+            <div className="w-[calc(50%+0.5px)] grow border-r border-neutral-600 pr-[1px] lg:w-auto lg:border-0 lg:pr-0">
+              {data?.bids?.map((level) => (
+                <Row
+                  level={level}
+                  type={"bid"}
+                  key={`bid-${level.price}-${level.size}`}
+                  highestSize={highestSize}
+                  marketData={marketData}
+                  updatedLevel={data.updatedLevel}
+                />
+              ))}
+            </div>
           </div>
         )}
       </div>

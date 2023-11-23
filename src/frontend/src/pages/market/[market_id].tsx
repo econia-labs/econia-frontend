@@ -290,6 +290,18 @@ export default function Market({ allMarketData, marketData }: Props) {
     };
   }, [marketData, account?.address, queryClient]);
 
+  useEffect(() => {
+    const f = () => {
+      const LG = 1024;
+      if (window.innerWidth > LG) {
+        setTab("orders");
+      }
+    };
+    window.addEventListener("resize", f);
+
+    return () => window.removeEventListener("resize", f);
+  }, []);
+
   const {
     data: orderbookData,
     isFetching: orderbookIsFetching,
@@ -344,7 +356,7 @@ export default function Market({ allMarketData, marketData }: Props) {
         />
         <StatsBar allMarketData={allMarketData} selectedMarket={marketData} />
         <main className="flex h-full min-h-[680px] w-full grow flex-col md:flex-row">
-          <div className="flex grow flex-col p-3">
+          <div className="flex flex-col p-3 pr-3 md:w-[calc(100%-296px)] md:pr-0  lg:w-[calc(100%-564px)] lg:pr-3">
             <div className="mb-3 flex grow flex-col border border-neutral-600">
               <div className="flex h-full min-h-[400px]">
                 {isScriptReady && <TVChartContainer {...defaultTVChartProps} />}
@@ -354,9 +366,9 @@ export default function Market({ allMarketData, marketData }: Props) {
                 <DepthChart marketData={marketData} />
               </div>
             </div>
-            <div className="border border-neutral-600">
-              <div className="flex gap-4 bg-transparent py-3 pl-4">
-                <div className="flex gap-4 bg-transparent py-3 pl-4">
+            <div className="max-w-full border border-neutral-600">
+              <div className="flex gap-4 bg-transparent pl-4 pt-1 lg:pt-3">
+                <div className="flex gap-4 bg-transparent py-1 text-base lg:py-3 lg:pl-4">
                   <p
                     onClick={() => setTab("orders")}
                     className={`cursor-pointer font-jost font-bold ${
@@ -367,7 +379,7 @@ export default function Market({ allMarketData, marketData }: Props) {
                   </p>
                   <p
                     onClick={() => setTab("order-book")}
-                    className={`cursor-pointer font-jost font-bold md:hidden ${
+                    className={`cursor-pointer font-jost font-bold lg:hidden ${
                       tab === "order-book" ? "text-white" : "text-neutral-600"
                     }`}
                   >
@@ -393,10 +405,16 @@ export default function Market({ allMarketData, marketData }: Props) {
                 />
               )}
               {tab === "trade-histories" && (
-                <TradeHistoryTable
-                  marketData={marketData}
-                  marketId={marketData?.market_id}
-                />
+                <div className="scrollbar-none  h-full max-h-[200px] overflow-auto ">
+                  <TradeHistoryTable
+                    marketData={marketData}
+                    marketId={marketData?.market_id}
+                  />
+                </div>
+                // <TradeHistoryTable
+                //   marketData={marketData}
+                //   marketId={marketData?.market_id}
+                // />
               )}
               {tab === "order-book" && (
                 <OrderbookTable
@@ -408,7 +426,7 @@ export default function Market({ allMarketData, marketData }: Props) {
               )}
             </div>
           </div>
-          <div className="hidden min-w-[268px] py-3 pr-3 md:flex">
+          <div className="hidden w-0 pr-3 pt-3 lg:flex lg:min-w-[268px]">
             <div className="flex w-full flex-col border border-neutral-600">
               <OrderbookTable
                 marketData={marketData}
@@ -418,7 +436,7 @@ export default function Market({ allMarketData, marketData }: Props) {
               />
             </div>
           </div>
-          <div className="hidden min-w-full flex-col px-3 py-3 pr-3 md:flex md:min-w-[296px] md:max-w-[296px]">
+          <div className="hidden min-w-full flex-col px-3 pr-3 pt-3 md:flex md:min-w-[296px] md:max-w-[296px]">
             <div className="border border-neutral-600">
               <OrderEntry marketData={marketData} />
             </div>

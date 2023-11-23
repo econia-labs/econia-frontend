@@ -21,11 +21,11 @@ const config = {
       },
       screens: {
         tall: { raw: "(min-height: 960px)" },
-        sm: '640px',
-        md: '768px',
-        lg: '1024px',
-        xl: '1280px',
-        xxl: '1536px',
+        sm: '640.1px',
+        md: '768.1px',
+        lg: '1024.1px',
+        xl: '1280.1px',
+        xxl: '1536.1px',
       },
     },
     colors: {
