@@ -73,7 +73,7 @@ export const StatsBar: React.FC<{
     if (router.asPath.includes("?recognized=false")) {
       setIsModalOpen(true);
     }
-  }, []);
+  }, [router.asPath]);
 
   useEffect(() => {
     setIsFirstFetch(true);
@@ -106,7 +106,7 @@ export const StatsBar: React.FC<{
       const priceStats = data[0];
       dispatch(setPriceStats(data[0]));
       const formattedPriceStats = Object.keys(priceStats).reduce(
-        (acc: any, key) => {
+        (acc: { [key: string]: number }, key) => {
           if (key === "price_change_percentage") {
             acc[key] = priceStats[key];
           } else if (key.includes("price")) {
@@ -186,8 +186,10 @@ export const StatsBar: React.FC<{
               <span className="inline-block min-w-[4em] text-xl text-white">
                 {isFetchingPriceInfo && isFirstFetch ? (
                   <Skeleton />
+                ) : priceInfo?.last_price != undefined ? (
+                  priceInfo.last_price
                 ) : (
-                  priceInfo?.last_price || "-"
+                  "-"
                 )}
               </span>
               <span
@@ -199,7 +201,7 @@ export const StatsBar: React.FC<{
               >
                 {isFetchingPriceInfo && isFirstFetch ? (
                   <Skeleton />
-                ) : priceInfo?.price_change_nominal ? (
+                ) : priceInfo?.price_change_nominal != undefined ? (
                   plusMinus(priceInfo.price_change_nominal) +
                   priceInfo.price_change_nominal
                 ) : (
@@ -216,8 +218,10 @@ export const StatsBar: React.FC<{
             <p className="font-roboto-mono text-xs font-light text-white">
               {isFetchingPriceInfo && isFirstFetch ? (
                 <Skeleton />
+              ) : priceInfo?.last_price != undefined ? (
+                priceInfo.last_price
               ) : (
-                priceInfo?.last_price || "-"
+                "-"
               )}
             </p>
           </div>
@@ -230,14 +234,14 @@ export const StatsBar: React.FC<{
               <span className="inline-block min-w-[70px] text-white">
                 {isFetchingPriceInfo && isFirstFetch ? (
                   <Skeleton />
-                ) : priceInfo?.price_change_nominal ? (
+                ) : priceInfo?.price_change_nominal != undefined ? (
                   plusMinus(priceInfo.price_change_nominal) +
                   priceInfo.price_change_nominal
                 ) : (
                   "-"
                 )}
               </span>
-              {priceInfo?.price_change_percentage !== undefined && (
+              {priceInfo?.price_change_percentage != undefined && (
                 <span
                   className={`ml-2 ${
                     (priceInfo?.price_change_percentage || 0) < 0
@@ -247,7 +251,7 @@ export const StatsBar: React.FC<{
                 >
                   {isFetchingPriceInfo && isFirstFetch ? (
                     <Skeleton />
-                  ) : priceInfo?.price_change_percentage ? (
+                  ) : priceInfo?.price_change_percentage != undefined ? (
                     plusMinus(priceInfo.price_change_percentage) +
                     priceInfo.price_change_percentage.toFixed(2) +
                     "%"
@@ -266,8 +270,10 @@ export const StatsBar: React.FC<{
             <p className="font-roboto-mono text-xs font-light text-white">
               {isFetchingPriceInfo && isFirstFetch ? (
                 <Skeleton />
+              ) : priceInfo?.high_price != undefined ? (
+                priceInfo.high_price
               ) : (
-                priceInfo?.high_price || "-"
+                "-"
               )}
             </p>
           </div>
@@ -279,8 +285,10 @@ export const StatsBar: React.FC<{
             <p className="font-roboto-mono text-xs font-light text-white">
               {isFetchingPriceInfo && isFirstFetch ? (
                 <Skeleton />
+              ) : priceInfo?.low_price != undefined ? (
+                priceInfo.low_price
               ) : (
-                priceInfo?.low_price || "-"
+                "-"
               )}
             </p>
           </div>
@@ -292,10 +300,12 @@ export const StatsBar: React.FC<{
             <p className="font-roboto-mono text-xs font-light text-white">
               {isFetchingPriceInfo && isFirstFetch ? (
                 <Skeleton />
-              ) : priceInfo?.base_volume ? (
+              ) : priceInfo?.base_volume != undefined ? (
                 priceInfo.base_volume.toLocaleString(
                   undefined,
-                  priceInfo.base_volume > 10000 && { maximumFractionDigits: 0 },
+                  priceInfo.base_volume > 10000
+                    ? { maximumFractionDigits: 0 }
+                    : {},
                 )
               ) : (
                 "-"
@@ -310,12 +320,14 @@ export const StatsBar: React.FC<{
             <p className="font-roboto-mono text-xs font-light text-white">
               {isFetchingPriceInfo && isFirstFetch ? (
                 <Skeleton />
-              ) : priceInfo?.quote_volume ? (
+              ) : priceInfo?.quote_volume != undefined ? (
                 priceInfo.quote_volume.toLocaleString(
                   undefined,
-                  priceInfo.quote_volume > 10000 && {
-                    maximumFractionDigits: 0,
-                  },
+                  priceInfo.quote_volume > 10000
+                    ? {
+                        maximumFractionDigits: 0,
+                      }
+                    : {},
                 )
               ) : (
                 "-"
