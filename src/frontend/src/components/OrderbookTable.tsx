@@ -266,7 +266,12 @@ export function OrderbookTable({
                 }).toNumber()}
               </div>
               <div className="mr-4 font-roboto-mono text-white">
-                {spread?.size || "-"}
+                {spread?.size
+                  ? toDecimalSize({
+                      size: spread.size,
+                      marketData: marketData,
+                    }).toNumber()
+                  : "-"}
               </div>
             </div>
             {/* BID */}
