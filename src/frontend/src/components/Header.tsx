@@ -76,7 +76,7 @@ export function Header({
   return (
     <>
       <header className="hidden border-b border-neutral-600 md:block">
-        <nav className="flex items-center justify-between px-8 py-4">
+        <nav className="flex items-center justify-between px-3 py-4 md:px-6 lg:px-8">
           <div className="my-auto flex flex-1 items-center">
             <Link href={logoHref}>
               <Image
@@ -240,7 +240,7 @@ const HeaderMobile = ({
   };
 
   return (
-    <header className="flex h-[69px] items-center justify-between border-b border-neutral-600 px-6 py-4 md:hidden">
+    <header className="flex h-[69px] items-center justify-between border-b border-neutral-600 px-3 py-4 md:hidden ">
       <div className="flex items-center">
         <Link
           href={logoHref}
@@ -252,7 +252,7 @@ const HeaderMobile = ({
       </div>
 
       {/* Connection buttons */}
-      <div className="flex items-center gap-4">
+      <div className="flex h-[69px] items-center  gap-5">
         {!isOpen && (
           <ConnectedButton className="w-[182px] py-[6px] !font-roboto-mono !text-base !font-bold uppercase leading-[22px]">
             <div className="flex items-center gap-4">
