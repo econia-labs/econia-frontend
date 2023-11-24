@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: Orderbook = {
+  isLoading: true,
   bids: [],
   asks: [],
   updatedLevel: undefined,
@@ -13,7 +14,10 @@ export const orderBookSlice = createSlice({
   initialState,
   reducers: {
     setOrderBook: (state, action: PayloadAction<Orderbook>) => {
-      return action.payload;
+      return {
+        ...action.payload,
+        isLoading: false,
+      };
     },
   },
 });

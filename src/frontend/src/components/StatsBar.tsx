@@ -10,7 +10,11 @@ import { useAptos } from "@/contexts/AptosContext";
 import { API_URL } from "@/env";
 import { setPriceStats } from "@/features/priceStatsSlice";
 import { type ApiMarket } from "@/types/api";
-import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
+import {
+  fromDecimalPrice,
+  toDecimalPrice,
+  toDecimalSize,
+} from "@/utils/econia";
 import { plusMinus } from "@/utils/formatter";
 import { TypeTag } from "@/utils/TypeTag";
 
@@ -20,6 +24,7 @@ import { TwitterIcon } from "./icons/TwitterIcon";
 import { MarketIconPair } from "./MarketIconPair";
 import { BaseModal } from "./modals/BaseModal";
 import { SelectMarketContent } from "./trade/DepositWithdrawModal/SelectMarketContent";
+import { useOrderBookData } from "@/features/hooks";
 
 const DEFAULT_TOKEN_ICON = "/tokenImages/default.png";
 
@@ -68,6 +73,7 @@ export const StatsBar: React.FC<{
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { coinListClient } = useAptos();
+  const { highestBid, lowestAsk, orderBook } = useOrderBookData();
 
   useEffect(() => {
     if (router.asPath.includes("?recognized=false")) {
@@ -161,14 +167,15 @@ export const StatsBar: React.FC<{
           }}
         />
       </BaseModal>
-      <div className="flex justify-between border-b border-neutral-600 px-9 py-3">
+      {/* Desktop */}
+      <div className="hidden justify-between border-b border-neutral-600 px-3 py-3 md:flex lg:px-9">
         <div className="flex overflow-x-clip whitespace-nowrap">
           <div className="flex items-center">
             <MarketIconPair
               baseAssetIcon={iconData?.baseAssetIcon}
               quoteAssetIcon={iconData?.quoteAssetIcon}
             />
-            <div className="min-w-[160px]">
+            <div className="min-w-[130px] lg:min-w-[160px]">
               <button
                 className="flex font-roboto-mono text-base font-medium text-neutral-300"
                 onClick={() => {
@@ -226,7 +233,7 @@ export const StatsBar: React.FC<{
             </p>
           </div>
           {/* 24 hr */}
-          <div className="ml-8 hidden md:block">
+          <div className="ml-4 hidden md:block lg:ml-8">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
               24H CHANGE
             </span>
@@ -263,7 +270,7 @@ export const StatsBar: React.FC<{
             </p>
           </div>
           {/* 24 hr high */}
-          <div className="ml-8 hidden md:block">
+          <div className="ml-4 hidden md:block lg:ml-8">
             <span className="font-roboto-mono text-xs font-light uppercase text-neutral-500">
               24h high
             </span>
@@ -278,7 +285,7 @@ export const StatsBar: React.FC<{
             </p>
           </div>
           {/* 24 hr low */}
-          <div className="ml-8 hidden md:block">
+          <div className="ml-4 hidden md:block lg:ml-8">
             <span className="font-roboto-mono text-xs font-light uppercase text-neutral-500">
               24h low
             </span>
@@ -293,7 +300,7 @@ export const StatsBar: React.FC<{
             </p>
           </div>
           {/* 24 hr main */}
-          <div className="ml-8 hidden md:block">
+          <div className="ml-4 hidden md:block lg:ml-8">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
               24H VOLUME ({baseSymbol || "-"})
             </span>
@@ -313,7 +320,7 @@ export const StatsBar: React.FC<{
             </p>
           </div>
           {/* 24 hr pair */}
-          <div className="ml-8 hidden md:block">
+          <div className="ml-4 hidden md:block lg:ml-8">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
               24H VOLUME ({quoteSymbol || "-"})
             </span>
@@ -337,6 +344,165 @@ export const StatsBar: React.FC<{
         </div>
 
         <SocialMediaIcons className={"my-auto hidden md:block"} />
+      </div>
+      {/* Mobile */}
+      <div className="border-b border-neutral-600 px-10 py-4 md:hidden">
+        <div className="flex w-full justify-between">
+          <div className="flex items-center">
+            <MarketIconPair
+              baseAssetIcon={iconData?.baseAssetIcon}
+              quoteAssetIcon={iconData?.quoteAssetIcon}
+            />
+            <div className="ml-5 min-w-[160px]">
+              <button
+                className="flex font-roboto-mono text-base font-medium text-neutral-300"
+                onClick={() => {
+                  setIsModalOpen(true);
+                }}
+              >
+                {selectedMarket.name}
+                <ChevronDownIcon className="my-auto ml-5 h-[18px] w-[18px] text-white" />
+              </button>
+            </div>
+          </div>
+          <div className="">
+            <p className="font-roboto-mono font-light">
+              <span className="inline-block min-w-[4em] text-base font-medium text-white">
+                {isFetchingPriceInfo && isFirstFetch ? (
+                  <Skeleton />
+                ) : priceInfo?.last_price != undefined ? (
+                  ` $${priceInfo.last_price}`
+                ) : (
+                  "-"
+                )}
+              </span>
+              <span
+                className={`block  text-xs ${
+                  (priceInfo?.price_change_nominal || 0) < 0
+                    ? "text-red"
+                    : "text-green"
+                }`}
+              >
+                {isFetchingPriceInfo && isFirstFetch ? (
+                  <Skeleton />
+                ) : priceInfo?.price_change_nominal != undefined ? (
+                  plusMinus(priceInfo.price_change_nominal) +
+                  priceInfo.price_change_nominal
+                ) : (
+                  "-"
+                )}
+              </span>
+            </p>
+          </div>
+        </div>
+        <div className="mt-4 flex gap-3">
+          {/* 24 hr high */}
+          <div className="flex gap-3">
+            <span className="font-roboto-mono text-xs font-light uppercase text-neutral-500">
+              high
+            </span>
+            <span className="min-w-[4em] font-roboto-mono text-xs font-normal text-white">
+              {isFetchingPriceInfo && isFirstFetch ? (
+                <Skeleton />
+              ) : priceInfo?.high_price != undefined ? (
+                priceInfo.high_price
+              ) : (
+                "-"
+              )}
+            </span>
+          </div>
+
+          <div className="flex gap-3">
+            <span className="font-roboto-mono text-xs font-light uppercase text-green">
+              BID
+            </span>
+            <span className="min-w-[3em] font-roboto-mono text-xs font-normal text-white">
+              {orderBook.isLoading ? (
+                <Skeleton />
+              ) : highestBid?.price ? (
+                toDecimalPrice({
+                  price: highestBid.price,
+                  marketData: selectedMarket,
+                }).toString()
+              ) : (
+                "-"
+              )}
+            </span>
+          </div>
+          <div className="flex gap-3">
+            <span className="min-w-[75px] font-roboto-mono text-xs  font-light text-neutral-500">
+              VOL({baseSymbol || "-"})
+            </span>
+            <span className="min-w-[4em] font-roboto-mono text-xs font-normal text-white">
+              {isFetchingPriceInfo && isFirstFetch ? (
+                <Skeleton />
+              ) : priceInfo?.base_volume != undefined ? (
+                priceInfo.base_volume.toLocaleString(
+                  undefined,
+                  priceInfo.base_volume > 10000
+                    ? { maximumFractionDigits: 0 }
+                    : {},
+                )
+              ) : (
+                "-"
+              )}
+            </span>
+          </div>
+        </div>
+        <div className="mt-1 flex gap-3">
+          {/* 24 hr high */}
+          <div className="flex gap-3">
+            <span className="min-w-[28.81px] font-roboto-mono text-xs font-light uppercase text-neutral-500">
+              {"low "}
+            </span>
+            <span className="min-w-[4em] font-roboto-mono text-xs font-normal text-white">
+              {isFetchingPriceInfo && isFirstFetch ? (
+                <Skeleton />
+              ) : priceInfo?.low_price != undefined ? (
+                priceInfo.low_price
+              ) : (
+                "-"
+              )}
+            </span>
+          </div>
+
+          <div className="flex gap-3">
+            <span className="font-roboto-mono text-xs font-light uppercase text-red">
+              ASK
+            </span>
+            <span className="min-w-[3em] font-roboto-mono text-xs font-normal text-white">
+              {orderBook.isLoading ? (
+                <Skeleton />
+              ) : lowestAsk?.price ? (
+                toDecimalPrice({
+                  price: lowestAsk.price,
+                  marketData: selectedMarket,
+                }).toString()
+              ) : (
+                "-"
+              )}
+            </span>
+          </div>
+          <div className="flex gap-3">
+            <span className="min-w-[75px] font-roboto-mono text-xs font-light text-neutral-500">
+              VOL({quoteSymbol || "-"})
+            </span>
+            <span className="min-w-[4em] font-roboto-mono text-xs font-normal text-white">
+              {isFetchingPriceInfo && isFirstFetch ? (
+                <Skeleton />
+              ) : priceInfo?.quote_volume != undefined ? (
+                priceInfo.quote_volume.toLocaleString(
+                  undefined,
+                  priceInfo.quote_volume > 10000
+                    ? { maximumFractionDigits: 0 }
+                    : {},
+                )
+              ) : (
+                "-"
+              )}
+            </span>
+          </div>
+        </div>
       </div>
     </>
   );
