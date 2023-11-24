@@ -13,6 +13,7 @@ import { DepositWithdrawFlowModal } from "@/components/modals/flows/DepositWithd
 import { WalletButtonFlowModal } from "@/components/modals/flows/WalletButtonFlowModal";
 import { OrderbookTable } from "@/components/OrderbookTable";
 import { StatsBar } from "@/components/StatsBar";
+import MobileOrderEntry from "@/components/trade/MobileOrderEntry";
 import { OrderEntry } from "@/components/trade/OrderEntry";
 import { OrdersTable } from "@/components/trade/OrdersTable";
 import { TradeHistoryTable } from "@/components/trade/TradeHistoryTable";
@@ -28,8 +29,6 @@ import {
   type ResolutionString,
   type ThemeName,
 } from "../../../public/static/charting_library";
-import { BaseModal } from "@/components/modals/BaseModal";
-import MobileOrderEntry from "@/components/trade/MobileOrderEntry";
 
 const TVChartContainer = dynamic(
   () =>
@@ -405,16 +404,12 @@ export default function Market({ allMarketData, marketData }: Props) {
                 />
               )}
               {tab === "trade-histories" && (
-                <div className="scrollbar-none  h-full max-h-[200px] overflow-auto ">
+                <div className="scrollbar-none h-full max-h-[200px] overflow-auto">
                   <TradeHistoryTable
                     marketData={marketData}
                     marketId={marketData?.market_id}
                   />
                 </div>
-                // <TradeHistoryTable
-                //   marketData={marketData}
-                //   marketId={marketData?.market_id}
-                // />
               )}
               {tab === "order-book" && (
                 <OrderbookTable

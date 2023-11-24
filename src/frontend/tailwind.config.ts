@@ -13,7 +13,7 @@ const config = {
     extend: {
       backgroundImage: {
         noise: 'url("/bg.png")',
-        fade: 'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.67) 30%, rgba(0, 0, 0, 0.82) 67%, black 100%)'
+        fade: "linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.67) 30%, rgba(0, 0, 0, 0.82) 67%, black 100%)",
       },
       fontFamily: {
         jost: ["var(--font-jost)", ...fontFamily.sans],
@@ -21,11 +21,11 @@ const config = {
       },
       screens: {
         tall: { raw: "(min-height: 960px)" },
-        sm: '640.1px',
-        md: '768.1px',
-        lg: '1024.1px',
-        xl: '1280.1px',
-        xxl: '1536.1px',
+        sm: "640.1px",
+        md: "768.1px",
+        lg: "1024.1px",
+        xl: "1280.1px",
+        xxl: "1536.1px",
       },
     },
     colors: {
@@ -47,7 +47,6 @@ const config = {
         800: "#020202",
       },
     },
-
   },
   plugins: [require("@headlessui/tailwindcss")],
 } satisfies Config;
