@@ -240,7 +240,7 @@ const HeaderMobile = ({
   };
 
   return (
-    <header className="flex h-[69px] items-center justify-between border-b border-neutral-600 px-10 py-4 md:hidden ">
+    <header className="flex h-[69px] items-center justify-between border-b border-neutral-600 px-3 py-4 md:hidden ">
       <div className="flex items-center">
         <Link
           href={logoHref}

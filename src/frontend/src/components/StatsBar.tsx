@@ -346,7 +346,7 @@ export const StatsBar: React.FC<{
         <SocialMediaIcons className={"my-auto hidden md:block"} />
       </div>
       {/* Mobile */}
-      <div className="border-b border-neutral-600 px-10 py-4 md:hidden">
+      <div className="border-b border-neutral-600 px-3 py-4 md:hidden">
         <div className="flex w-full justify-between">
           <div className="flex items-center">
             <MarketIconPair
