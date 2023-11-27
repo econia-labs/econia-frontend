@@ -1,14 +1,21 @@
 import { Tab } from "@headlessui/react";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  MagnifyingGlassIcon,
+} from "@heroicons/react/20/solid";
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getSortedRowModel,
+  type SortDirection,
+  type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 
 import { NotRecognizedIcon } from "@/components/icons/NotRecognizedIcon";
 import { RecognizedIcon } from "@/components/icons/RecognizedIcon";
@@ -48,6 +55,8 @@ export const SelectMarketContent: React.FC<{
   const { coinListClient } = useAptos();
 
   const [selectedTab, setSelectedTab] = useState(0);
+
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const marketDataWithNames: MarketSelectData[] = useMemo(() => {
     if (!marketsData) return [];
@@ -105,6 +114,7 @@ export const SelectMarketContent: React.FC<{
             </div>
           );
         },
+        enableSorting: false,
       }),
       columnHelper.accessor("last_fill_price_24hr", {
         header: "price",
@@ -122,6 +132,7 @@ export const SelectMarketContent: React.FC<{
           }).toNumber();
           return `${priceToDecimal} ${quoteSymbol}`;
         },
+        enableSorting: false,
       }),
       columnHelper.accessor("base_volume_24h", {
         header: "24h volume",
@@ -167,6 +178,7 @@ export const SelectMarketContent: React.FC<{
             </div>
           );
         },
+        enableSorting: false,
       }),
       columnHelper.accessor("market_id", {
         header: () => <div className="pr-8 text-right">Market ID</div>,
@@ -178,16 +190,36 @@ export const SelectMarketContent: React.FC<{
             </div>
           );
         },
+        enableSorting: false,
       }),
     ],
     [allMarketData],
   );
 
+  const sortLabel = useMemo(() => {
+    const map = new Map<SortDirection | false, ReactNode>();
+    map.set(false, null);
+    map.set(
+      "asc",
+      <ChevronUpIcon className="absolute top-[23px] ml-0.5 inline-block h-4 w-4 translate-y-1/2" />,
+    );
+    map.set(
+      "desc",
+      <ChevronDownIcon className="absolute top-[23px] ml-0.5 inline-block h-4 w-4 translate-y-1/2" />,
+    );
+    return map;
+  }, []);
+
   const table = useReactTable({
     columns,
     data: marketDataWithNames || [],
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
     getFilteredRowModel: getFilteredRowModel(),
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
   });
 
   return (
@@ -195,6 +227,7 @@ export const SelectMarketContent: React.FC<{
       <Tab.Group
         onChange={(index) => {
           setSelectedTab(index);
+          setSorting([]);
         }}
       >
         <div className="w-full px-8 pt-8">
@@ -262,8 +295,9 @@ export const SelectMarketContent: React.FC<{
                     }
                     return (
                       <th
-                        className={`pt-4 text-left font-roboto-mono text-sm font-light uppercase text-neutral-500`}
+                        className={`cursor-pointer select-none pt-4 text-left font-roboto-mono text-sm font-light uppercase text-neutral-500`}
                         key={header.id}
+                        onClick={header.column.getToggleSortingHandler()}
                         style={{ width: colWidths[i] }}
                       >
                         {header.isPlaceholder
@@ -272,6 +306,7 @@ export const SelectMarketContent: React.FC<{
                               header.column.columnDef.header,
                               header.getContext(),
                             )}
+                        {sortLabel.get(header.column.getIsSorted())}
                       </th>
                     );
                   })}
