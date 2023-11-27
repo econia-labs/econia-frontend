@@ -20,7 +20,6 @@ import { useQuery } from "@tanstack/react-query";
 import { fromDecimalPrice, toDecimalPrice } from "@/utils/econia";
 import { useBalance } from "@/hooks/useBalance";
 import { useOrderBookData, usePriceStats } from "@/features/hooks";
-import { on } from "process";
 type LimitFormValues = {
   price: string | undefined;
   size: string;
@@ -69,7 +68,6 @@ export const LimitOrderEntry: React.FC<{
   });
 
   const { balance } = useBalance(marketData);
-  console.log("🚀 ~ file: LimitOrderEntry.tsx:72 ~ balance:", balance);
   const watchPrice = watch("price", undefined);
 
   const watchSize = watch("size");
