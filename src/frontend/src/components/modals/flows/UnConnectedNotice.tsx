@@ -20,9 +20,13 @@ const UnConnectedNotice = () => {
       showBackButton={false}
       className="w-[500px]"
     >
-      <div className="flex h-[400px] max-h-full w-full max-w-full flex-col items-center justify-center p-4 font-jost md:p-10">
-        <h1 className="mb-4 text-lg font-bold text-neutral-100">Notice</h1>
-        <p className="text-sm text-neutral-500">{UNCONNECTED_NOTICE_MESSAGE}</p>
+      <div className="h-[400px] max-h-full w-full  p-4  md:p-10">
+        <div className="flex h-[400px] max-h-full w-[400px] max-w-full flex-col items-center justify-center font-jost">
+          <h1 className="mb-4 text-lg font-bold text-neutral-100">Notice</h1>
+          <p className="text-sm text-neutral-500">
+            {UNCONNECTED_NOTICE_MESSAGE}
+          </p>
+        </div>
       </div>
     </BaseModal>
   );
