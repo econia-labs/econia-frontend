@@ -10,7 +10,8 @@ import { MarketOrderEntry } from "./MarketOrderEntry";
 export const OrderEntry: React.FC<{
   marketData: ApiMarket;
   defaultSide?: "buy" | "sell";
-}> = ({ marketData, defaultSide = "buy" }) => {
+  onDepositWithdrawClick?: () => void;
+}> = ({ marketData, defaultSide = "buy", onDepositWithdrawClick }) => {
   const [side, setSide] = useState<Side>(defaultSide);
 
   return (
@@ -48,10 +49,18 @@ export const OrderEntry: React.FC<{
         </Tab.List>
         <Tab.Panels>
           <Tab.Panel>
-            <LimitOrderEntry marketData={marketData} side={side} />
+            <LimitOrderEntry
+              marketData={marketData}
+              side={side}
+              onDepositWithdrawClick={onDepositWithdrawClick}
+            />
           </Tab.Panel>
           <Tab.Panel>
-            <MarketOrderEntry marketData={marketData} side={side} />
+            <MarketOrderEntry
+              marketData={marketData}
+              side={side}
+              onDepositWithdrawClick={onDepositWithdrawClick}
+            />
           </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
