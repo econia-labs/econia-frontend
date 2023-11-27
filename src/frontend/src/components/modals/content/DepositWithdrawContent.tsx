@@ -22,12 +22,12 @@ const SelectCoinInput: React.FC<{
   onSelectCoin: (coin: ApiCoin) => void;
 }> = ({ coins, startAdornment, selectedCoin, onSelectCoin }) => {
   return (
-    <div className="flex h-12 w-full items-center justify-between border border-neutral-600 p-4">
-      <p className="font-roboto-mono font-medium uppercase text-white">
-        {startAdornment}
-      </p>
-      <Menu as="div" className="relative inline-block text-left">
-        <Menu.Button>
+    <div className="flex h-12 w-full items-center border border-neutral-600 p-4">
+      <Menu as="div" className="relative inline-block w-full text-left">
+        <Menu.Button className="flex w-full items-center justify-between">
+          <p className="font-roboto-mono font-medium uppercase text-white">
+            {startAdornment}
+          </p>
           <div className="flex cursor-pointer items-center gap-2">
             <p className="whitespace-nowrap font-roboto-mono text-white">
               {selectedCoin?.symbol}
