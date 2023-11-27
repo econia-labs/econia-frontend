@@ -30,6 +30,7 @@ import { ConnectWalletContextProvider } from "@/contexts/ConnectWalletContext";
 import { store } from "@/store/store";
 
 import bg from "../../public/bg.png";
+import UnConnectedNotice from "@/components/modals/flows/UnConnectedNotice";
 
 Chart.register(
   CategoryScale,
@@ -94,6 +95,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 `}</style>
                 <div>
                   <Component {...pageProps} />
+                  <UnConnectedNotice />
                 </div>
               </ConnectWalletContextProvider>
             </AptosContextProvider>
