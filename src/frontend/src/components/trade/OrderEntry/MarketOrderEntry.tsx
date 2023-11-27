@@ -25,7 +25,8 @@ type MarketFormValues = {
 export const MarketOrderEntry: React.FC<{
   marketData: ApiMarket;
   side: Side;
-}> = ({ marketData, side }) => {
+  onDepositWithdrawClick?: () => void;
+}> = ({ marketData, side, onDepositWithdrawClick }) => {
   const { signAndSubmitTransaction, account, aptosClient } = useAptos();
   const {
     handleSubmit,
@@ -77,6 +78,28 @@ export const MarketOrderEntry: React.FC<{
     const takerSize = Number(totalSize) * 1;
     return `${Number(((takerSize * 1) / takerFeeDivisor).toFixed(4))}`;
   }, [takerFeeDivisor, last_price, watchSize]);
+
+  const isSufficient = useMemo(() => {
+    if (!Number(watchSize)) {
+      return true;
+    }
+    if (
+      (side === "buy" && !balance?.quote_available) ||
+      (side === "sell" && !balance?.base_available)
+    ) {
+      return false;
+    }
+    if (side === "buy") {
+      const totalSize =
+        toDecimalPrice({ price: Number(last_price), marketData }).toNumber() *
+        Number(watchSize);
+      return totalSize < Number(balance?.quote_available);
+    }
+
+    if (side === "sell") {
+      return Number(watchSize) < Number(balance?.base_available);
+    }
+  }, [balance, watchSize, last_price]); //INSUFFICIENT
 
   const onSubmit = async ({ size }: MarketFormValues) => {
     if (marketData.base == null) {
@@ -191,12 +214,33 @@ export const MarketOrderEntry: React.FC<{
           value={estimateFee}
         />
         <ConnectedButton className="w-full">
-          <Button
+          {/* <Button
             variant={side === "buy" ? "green" : "red"}
             className={`w-full`}
           >
             {side === "buy" ? "Buy" : "Sell"} {marketData.base?.symbol}
-          </Button>
+          </Button> */}
+          {isSufficient ? (
+            <Button
+              type="submit"
+              variant={side === "buy" ? "green" : "red"}
+              className="w-full text-[16px]/6"
+            >
+              {side === "buy" ? "Buy" : "Sell"} {marketData.base?.symbol}
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              variant={"primary"}
+              className="w-full text-[16px]/6"
+              onClick={(e) => {
+                e.preventDefault();
+                onDepositWithdrawClick && onDepositWithdrawClick();
+              }}
+            >
+              Add funds to continue
+            </Button>
+          )}
         </ConnectedButton>
         <OrderEntryInfo
           label={`${marketData.base?.symbol} AVAILABLE`}

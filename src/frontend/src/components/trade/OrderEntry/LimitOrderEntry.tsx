@@ -31,7 +31,8 @@ export const MIN_PRICE = 1;
 export const LimitOrderEntry: React.FC<{
   marketData: ApiMarket;
   side: Side;
-}> = ({ marketData, side }) => {
+  onDepositWithdrawClick?: () => void;
+}> = ({ marketData, side, onDepositWithdrawClick }) => {
   // const { price } = useOrderEntry();
   const {
     data: { last_price },
@@ -251,6 +252,28 @@ export const LimitOrderEntry: React.FC<{
     });
   };
 
+  const isSufficient = useMemo(() => {
+    if (!Number(watchSize)) {
+      return true;
+    }
+    if (
+      (side === "buy" && !balance?.quote_available) ||
+      (side === "sell" && !balance?.base_available)
+    ) {
+      return false;
+    }
+    if (side === "buy") {
+      return (
+        Number(watchPrice) * Number(watchSize) <
+        Number(balance?.quote_available)
+      );
+    }
+
+    if (side === "sell") {
+      return Number(watchSize) < Number(balance?.base_available);
+    }
+  }, [balance, watchSize, watchPrice]); //INSUFFICIENT
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="md:mx-4">
@@ -350,13 +373,27 @@ export const LimitOrderEntry: React.FC<{
           value={estimateFee}
         />
         <ConnectedButton className="w-full">
-          <Button
-            type="submit"
-            variant={side === "buy" ? "green" : "red"}
-            className="w-full text-[16px]/6"
-          >
-            {side === "buy" ? "Buy" : "Sell"} {marketData.base?.symbol}
-          </Button>
+          {isSufficient ? (
+            <Button
+              type="submit"
+              variant={side === "buy" ? "green" : "red"}
+              className="w-full text-[16px]/6"
+            >
+              {side === "buy" ? "Buy" : "Sell"} {marketData.base?.symbol}
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              variant={"primary"}
+              className="w-full text-[16px]/6"
+              onClick={(e) => {
+                e.preventDefault();
+                onDepositWithdrawClick && onDepositWithdrawClick();
+              }}
+            >
+              Add funds to continue
+            </Button>
+          )}
         </ConnectedButton>
         <OrderEntryInfo
           label={`${marketData.base?.symbol} AVAILABLE`}

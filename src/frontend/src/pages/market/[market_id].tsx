@@ -291,7 +291,7 @@ export default function Market({ allMarketData, marketData }: Props) {
 
   useEffect(() => {
     const f = () => {
-      const LG = 1024;
+      const LG = 768;
       if (window.innerWidth > LG) {
         setTab("orders");
       }
@@ -433,7 +433,10 @@ export default function Market({ allMarketData, marketData }: Props) {
           </div>
           <div className="hidden min-w-full flex-col px-3 pr-3 pt-3 md:flex md:min-w-[296px] md:max-w-[296px]">
             <div className="border border-neutral-600">
-              <OrderEntry marketData={marketData} />
+              <OrderEntry
+                marketData={marketData}
+                onDepositWithdrawClick={() => setDepositWithdrawModalOpen(true)}
+              />
             </div>
             <div className="scrollbar-none mt-3 h-full max-h-full min-h-[160px] overflow-auto border border-neutral-600">
               <p className="sticky top-0 bg-neutral-800 bg-noise py-3 pl-4 font-jost font-bold text-white">
@@ -445,7 +448,10 @@ export default function Market({ allMarketData, marketData }: Props) {
               />
             </div>
           </div>
-          <MobileOrderEntry marketData={marketData} />
+          <MobileOrderEntry
+            marketData={marketData}
+            onDepositWithdrawClick={() => setDepositWithdrawModalOpen(true)}
+          />
         </main>
       </div>
       {/* temp */}

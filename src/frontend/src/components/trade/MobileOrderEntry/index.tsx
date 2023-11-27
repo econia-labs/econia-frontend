@@ -3,7 +3,13 @@ import React, { useState } from "react";
 import { OrderEntry } from "../OrderEntry";
 import { ApiMarket } from "@/types/api";
 
-const MobileOrderEntry = ({ marketData }: { marketData: ApiMarket }) => {
+const MobileOrderEntry = ({
+  marketData,
+  onDepositWithdrawClick,
+}: {
+  marketData: ApiMarket;
+  onDepositWithdrawClick: () => void;
+}) => {
   const [modal, setModal] = useState<{
     side: "buy" | "sell";
     isOpen: boolean;
@@ -48,7 +54,11 @@ const MobileOrderEntry = ({ marketData }: { marketData: ApiMarket }) => {
           onClose={closeModal}
           className="w-full max-w-[284px] !p-3 "
         >
-          <OrderEntry defaultSide={modal.side} marketData={marketData} />
+          <OrderEntry
+            onDepositWithdrawClick={onDepositWithdrawClick}
+            defaultSide={modal.side}
+            marketData={marketData}
+          />
         </BaseModal>
       </div>
     </div>
