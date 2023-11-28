@@ -38,7 +38,7 @@ export const RegisterAccountContent: React.FC<RegisterAccountContentProps> = ({
         onClick={async () => {
           if (selectedMarket?.base == null) {
             toast.error("Generic markets not supported");
-            console.log("Generic markets not supported");
+            console.warn("Generic markets not supported");
             return;
           }
           const payload = entryFunctions.registerMarketAccount(
