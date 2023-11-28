@@ -273,13 +273,13 @@ export const TVChartContainer: React.FC<
             .filter(
               (bar: Bar) => bar.time >= from * 1000 && bar.time <= to * 1000,
             );
-          console.log(`[getBars]: returned ${bars.length} bar(s)`);
+          console.warn(`[getBars]: returned ${bars.length} bar(s)`);
           onHistoryCallback(bars, {
             noData: bars.length === 0,
           });
         } catch (e) {
           if (e instanceof Error) {
-            console.log("[getBars]: Get error", e);
+            console.warn("[getBars]: Get error", e);
             onErrorCallback(e.message);
           }
         }
@@ -397,7 +397,7 @@ export const TVChartContainer: React.FC<
     tvWidget.current = new widget(widgetOptions);
 
     return () => {
-      console.log("reject");
+      console.warn("reject");
       if (tvWidget.current != null) {
         tvWidget.current.remove();
         tvWidget.current = undefined;

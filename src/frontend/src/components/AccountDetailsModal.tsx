@@ -48,7 +48,7 @@ export const AccountDetailsModal: React.FC<{
       } catch (e) {
         if (e instanceof Error) {
           // toast.error(e.message);
-          console.log(e.message);
+          console.warn(e.message);
         } else {
           console.error(e);
         }
@@ -217,7 +217,7 @@ const DepositWithdrawCard: React.FC<{
             key: makeMarketAccountId(marketID - 1, NO_CUSTODIAN),
           },
         );
-        console.log(marketAccount);
+        console.warn(marketAccount);
         return marketAccount as MarketAccount;
       } catch (e) {
         if (e instanceof Error) {

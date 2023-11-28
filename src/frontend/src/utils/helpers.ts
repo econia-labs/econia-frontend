@@ -54,7 +54,7 @@ export async function getAllMarket() {
     });
     return allMarketData;
   } catch (error) {
-    console.log("🚀 ~ file: helpers.ts:117 ~ getAllMarket ~ error:", error);
+    console.warn("🚀 ~ file: helpers.ts:117 ~ getAllMarket ~ error:", error);
     throw error;
   }
 }
