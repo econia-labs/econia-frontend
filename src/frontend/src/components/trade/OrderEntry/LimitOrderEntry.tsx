@@ -1,6 +1,6 @@
 import { entryFunctions, type order } from "@econia-labs/sdk";
 import BigNumber from "bignumber.js";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/Button";
@@ -20,6 +20,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fromDecimalPrice, toDecimalPrice } from "@/utils/econia";
 import { useBalance } from "@/hooks/useBalance";
 import { useOrderBookData, usePriceStats } from "@/features/hooks";
+import RangeSlider from "@/components/slider-order/RangeSlider";
 type LimitFormValues = {
   price: string | undefined;
   size: string;
@@ -33,6 +34,8 @@ export const LimitOrderEntry: React.FC<{
   side: Side;
   onDepositWithdrawClick?: () => void;
 }> = ({ marketData, side, onDepositWithdrawClick }) => {
+  console.log(marketData);
+
   // const { price } = useOrderEntry();
   const {
     data: { last_price },
@@ -66,6 +69,7 @@ export const LimitOrderEntry: React.FC<{
       return 2000; // default
     }
   });
+  const [percent, setPercent] = useState(0);
 
   const { balance } = useBalance(marketData);
   const watchPrice = watch("price", undefined);
@@ -274,6 +278,40 @@ export const LimitOrderEntry: React.FC<{
     }
   }, [balance, watchSize, watchPrice]); //INSUFFICIENT
 
+  useEffect(() => {
+    if (side === "buy") {
+      if (!balance?.quote_available || !Number(watchPrice)) {
+        return;
+      }
+      const maxSize = balance?.quote_available / Number(watchPrice);
+      setValue(
+        "size",
+        `${Number(Number((percent / 100) * maxSize).toFixed(4))}`,
+      );
+    }
+    if (side === "sell") {
+      if (!balance?.base_available) {
+        return;
+      }
+      setValue(
+        "size",
+        `${Number(
+          Number((balance.base_available * percent) / 100).toFixed(4),
+        )}`,
+      );
+    }
+  }, [percent, balance, side, watchPrice]);
+
+  useEffect(() => {
+    // totalSize
+    if (!Number(watchPrice) || !Number(watchSize)) {
+      setValue("totalSize", "");
+      return;
+    }
+    const total = Number(watchSize) * Number(watchPrice);
+    setValue("totalSize", `${total}`);
+  }, [watchSize, watchPrice, side]);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="md:mx-4">
@@ -299,15 +337,16 @@ export const LimitOrderEntry: React.FC<{
               },
               // TODO: check that amount * size does not exceed quote currency
               // balance for bids
-              onChange: (e) => {
-                const size = Number(getValues("size"));
-                if (!isNaN(size) && !isNaN(e.target.value)) {
-                  const totalSize = (size * e.target.value).toFixed(4);
-                  setValue("totalSize", totalSize);
-                } else {
-                  setValue("totalSize", "");
-                }
-              },
+              // onChange: (e) => {
+              //   const size = Number(getValues("size"));
+              //   if (!isNaN(size) && !isNaN(e.target.value)) {
+              //     if()
+              //     const totalSize = (size * e.target.value).toFixed(4);
+              //     setValue("totalSize", totalSize);
+              //   } else {
+              //     setValue("totalSize", "");
+              //   }
+              // },
             })}
             className="z-30 w-full bg-transparent pb-3 pl-14 pr-14 pt-3 text-right font-roboto-mono text-xs font-light text-neutral-400 outline-none"
           />
@@ -317,6 +356,17 @@ export const LimitOrderEntry: React.FC<{
             {errors.price != null && errors.price.message}
           </p>
         </div>
+        <RangeSlider
+          className="relative left-[50%] mb-4 mt-4 translate-x-[-50%]"
+          style={{
+            width: "calc(100% - 7px)",
+          }}
+          variant={"primary"}
+          value={percent}
+          onChange={(value) => {
+            setPercent(Number(value));
+          }}
+        />
       </div>
       <hr className="border-neutral-600" />
       <div className="mt-4 md:mx-4">

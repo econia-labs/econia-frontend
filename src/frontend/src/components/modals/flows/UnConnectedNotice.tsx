@@ -18,7 +18,7 @@ const UnConnectedNotice = () => {
       onClose={() => setOpen(false)}
       showCloseButton={true}
       showBackButton={false}
-      className="w-[500px]"
+      className="!w-[500px]"
     >
       <div className="h-[400px] max-h-full w-full  p-4  md:p-10">
         <div className="flex h-[400px] max-h-full w-[400px] max-w-full flex-col items-center justify-center font-jost">
