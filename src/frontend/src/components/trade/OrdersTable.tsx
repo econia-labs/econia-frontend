@@ -22,6 +22,8 @@ import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 
 import bg from "../../../public/bg.png";
 import { ConnectedButton } from "../ConnectedButton";
+import { BaseModal } from "../modals/BaseModal";
+import { OrderDetailsModalContent } from "./OrderDetailsModalContent";
 
 const columnHelper = createColumnHelper<ApiOrder>();
 
@@ -31,7 +33,7 @@ export const OrdersTable: React.FC<{
   marketData: ApiMarket;
 }> = ({ className, market_id, marketData }) => {
   const { signAndSubmitTransaction } = useAptos();
-  const { base, quote } = marketData;
+  const { base, quote, name } = marketData;
   const { symbol: baseSymbol } = base;
   const { symbol: quoteSymbol } = quote;
   const { connected, account } = useWallet();
@@ -39,6 +41,8 @@ export const OrdersTable: React.FC<{
   const [sorting, setSorting] = useState<SortingState>([
     { id: "created_at", desc: true },
   ]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedOrder, setSelectedOrder] = useState<ApiOrder | null>(null);
 
   const { data, isLoading, refetch } = useQuery<ApiOrder[]>(
     ["useUserOrders", market_id, account?.address],
@@ -73,6 +77,11 @@ export const OrdersTable: React.FC<{
       <ChevronDownIcon className="absolute top-0 ml-0.5 inline-block h-4 w-4 translate-y-1/2" />,
     );
     return map;
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setIsModalOpen(false);
+    setSelectedOrder(null);
   }, []);
 
   const cancelOrder = useCallback(
@@ -260,11 +269,24 @@ export const OrdersTable: React.FC<{
 
   return (
     <div className="scrollbar-none h-[200px] overflow-auto">
+      <BaseModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        showCloseButton={true}
+        showBackButton={false}
+        className="!w-[700px] font-roboto-mono text-white"
+      >
+        <OrderDetailsModalContent
+          onClose={closeModal}
+          orderDetails={selectedOrder}
+          pair={name}
+        />
+      </BaseModal>
       <table
         className={"w-full table-fixed" + (className ? ` ${className}` : "")}
       >
         <thead
-          className="sticky top-0 h-8  bg-[#020202] shadow-[inset_0_-1px_0_theme(colors.neutral.600)]"
+          className="sticky top-0 h-8 bg-[#020202] shadow-[inset_0_-1px_0_theme(colors.neutral.600)]"
           style={{
             backgroundImage: `url(${bg.src})`,
           }}
@@ -331,7 +353,15 @@ export const OrdersTable: React.FC<{
             </tr>
           ) : (
             table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
+              <tr
+                className="cursor-pointer transition-colors hover:bg-neutral-700"
+                key={row.id}
+                onClick={() => {
+                  setIsModalOpen(true);
+                  setSelectedOrder(row.original);
+                  console.log(row.original);
+                }}
+              >
                 {row.getVisibleCells().map((cell) => (
                   <td
                     className="h-7 py-0.5 text-left font-roboto-mono text-sm font-light text-white"

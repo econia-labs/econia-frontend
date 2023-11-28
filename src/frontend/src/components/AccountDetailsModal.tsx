@@ -1,24 +1,24 @@
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { useQuery } from "@tanstack/react-query";
 import React, { useCallback, useState } from "react";
+import { toast } from "react-toastify";
 
 import { Button } from "@/components/Button";
+import { NO_CUSTODIAN } from "@/constants";
+import { useAptos } from "@/contexts/AptosContext";
+import { API_URL, AUDIT_ADDR, ECONIA_ADDR } from "@/env";
 import { type ApiMarket } from "@/types/api";
+import { type MarketAccount, type MarketAccounts } from "@/types/econia";
+import { fromRawCoinAmount } from "@/utils/coin";
+import { makeMarketAccountId } from "@/utils/econia";
+import { shorten } from "@/utils/formatter";
+import { TypeTag } from "@/utils/TypeTag";
 
 import { CopyIcon } from "./icons/CopyIcon";
 import { ExitIcon } from "./icons/ExitIcon";
 import { RecognizedIcon } from "./icons/RecognizedIcon";
 import { MarketIconPair } from "./MarketIconPair";
-import { shorten } from "@/utils/formatter";
-import { useQuery } from "@tanstack/react-query";
-import { API_URL, AUDIT_ADDR, ECONIA_ADDR } from "@/env";
-import { toast } from "react-toastify";
-import { MarketAccount, MarketAccounts } from "@/types/econia";
-import { useAptos } from "@/contexts/AptosContext";
-import { makeMarketAccountId } from "@/utils/econia";
-import { NO_CUSTODIAN } from "@/constants";
-import { TypeTag } from "@/utils/TypeTag";
-import { fromRawCoinAmount } from "@/utils/coin";
 
 // get_all_market_account_ids_for_user
 
@@ -28,7 +28,7 @@ export const AccountDetailsModal: React.FC<{
   onDepositWithdrawClick: (selected: ApiMarket) => void;
   onRegisterAccountClick: () => void;
 }> = ({ onClose, onDepositWithdrawClick, onRegisterAccountClick }) => {
-  const { aptosClient, signAndSubmitTransaction } = useAptos();
+  const { aptosClient } = useAptos();
   const { account, disconnect } = useWallet();
 
   const [showCopiedNotif, setShowCopiedNotif] = useState<boolean>(false);
@@ -48,7 +48,7 @@ export const AccountDetailsModal: React.FC<{
       } catch (e) {
         if (e instanceof Error) {
           // toast.error(e.message);
-          console.log(e.message);
+          // console.log(e.message);
         } else {
           console.error(e);
         }
@@ -217,7 +217,7 @@ const DepositWithdrawCard: React.FC<{
             key: makeMarketAccountId(marketID - 1, NO_CUSTODIAN),
           },
         );
-        console.log(marketAccount);
+        // console.log(marketAccount);
         return marketAccount as MarketAccount;
       } catch (e) {
         if (e instanceof Error) {
