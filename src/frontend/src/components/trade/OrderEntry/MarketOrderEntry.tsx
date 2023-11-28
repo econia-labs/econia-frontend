@@ -14,10 +14,15 @@ import { TypeTag } from "@/utils/TypeTag";
 import { OrderEntryInfo } from "./OrderEntryInfo";
 import { OrderEntryInputWrapper } from "./OrderEntryInputWrapper";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useBalance } from "@/hooks/useBalance";
 import { usePriceStats } from "@/features/hooks";
-import { toDecimalPrice } from "@/utils/econia";
+import {
+  fromDecimalCoin,
+  fromDecimalPrice,
+  toDecimalPrice,
+} from "@/utils/econia";
+import RangeSlider from "@/components/slider-order/RangeSlider";
 type MarketFormValues = {
   size: string;
 };
@@ -28,6 +33,7 @@ export const MarketOrderEntry: React.FC<{
   onDepositWithdrawClick?: () => void;
 }> = ({ marketData, side, onDepositWithdrawClick }) => {
   const { signAndSubmitTransaction, account, aptosClient } = useAptos();
+  const [percent, setPercent] = useState(0);
   const {
     handleSubmit,
     register,
@@ -54,6 +60,35 @@ export const MarketOrderEntry: React.FC<{
   const {
     data: { last_price },
   } = usePriceStats();
+
+  useEffect(() => {
+    const price = toDecimalPrice({
+      price: Number(last_price),
+      marketData,
+    }).toNumber();
+    if (side === "buy") {
+      if (!balance?.quote_available || !Number(price)) {
+        return;
+      }
+      const maxSize = balance?.quote_available / Number(price);
+      setValue(
+        "size",
+        `${Number(Number((percent / 100) * maxSize).toFixed(4))}`,
+      );
+    }
+    if (side === "sell") {
+      if (!balance?.base_available) {
+        return;
+      }
+      setValue(
+        "size",
+        `${Number(
+          Number((balance.base_available * percent) / 100).toFixed(4),
+        )}`,
+      );
+    }
+  }, [percent, balance, side]);
+
   const { data: takerFeeDivisor } = useQuery(["takerFeeDivisor"], async () => {
     try {
       const rs = await aptosClient.view({
@@ -201,11 +236,22 @@ export const MarketOrderEntry: React.FC<{
             className="z-30 w-full bg-transparent pb-3 pl-14 pr-14 pt-3 text-right font-roboto-mono text-xs font-light text-neutral-400 outline-none"
           />
         </OrderEntryInputWrapper>
-        <div className="relative mb-4">
+        <div className="relative mb-0">
           <p className="absolute text-xs text-red">
             {errors.size != null && errors.size.message}
           </p>
         </div>
+        <RangeSlider
+          className="relative left-[50%] mb-0 mt-4 translate-x-[-50%]"
+          style={{
+            width: "calc(100% - 7px)",
+          }}
+          variant={"primary"}
+          value={percent}
+          onChange={(value) => {
+            setPercent(Number(value));
+          }}
+        />
       </div>
       <hr className="my-4 border-neutral-600" />
       <div className="mx-4 mb-4 flex flex-col gap-4">
