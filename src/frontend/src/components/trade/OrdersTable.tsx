@@ -33,7 +33,7 @@ export const OrdersTable: React.FC<{
   marketData: ApiMarket;
 }> = ({ className, market_id, marketData }) => {
   const { signAndSubmitTransaction } = useAptos();
-  const { base, quote, name } = marketData;
+  const { base, quote } = marketData;
   const { symbol: baseSymbol } = base;
   const { symbol: quoteSymbol } = quote;
   const { connected, account } = useWallet();
@@ -42,6 +42,7 @@ export const OrdersTable: React.FC<{
     { id: "created_at", desc: true },
   ]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isCancelingOrder, setIsCancelingOrder] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<ApiOrder | null>(null);
 
   const { data, isLoading, refetch } = useQuery<ApiOrder[]>(
@@ -86,36 +87,46 @@ export const OrdersTable: React.FC<{
 
   const cancelOrder = useCallback(
     async (orderInfo: ApiOrder) => {
-      const { direction, order_id } = orderInfo;
-      let side = direction;
-      switch (direction) {
-        case "buy":
-          side = "bid";
-          break;
-        case "sell":
-          side = "ask";
-          break;
-        default:
-          side = direction;
-          break;
-      }
+      try {
+        setIsCancelingOrder(true);
+        const { direction, order_id } = orderInfo;
+        let side = direction;
+        switch (direction) {
+          case "buy":
+            side = "bid";
+            break;
+          case "sell":
+            side = "ask";
+            break;
+          default:
+            side = direction;
+            break;
+        }
 
-      const payload = {
-        arguments: [
-          market_id.toString(),
-          sideToBoolean(side as Side),
-          order_id,
-        ],
-        function: `${ECONIA_ADDR}::market::cancel_order_user`,
-        type_arguments: [],
-      };
-      await signAndSubmitTransaction({
-        type: "entry_function_payload",
-        ...payload,
-      });
-      refetch();
+        const payload = {
+          arguments: [
+            market_id.toString(),
+            sideToBoolean(side as Side),
+            order_id,
+          ],
+          function: `${ECONIA_ADDR}::market::cancel_order_user`,
+          type_arguments: [],
+        };
+        await signAndSubmitTransaction({
+          type: "entry_function_payload",
+          ...payload,
+        });
+        refetch();
+
+        // close modal if it's open
+        if (isModalOpen) closeModal();
+      } catch (error) {
+        console.error("Error while cancelling order:", error);
+      } finally {
+        setIsCancelingOrder(false);
+      }
     },
-    [market_id, refetch, signAndSubmitTransaction],
+    [closeModal, isModalOpen, market_id, refetch, signAndSubmitTransaction],
   );
 
   const columns = useMemo(
@@ -245,7 +256,13 @@ export const OrdersTable: React.FC<{
           const { order_status: status } = orderInfo;
           if (status !== "open") return "N/A";
           return (
-            <button className="text-red" onClick={() => cancelOrder(orderInfo)}>
+            <button
+              className="text-red"
+              onClick={(e) => {
+                e.stopPropagation();
+                cancelOrder(orderInfo);
+              }}
+            >
               Cancel
             </button>
           );
@@ -277,9 +294,12 @@ export const OrdersTable: React.FC<{
         className="!w-[700px] font-roboto-mono text-white"
       >
         <OrderDetailsModalContent
-          onClose={closeModal}
           orderDetails={selectedOrder}
-          pair={name}
+          baseSymbol={baseSymbol}
+          quoteSymbol={quoteSymbol}
+          marketData={marketData}
+          cancelOrder={cancelOrder}
+          loading={isCancelingOrder}
         />
       </BaseModal>
       <table
@@ -359,7 +379,6 @@ export const OrdersTable: React.FC<{
                 onClick={() => {
                   setIsModalOpen(true);
                   setSelectedOrder(row.original);
-                  console.log(row.original);
                 }}
               >
                 {row.getVisibleCells().map((cell) => (

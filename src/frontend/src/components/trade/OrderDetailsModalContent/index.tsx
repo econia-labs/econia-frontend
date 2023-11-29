@@ -1,7 +1,8 @@
 import React from "react";
 
 import { Button } from "@/components/Button";
-import { type ApiOrder } from "@/types/api";
+import { type ApiMarket, type ApiOrder } from "@/types/api";
+import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 
 interface RowDetailsProps {
   label: string;
@@ -9,15 +10,20 @@ interface RowDetailsProps {
 }
 
 interface OrderDetailsModalContentProps {
-  onClose: () => void;
   orderDetails: ApiOrder | null;
-  pair: string;
+  baseSymbol: string;
+  quoteSymbol: string;
+  marketData: ApiMarket;
+  cancelOrder: (orderInfo: ApiOrder) => void;
+  loading: boolean;
 }
 
 const RowDetails: React.FC<RowDetailsProps> = ({ label, value }) => (
   <div className="flex justify-between">
     <span>{label}</span>
-    <span className="text-neutral-500">{capitalizeFirstLetter(value)}</span>
+    <span className="text-neutral-500">
+      {label === "Pair" ? value : capitalizeFirstLetter(value)}
+    </span>
   </div>
 );
 
@@ -38,7 +44,14 @@ function capitalizeFirstLetter(str: string | number | undefined) {
 
 export const OrderDetailsModalContent: React.FC<
   OrderDetailsModalContentProps
-> = ({ onClose, orderDetails, pair }) => {
+> = ({
+  orderDetails,
+  baseSymbol,
+  quoteSymbol,
+  marketData,
+  cancelOrder,
+  loading,
+}) => {
   if (!orderDetails) {
     return null;
   }
@@ -53,6 +66,27 @@ export const OrderDetailsModalContent: React.FC<
     total_filled,
     average_execution_price,
   } = orderDetails;
+
+  const amount = toDecimalSize({
+    size: total_filled,
+    marketData,
+  }).toNumber();
+
+  const limitPrice =
+    price != null
+      ? toDecimalPrice({
+          price,
+          marketData,
+        }).toNumber()
+      : "-";
+
+  const convertedAvgPrice =
+    average_execution_price != null
+      ? toDecimalPrice({
+          price: average_execution_price,
+          marketData,
+        }).toNumber()
+      : "-";
 
   return (
     <>
@@ -73,23 +107,39 @@ export const OrderDetailsModalContent: React.FC<
             hour12: true,
           })}
         />
-        <RowDetails label="Pair" value={pair} />
+        <RowDetails label="Pair" value={`${baseSymbol}-${quoteSymbol}`} />
         <RowDetails label="Type" value={order_type} />
         <RowDetails label="Side" value={direction} />
-        <RowDetails label="Amount" value={total_filled} />
-        <RowDetails label="Limit Price" value={price} />
-        <RowDetails label="Fee" value="null" />
+        <RowDetails label="Amount" value={`${amount} ${baseSymbol}`} />
+        <RowDetails
+          label="Limit Price"
+          value={`${limitPrice} ${quoteSymbol}`}
+        />
+        <RowDetails label="Fee" value="-" />
         <RowDetails
           label="Total"
           value={
-            average_execution_price === null
-              ? "-"
-              : total_filled * average_execution_price
+            convertedAvgPrice === "-"
+              ? convertedAvgPrice
+              : amount * convertedAvgPrice + " " + quoteSymbol
           }
         />
         <RowDetails label="Status" value={order_status} />
       </div>
-      <Button className="w-full" variant="red" onClick={onClose}>
+      <Button
+        className="w-full"
+        variant="red"
+        onClick={() => {
+          cancelOrder(orderDetails);
+        }}
+        disabledReason={
+          loading
+            ? "Cancelling order..."
+            : order_status !== "open"
+            ? "Order already cancelled"
+            : undefined
+        }
+      >
         Cancel Order
       </Button>
     </>

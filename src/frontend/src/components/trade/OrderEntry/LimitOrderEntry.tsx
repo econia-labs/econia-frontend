@@ -34,8 +34,6 @@ export const LimitOrderEntry: React.FC<{
   side: Side;
   onDepositWithdrawClick?: () => void;
 }> = ({ marketData, side, onDepositWithdrawClick }) => {
-  console.log(marketData);
-
   // const { price } = useOrderEntry();
   const {
     data: { last_price },
