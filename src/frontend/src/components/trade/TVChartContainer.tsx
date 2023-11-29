@@ -329,13 +329,11 @@ export const TVChartContainer: React.FC<
       user_id: props.userId,
       fullscreen: props.fullscreen,
       autosize: props.autosize,
-      loading_screen: { backgroundColor: "#020202" },
+      loading_screen: { backgroundColor: "#000000" },
       overrides: {
         "paneProperties.backgroundType": "solid",
-        "paneProperties.background": "#020202",
-        // background image url("/bg.png")
-        "paneProperties.backgroundImage": 'url("../../bg.png")',
-        "scalesProperties.backgroundColor": "#020202",
+        "paneProperties.background": "#000000",
+        "scalesProperties.backgroundColor": "#000000",
         "mainSeriesProperties.barStyle.upColor": GREEN,
         "mainSeriesProperties.barStyle.downColor": RED,
         "mainSeriesProperties.candleStyle.upColor": GREEN,
