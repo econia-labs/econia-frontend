@@ -22,6 +22,8 @@ import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 
 import bg from "../../../public/bg.png";
 import { ConnectedButton } from "../ConnectedButton";
+import { BaseModal } from "../modals/BaseModal";
+import { OrderDetailsModalContent } from "./OrderDetailsModalContent";
 
 const columnHelper = createColumnHelper<ApiOrder>();
 
@@ -39,6 +41,9 @@ export const OrdersTable: React.FC<{
   const [sorting, setSorting] = useState<SortingState>([
     { id: "created_at", desc: true },
   ]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isCancelingOrder, setIsCancelingOrder] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<ApiOrder | null>(null);
 
   const { data, isLoading, refetch } = useQuery<ApiOrder[]>(
     ["useUserOrders", market_id, account?.address],
@@ -75,38 +80,53 @@ export const OrdersTable: React.FC<{
     return map;
   }, []);
 
+  const closeModal = useCallback(() => {
+    setIsModalOpen(false);
+    setSelectedOrder(null);
+  }, []);
+
   const cancelOrder = useCallback(
     async (orderInfo: ApiOrder) => {
-      const { direction, order_id } = orderInfo;
-      let side = direction;
-      switch (direction) {
-        case "buy":
-          side = "bid";
-          break;
-        case "sell":
-          side = "ask";
-          break;
-        default:
-          side = direction;
-          break;
-      }
+      try {
+        setIsCancelingOrder(true);
+        const { direction, order_id } = orderInfo;
+        let side = direction;
+        switch (direction) {
+          case "buy":
+            side = "bid";
+            break;
+          case "sell":
+            side = "ask";
+            break;
+          default:
+            side = direction;
+            break;
+        }
 
-      const payload = {
-        arguments: [
-          market_id.toString(),
-          sideToBoolean(side as Side),
-          order_id,
-        ],
-        function: `${ECONIA_ADDR}::market::cancel_order_user`,
-        type_arguments: [],
-      };
-      await signAndSubmitTransaction({
-        type: "entry_function_payload",
-        ...payload,
-      });
-      refetch();
+        const payload = {
+          arguments: [
+            market_id.toString(),
+            sideToBoolean(side as Side),
+            order_id,
+          ],
+          function: `${ECONIA_ADDR}::market::cancel_order_user`,
+          type_arguments: [],
+        };
+        await signAndSubmitTransaction({
+          type: "entry_function_payload",
+          ...payload,
+        });
+        refetch();
+
+        // close modal if it's open
+        if (isModalOpen) closeModal();
+      } catch (error) {
+        console.error("Error while cancelling order:", error);
+      } finally {
+        setIsCancelingOrder(false);
+      }
     },
-    [market_id, refetch, signAndSubmitTransaction],
+    [closeModal, isModalOpen, market_id, refetch, signAndSubmitTransaction],
   );
 
   const columns = useMemo(
@@ -236,7 +256,13 @@ export const OrdersTable: React.FC<{
           const { order_status: status } = orderInfo;
           if (status !== "open") return "N/A";
           return (
-            <button className="text-red" onClick={() => cancelOrder(orderInfo)}>
+            <button
+              className="text-red"
+              onClick={(e) => {
+                e.stopPropagation();
+                cancelOrder(orderInfo);
+              }}
+            >
               Cancel
             </button>
           );
@@ -260,11 +286,27 @@ export const OrdersTable: React.FC<{
 
   return (
     <div className="scrollbar-none h-[200px] overflow-auto">
+      <BaseModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        showCloseButton={true}
+        showBackButton={false}
+        className="!w-[700px] font-roboto-mono text-white"
+      >
+        <OrderDetailsModalContent
+          orderDetails={selectedOrder}
+          baseSymbol={baseSymbol}
+          quoteSymbol={quoteSymbol}
+          marketData={marketData}
+          cancelOrder={cancelOrder}
+          loading={isCancelingOrder}
+        />
+      </BaseModal>
       <table
         className={"w-full table-fixed" + (className ? ` ${className}` : "")}
       >
         <thead
-          className="sticky top-0 h-8  bg-[#020202] shadow-[inset_0_-1px_0_theme(colors.neutral.600)]"
+          className="sticky top-0 h-8 bg-[#020202] shadow-[inset_0_-1px_0_theme(colors.neutral.600)]"
           style={{
             backgroundImage: `url(${bg.src})`,
           }}
@@ -331,7 +373,14 @@ export const OrdersTable: React.FC<{
             </tr>
           ) : (
             table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
+              <tr
+                className="cursor-pointer transition-colors hover:bg-neutral-700"
+                key={row.id}
+                onClick={() => {
+                  setIsModalOpen(true);
+                  setSelectedOrder(row.original);
+                }}
+              >
                 {row.getVisibleCells().map((cell) => (
                   <td
                     className="h-7 py-0.5 text-left font-roboto-mono text-sm font-light text-white"

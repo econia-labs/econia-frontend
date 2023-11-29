@@ -1,5 +1,8 @@
+import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef } from "react";
+import { white } from "tailwindcss/colors";
 
+import { API_URL } from "@/env";
 import {
   type ApiBar,
   type ApiMarket,
@@ -7,6 +10,7 @@ import {
   type APITickerExchange,
   type MarketData,
 } from "@/types/api";
+import { fromDecimalSize, toDecimalPrice, toDecimalSize } from "@/utils/econia";
 import {
   generateSymbol,
   getClientTimezone,
@@ -24,15 +28,11 @@ import {
   type LibrarySymbolInfo,
   type ResolutionString,
   type SearchSymbolResultItem,
-  type Timezone,
-  widget,
   SeriesFormat,
+  type Timezone,
   VisiblePlotsSet,
+  widget,
 } from "../../../public/static/charting_library";
-import { white } from "tailwindcss/colors";
-import { API_URL } from "@/env";
-import { useRouter } from "next/router";
-import { fromDecimalSize, toDecimalPrice, toDecimalSize } from "@/utils/econia";
 
 const DAY_BY_RESOLUTION: { [key: string]: string } = {
   "1D": "86400",

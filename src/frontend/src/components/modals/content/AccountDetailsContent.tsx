@@ -6,8 +6,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/Button";
-import { MOCK_MARKETS } from "@/mockdata/markets";
-import { MarketData, type ApiMarket } from "@/types/api";
+import { type ApiMarket } from "@/types/api";
 import { getAllMarket } from "@/utils/helpers";
 
 const MarketCard = ({
