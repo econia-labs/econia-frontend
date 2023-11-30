@@ -1,24 +1,60 @@
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useQuery } from "@tanstack/react-query";
 import React, { useCallback, useState } from "react";
-import { toast } from "react-toastify";
 
 import { Button } from "@/components/Button";
-import { NO_CUSTODIAN } from "@/constants";
-import { useAptos } from "@/contexts/AptosContext";
-import { API_URL, AUDIT_ADDR, ECONIA_ADDR } from "@/env";
+import { API_URL } from "@/env";
 import { type ApiMarket } from "@/types/api";
-import { type MarketAccount, type MarketAccounts } from "@/types/econia";
-import { fromRawCoinAmount } from "@/utils/coin";
-import { makeMarketAccountId } from "@/utils/econia";
 import { shorten } from "@/utils/formatter";
-import { TypeTag } from "@/utils/TypeTag";
 
 import { CopyIcon } from "./icons/CopyIcon";
 import { ExitIcon } from "./icons/ExitIcon";
-import { RecognizedIcon } from "./icons/RecognizedIcon";
-import { MarketIconPair } from "./MarketIconPair";
+import { MarketAccountCard } from "./MarketAccountCard";
+
+interface MarketData {
+  market_id: number;
+  registration_time: string;
+  base_account_address: string;
+  base_module_name: string;
+  base_struct_name: string;
+  base_name_generic: string | null;
+  quote_account_address: string;
+  quote_module_name: string;
+  quote_struct_name: string;
+  lot_size: number;
+  tick_size: number;
+  min_size: number;
+  underwriter_id: number;
+  is_recognized: boolean;
+  last_fill_price_24hr: number | null;
+  price_change_as_percent_24hr: number;
+  price_change_24hr: number | null;
+  min_price_24h: number | null;
+  max_price_24h: number | null;
+  base_volume_24h: number | null;
+  quote_volume_24h: number | null;
+  base_name: string;
+  base_decimals: number;
+  base_symbol: string;
+  quote_name: string;
+  quote_decimals: number;
+  quote_symbol: string;
+}
+
+export interface MarketAccountData {
+  user: string;
+  market_id: number;
+  custodian_id: number;
+  base_total: number;
+  base_available: number;
+  base_ceiling: number;
+  quote_total: number;
+  quote_available: number;
+  quote_ceiling: number;
+  last_update_time: string;
+  last_update_txn_version: number;
+  markets: MarketData;
+}
 
 // get_all_market_account_ids_for_user
 
@@ -28,23 +64,20 @@ export const AccountDetailsModal: React.FC<{
   onDepositWithdrawClick: (selected: ApiMarket) => void;
   onRegisterAccountClick: () => void;
 }> = ({ onClose, onDepositWithdrawClick, onRegisterAccountClick }) => {
-  const { aptosClient } = useAptos();
   const { account, disconnect } = useWallet();
 
   const [showCopiedNotif, setShowCopiedNotif] = useState<boolean>(false);
 
-  const { data } = useQuery(
-    ["userMarketIdsForUser", account?.address],
+  const { data: marketAccounts } = useQuery<MarketAccountData[]>(
+    ["userMarketAccounts", account?.address],
     async () => {
       if (!account?.address) return null;
       try {
-        const test = await aptosClient.view({
-          // TODO: change with real when audit comes back
-          function: `${AUDIT_ADDR}::user::get_all_market_account_ids_for_user`,
-          arguments: [account?.address],
-          type_arguments: [],
-        });
-        return test;
+        const response = await fetch(
+          `${API_URL}/user_balances?select=*,markets(*)&user=eq.${account.address}`,
+        );
+        const data = await response.json();
+        return data;
       } catch (e) {
         if (e instanceof Error) {
           // toast.error(e.message);
@@ -71,6 +104,7 @@ export const AccountDetailsModal: React.FC<{
     onClose();
     disconnect();
   };
+
   return (
     <div className="relative flex flex-col items-center gap-6 font-roboto-mono">
       <div className="scrollbar-none mt-[-24px] max-h-[524px] min-h-[524px] overflow-auto">
@@ -138,13 +172,11 @@ export const AccountDetailsModal: React.FC<{
           Market Accounts
         </p>
         {/* market accounts */}
-        {data?.map((id) => (
-          <DepositWithdrawCard
-            // marketID={Number(id.toString())}
-            // TODO: when audit comes back update hardcode
-            marketID={2}
-            key={id.toString() + "deposit card"}
+        {marketAccounts?.map((marketAccount) => (
+          <MarketAccountCard
+            key={marketAccount.market_id.toString() + "deposit card"}
             onDepositWithdrawClick={onDepositWithdrawClick}
+            marketAccountData={marketAccount}
           />
         ))}
       </div>
@@ -169,194 +201,6 @@ export const AccountDetailsModal: React.FC<{
 
       {/* sticky fade out header */}
       <div className="absolute left-[50%] top-[-24px] mb-[-24px] flex h-[48px] w-full min-w-[500px] translate-x-[-50%] border-[1px] border-b-0 border-neutral-600 bg-gradient-to-t from-transparent to-black"></div>
-    </div>
-  );
-};
-
-const DepositWithdrawCard: React.FC<{
-  marketID: number;
-  onDepositWithdrawClick: (selected: ApiMarket) => void;
-}> = ({ marketID, onDepositWithdrawClick }) => {
-  const [expanded, setExpanded] = React.useState(false);
-  const toggleExpanded = () => setExpanded(!expanded);
-  const { account } = useWallet();
-  const { aptosClient, coinListClient } = useAptos();
-
-  // move into parent, this is inefficient
-  const { data: marketAccounts } = useQuery(
-    ["useMarketAccounts", account?.address],
-    async () => {
-      if (!account?.address) return null;
-      try {
-        const resource = await aptosClient.getAccountResource(
-          account.address,
-          `${ECONIA_ADDR}::user::MarketAccounts`,
-        );
-        return resource.data as MarketAccounts;
-      } catch (e) {
-        if (e instanceof Error) {
-          toast.error(e.message);
-        } else {
-          console.error(e);
-        }
-        return null;
-      }
-    },
-  );
-
-  const { data: marketAccount } = useQuery(
-    ["useMarketAccount", account?.address, marketID],
-    async () => {
-      if (!account?.address) return null;
-      try {
-        const marketAccount = await aptosClient.getTableItem(
-          marketAccounts!.map.handle,
-          {
-            key_type: "u128",
-            value_type: `${ECONIA_ADDR}::user::MarketAccount`,
-            key: makeMarketAccountId(marketID - 1, NO_CUSTODIAN),
-          },
-        );
-        console.warn(marketAccount);
-        return marketAccount as MarketAccount;
-      } catch (e) {
-        if (e instanceof Error) {
-          toast.error(e.message);
-        } else {
-          console.error(e);
-        }
-        return null;
-      }
-    },
-    {
-      enabled: !!marketAccounts,
-    },
-  );
-
-  const { data: marketPair } = useQuery(
-    ["market", marketID],
-    async () => {
-      const resProm = fetch(`${API_URL}/markets/${marketID}`).then((res) =>
-        res.json(),
-      );
-
-      const res = await resProm;
-      return res as ApiMarket;
-    },
-    {
-      keepPreviousData: true,
-      refetchOnWindowFocus: false,
-      refetchInterval: 10 * 1000,
-    },
-  );
-  const DEFAULT_TOKEN_ICON = "/tokenImages/default.png";
-
-  // could refactor
-  const baseAssetIcon = marketAccount
-    ? coinListClient.getCoinInfoByFullName(
-        TypeTag.fromMoveTypeInfo(marketAccount.base_type).toString(),
-      )?.logo_url
-    : DEFAULT_TOKEN_ICON;
-  const quoteAssetIcon = marketAccount
-    ? coinListClient.getCoinInfoByFullName(
-        TypeTag.fromMoveTypeInfo(marketAccount.quote_type).toString(),
-      )?.logo_url
-    : DEFAULT_TOKEN_ICON;
-
-  return (
-    <div
-      className={
-        "mb-4 flex min-h-[105px] w-[378px] justify-between  border-[1px] border-neutral-600 px-[21px] py-[18px]"
-      }
-    >
-      {/* left side */}
-      <div className="flex-1">
-        {/* input copy row 1 */}
-        <div className="mb-[9px] flex items-center">
-          <div className="text-white">
-            <div className="flex items-center text-sm font-bold">
-              <MarketIconPair
-                size={16}
-                baseAssetIcon={baseAssetIcon}
-                quoteAssetIcon={quoteAssetIcon}
-              />
-              {!marketPair?.base ? "GENERIC" : marketPair?.base?.symbol}/
-              {marketPair?.quote.symbol}
-              <RecognizedIcon className="ml-1 inline-block h-[9px] w-[9px] text-center" />
-            </div>
-            {/* row2 within row1 */}
-            <div>
-              <div
-                className="ml-[27.42px] cursor-pointer text-left text-[10px] text-neutral-500"
-                onClick={toggleExpanded}
-              >
-                LAYERZERO {/** TODO */}
-                <ChevronDownIcon
-                  className={`inline-block h-4 w-4 text-center duration-150 ${
-                    expanded && "rotate-180"
-                  }`}
-                />
-              </div>
-              {/* expand container */}
-              <div className="relative overflow-hidden">
-                <div
-                  className={`reveal-container ml-[27.42px] ${
-                    expanded && "revealed"
-                  } line-clamp-[10px] text-left text-[8px] text-neutral-500`}
-                >
-                  <div>MARKET ID: {marketID}</div>
-                  <div>LOT SIZE: {marketAccount?.lot_size}</div>
-                  <div>TICK SIZE: {marketAccount?.tick_size}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* row 2 */}
-        <Button
-          variant="secondary"
-          onClick={() => {
-            onDepositWithdrawClick(marketPair!);
-          }}
-          className={
-            "flex items-center !px-3 !py-1 !text-[10px] !leading-[18px]"
-          }
-        >
-          Deposit / Withdraw
-        </Button>
-      </div>
-      {/* right side */}
-      <div className="ml-[39px] flex-1">
-        <div className="ml-8 flex flex-col text-left">
-          <span className="align-text-top font-roboto-mono text-[10px] font-light text-neutral-500">
-            {!marketPair?.base ? "GENERIC ASSET" : marketPair?.base?.symbol}{" "}
-            BALANCE
-          </span>
-          <p className="font-roboto-mono text-xs font-light text-white">
-            <span className="inline-block align-text-top text-white">
-              {fromRawCoinAmount(
-                marketAccount?.base_total || 0,
-                !marketPair?.base ? 0 : marketPair?.base.decimals || 0,
-              )}
-
-              {/* {marketAccount?.base_total} */}
-            </span>
-          </p>
-        </div>
-        <div className="ml-8 text-left">
-          <span className="font-roboto-mono text-[10px] font-light text-neutral-500">
-            {marketPair?.quote.symbol} BALANCE
-          </span>
-          <p className="font-roboto-mono text-xs font-light text-white">
-            <span className="inline-block text-white">
-              {fromRawCoinAmount(
-                marketAccount?.quote_total || 0,
-                marketPair?.quote.decimals || 0,
-              )}
-            </span>
-          </p>
-        </div>
-      </div>
     </div>
   );
 };
