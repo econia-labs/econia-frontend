@@ -12,7 +12,7 @@ export const ExitIcon: React.FC<React.SVGProps<SVGSVGElement>> = ({
       className={className}
       id={id}
     >
-      <g clip-path="url(#clip0_5487_56117)">
+      <g clipPath="url(#clip0_5487_56117)">
         <path
           d="M7.49483 7.43925L15.526 7.42102"
           stroke="#565656"
