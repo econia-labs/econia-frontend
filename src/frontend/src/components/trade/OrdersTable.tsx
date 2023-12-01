@@ -285,7 +285,7 @@ export const OrdersTable: React.FC<{
   });
 
   return (
-    <div className="scrollbar-none h-[200px] overflow-auto">
+    <div className="scrollbar-none grow overflow-auto">
       <BaseModal
         isOpen={isModalOpen}
         onClose={closeModal}
