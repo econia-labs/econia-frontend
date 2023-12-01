@@ -170,23 +170,23 @@ export const StatsBar: React.FC<{
       {/* Desktop */}
       <div className="hidden justify-between border-b border-neutral-600 px-3 py-3 md:flex lg:px-9">
         <div className="flex overflow-x-clip whitespace-nowrap">
-          <div className="flex items-center">
+          <button
+            className="flex items-center outline-none "
+            onClick={() => {
+              setIsModalOpen(true);
+            }}
+          >
             <MarketIconPair
               baseAssetIcon={iconData?.baseAssetIcon}
               quoteAssetIcon={iconData?.quoteAssetIcon}
             />
             <div className="min-w-[130px] lg:min-w-[160px]">
-              <button
-                className="flex font-roboto-mono text-base font-medium text-neutral-300"
-                onClick={() => {
-                  setIsModalOpen(true);
-                }}
-              >
+              <div className="flex font-roboto-mono text-base font-medium text-neutral-300">
                 {selectedMarket.name}
                 <ChevronDownIcon className="my-auto ml-1 h-[18px] w-[18px] text-white" />
-              </button>
+              </div>
             </div>
-          </div>
+          </button>
           {/* mobile price */}
           <div className="block md:hidden">
             <p className="font-roboto-mono font-light">

@@ -355,9 +355,9 @@ export default function Market({ allMarketData, marketData }: Props) {
         />
         <StatsBar allMarketData={allMarketData} selectedMarket={marketData} />
         <main className="flex h-full min-h-[680px] w-full grow flex-col md:flex-row">
-          <div className="flex flex-col p-3 pr-3 md:w-[calc(100%-296px)] md:pr-0  lg:w-[calc(100%-564px)] lg:pr-3">
-            <div className="mb-3 flex grow flex-col border border-neutral-600">
-              <div className="flex h-full min-h-[400px]">
+          <div className="flex flex-col gap-3 p-3 pb-0 pr-3 md:w-[calc(100%-296px)] md:pr-0  lg:w-[calc(100%-564px)] lg:pr-3">
+            <div className=" flex grow flex-col border border-neutral-600">
+              <div className="flex h-full min-h-[400px] md:min-h-[unset]">
                 {isScriptReady && <TVChartContainer {...defaultTVChartProps} />}
               </div>
 
@@ -365,7 +365,7 @@ export default function Market({ allMarketData, marketData }: Props) {
                 <DepthChart marketData={marketData} />
               </div>
             </div>
-            <div className="max-w-full border border-neutral-600">
+            <div className="h-[260px] max-w-full border border-neutral-600">
               <div className="flex gap-4 bg-transparent pl-4 pt-1 lg:pt-3">
                 <div className="flex gap-4 bg-transparent py-1 text-base lg:py-3 lg:pl-4">
                   <p
@@ -404,7 +404,7 @@ export default function Market({ allMarketData, marketData }: Props) {
                 />
               )}
               {tab === "trade-histories" && (
-                <div className="scrollbar-none h-full max-h-[200px] overflow-auto">
+                <div className="scrollbar-none h-full overflow-auto">
                   <TradeHistoryTable
                     marketData={marketData}
                     marketId={marketData?.market_id}
@@ -421,7 +421,7 @@ export default function Market({ allMarketData, marketData }: Props) {
               )}
             </div>
           </div>
-          <div className="hidden w-0 pr-3 pt-3 lg:flex lg:min-w-[268px]">
+          <div className="hidden w-0 pr-3 pt-3 lg:flex lg:min-w-[268px] ">
             <div className="flex w-full flex-col border border-neutral-600">
               <OrderbookTable
                 marketData={marketData}
@@ -438,7 +438,7 @@ export default function Market({ allMarketData, marketData }: Props) {
                 onDepositWithdrawClick={() => setDepositWithdrawModalOpen(true)}
               />
             </div>
-            <div className="scrollbar-none mt-3 h-full max-h-full min-h-[160px] overflow-auto border border-neutral-600">
+            <div className="scrollbar-none mt-3 h-full max-h-full grid-rows-none  overflow-auto border border-neutral-600">
               <p className="sticky top-0 bg-neutral-800 bg-noise py-3 pl-4 font-jost font-bold text-white">
                 Market Trade History
               </p>
