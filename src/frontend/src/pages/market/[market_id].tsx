@@ -19,7 +19,6 @@ import { OrdersTable } from "@/components/trade/OrdersTable";
 import { TradeHistoryTable } from "@/components/trade/TradeHistoryTable";
 import { useAptos } from "@/contexts/AptosContext";
 import { OrderEntryContextProvider } from "@/contexts/OrderEntryContext";
-import { WS_URL } from "@/env";
 import { useOrderBook } from "@/hooks/useOrderbook";
 import type { ApiMarket, ApiOrder, ApiPriceLevel } from "@/types/api";
 import { type Orderbook } from "@/types/global";
@@ -63,118 +62,118 @@ export default function Market({ allMarketData, marketData }: Props) {
   const [isScriptReady, setIsScriptReady] = useState(false);
 
   // Set up WebSocket API connection
-  useEffect(() => {
-    ws.current = new WebSocket(WS_URL);
-    ws.current.onopen = () => {
-      // because useEffects can fire more than once and onopen is an async function, we still want to check readystate when we send a message
-      if (
-        marketData?.market_id == null ||
-        ws.current == null ||
-        ws.current.readyState !== WebSocket.OPEN
-      ) {
-        return;
-      }
+  // useEffect(() => {
+  //   ws.current = new WebSocket(WS_URL);
+  //   ws.current.onopen = () => {
+  //     // because useEffects can fire more than once and onopen is an async function, we still want to check readystate when we send a message
+  //     if (
+  //       marketData?.market_id == null ||
+  //       ws.current == null ||
+  //       ws.current.readyState !== WebSocket.OPEN
+  //     ) {
+  //       return;
+  //     }
 
-      // Subscribe to orderbook price level updates
-      ws.current.send(
-        JSON.stringify({
-          method: "subscribe",
-          channel: "price_levels",
-          params: {
-            market_id: marketData.market_id,
-          },
-        }),
-      );
-    };
+  //     // Subscribe to orderbook price level updates
+  //     ws.current.send(
+  //       JSON.stringify({
+  //         method: "subscribe",
+  //         channel: "price_levels",
+  //         params: {
+  //           market_id: marketData.market_id,
+  //         },
+  //       }),
+  //     );
+  //   };
 
-    // Close WebSocket connection on page close
-    return () => {
-      if (ws.current != null) {
-        ws.current.close();
-      }
-    };
-  }, [marketData?.market_id]);
+  //   // Close WebSocket connection on page close
+  //   return () => {
+  //     if (ws.current != null) {
+  //       ws.current.close();
+  //     }
+  //   };
+  // }, [marketData?.market_id]);
 
   // Handle wallet connect and disconnect
-  useEffect(() => {
-    if (
-      marketData?.market_id == null ||
-      ws.current == null ||
-      ws.current.readyState !== WebSocket.OPEN
-    ) {
-      return;
-    }
-    if (account?.address != null) {
-      //  commenting this out because it doesn't seem to be doing what it's supposed to
-      //  maybe if we made it synchronous it would work?
+  // useEffect(() => {
+  //   if (
+  //     marketData?.market_id == null ||
+  //     ws.current == null ||
+  //     ws.current.readyState !== WebSocket.OPEN
+  //   ) {
+  //     return;
+  //   }
+  //   if (account?.address != null) {
+  //     //  commenting this out because it doesn't seem to be doing what it's supposed to
+  //     //  maybe if we made it synchronous it would work?
 
-      // If the WebSocket connection is not ready,
-      // wait for the WebSocket connection to be opened.
-      // if (ws.current.readyState === WebSocket.CONNECTING) {
-      //   const interval = setInterval(() => {
-      //     if (ws.current?.readyState === WebSocket.OPEN) {
-      //       clearInterval(interval);
-      //     }
-      //   }, 500);
-      // }
+  //     // If the WebSocket connection is not ready,
+  //     // wait for the WebSocket connection to be opened.
+  //     // if (ws.current.readyState === WebSocket.CONNECTING) {
+  //     //   const interval = setInterval(() => {
+  //     //     if (ws.current?.readyState === WebSocket.OPEN) {
+  //     //       clearInterval(interval);
+  //     //     }
+  //     //   }, 500);
+  //     // }
 
-      // Subscribe to orders by account channel
-      ws.current.send(
-        JSON.stringify({
-          method: "subscribe",
-          channel: "orders",
-          params: {
-            market_id: marketData.market_id,
-            user_address: account.address,
-          },
-        }),
-      );
+  //     // Subscribe to orders by account channel
+  //     ws.current.send(
+  //       JSON.stringify({
+  //         method: "subscribe",
+  //         channel: "orders",
+  //         params: {
+  //           market_id: marketData.market_id,
+  //           user_address: account.address,
+  //         },
+  //       }),
+  //     );
 
-      // Subscribe to fills by account channel
-      ws.current.send(
-        JSON.stringify({
-          method: "subscribe",
-          channel: "fills",
-          params: {
-            market_id: marketData.market_id,
-            user_address: account.address,
-          },
-        }),
-      );
+  //     // Subscribe to fills by account channel
+  //     ws.current.send(
+  //       JSON.stringify({
+  //         method: "subscribe",
+  //         channel: "fills",
+  //         params: {
+  //           market_id: marketData.market_id,
+  //           user_address: account.address,
+  //         },
+  //       }),
+  //     );
 
-      // Store address for unsubscribing when wallet is disconnected.
-      prevAddress.current = account.address;
-    } else {
-      if (prevAddress.current != null) {
-        // Unsubscribe to orders by account channel
-        ws.current.send(
-          JSON.stringify({
-            method: "unsubscribe",
-            channel: "orders",
-            params: {
-              market_id: marketData.market_id,
-              user_address: prevAddress.current,
-            },
-          }),
-        );
+  //     // Store address for unsubscribing when wallet is disconnected.
+  //     prevAddress.current = account.address;
+  //   } else {
+  //     if (prevAddress.current != null) {
+  //       // Unsubscribe to orders by account channel
+  //       ws.current.send(
+  //         JSON.stringify({
+  //           method: "unsubscribe",
+  //           channel: "orders",
+  //           params: {
+  //             market_id: marketData.market_id,
+  //             user_address: prevAddress.current,
+  //           },
+  //         }),
+  //       );
 
-        // Unsubscribe to fills by account channel
-        ws.current.send(
-          JSON.stringify({
-            method: "unsubscribe",
-            channel: "fills",
-            params: {
-              market_id: marketData.market_id,
-              user_address: prevAddress.current,
-            },
-          }),
-        );
+  //       // Unsubscribe to fills by account channel
+  //       ws.current.send(
+  //         JSON.stringify({
+  //           method: "unsubscribe",
+  //           channel: "fills",
+  //           params: {
+  //             market_id: marketData.market_id,
+  //             user_address: prevAddress.current,
+  //           },
+  //         }),
+  //       );
 
-        // Clear saved address
-        prevAddress.current = undefined;
-      }
-    }
-  }, [marketData?.market_id, account?.address]);
+  //       // Clear saved address
+  //       prevAddress.current = undefined;
+  //     }
+  //   }
+  // }, [marketData?.market_id, account?.address]);
 
   // Handle incoming WebSocket messages
   useEffect(() => {

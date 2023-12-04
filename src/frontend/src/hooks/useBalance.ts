@@ -2,7 +2,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAptos } from "@/contexts/AptosContext";
 import { ApiMarket } from "@/types/api";
-import { API_URL, CUSTODIAN_ID } from "@/env";
+import { API_URL } from "@/env";
+import { NO_CUSTODIAN } from "@/constants";
 
 export const useBalance = (marketData: ApiMarket) => {
   const { account } = useAptos();
@@ -15,7 +16,7 @@ export const useBalance = (marketData: ApiMarket) => {
     async () => {
       try {
         const response = await fetch(
-          `${API_URL}/rpc/user_balance?user_address=${account?.address}&market=${marketData.market_id}&custodian=${CUSTODIAN_ID}`,
+          `${API_URL}/rpc/user_balance?user_address=${account?.address}&market=${marketData.market_id}&custodian=${NO_CUSTODIAN}`,
         );
         const balance = await response.json();
         if (balance.length) {
