@@ -28,6 +28,7 @@ pnpm i # pnpm is required
 Copy .env.example file
 
 ```bash
+<<<<<<< Updated upstream
 cp -R .env.example .env.local
 ```
 
@@ -62,3 +63,8 @@ To generate a `GITHUB_ACCESS_TOKEN`:
 1. In the `Select scopes` section, click on `repo - Full control of private repositories` to select all repository-related options.
 1. Click `Generate token`
 1. Copy the generated token to your Vercel environment variables and name it `GITHUB_ACCESS_TOKEN`
+=======
+npm run dev 
+```
+## Deployment guide
+>>>>>>> Stashed changes

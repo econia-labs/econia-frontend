@@ -324,7 +324,7 @@ export const LimitOrderEntry: React.FC<{
             step="any"
             placeholder="0.00"
             {...register("price", {
-              required: "please input price",
+              required: "PLEASE INPUT PRICE",
               min: {
                 value: MIN_PRICE,
                 message: "Min price is: " + MIN_PRICE,
@@ -379,7 +379,7 @@ export const LimitOrderEntry: React.FC<{
             step="any"
             placeholder="0.00"
             {...register("size", {
-              required: "please input amount",
+              required: "PLEASE INPUT AMOUNT",
               min: 0,
               // max: HI_PRICE,
               // TODO: check that size does not exceed base currency balance for asks

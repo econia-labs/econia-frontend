@@ -230,7 +230,7 @@ export const MarketOrderEntry: React.FC<{
             step="any"
             placeholder="0.00"
             {...register("size", {
-              required: "please input amount",
+              required: "PLEASE INPUT AMOUNT",
               min: 0,
             })}
             className="z-30 w-full bg-transparent pb-3 pl-14 pr-14 pt-3 text-right font-roboto-mono text-xs font-light text-neutral-400 outline-none"
