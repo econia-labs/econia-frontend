@@ -433,7 +433,7 @@ export const LimitOrderEntry: React.FC<{
             <Button
               type="submit"
               variant={"primary"}
-              className="w-full text-[16px]/6"
+              className="w-full !bg-blue text-[16px]/6"
               onClick={(e) => {
                 e.preventDefault();
                 onDepositWithdrawClick && onDepositWithdrawClick();
