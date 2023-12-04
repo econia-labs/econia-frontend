@@ -7,7 +7,7 @@ import { Button } from "@/components/Button";
 import { ConnectedButton } from "@/components/ConnectedButton";
 import { useAptos } from "@/contexts/AptosContext";
 import { useOrderEntry } from "@/contexts/OrderEntryContext";
-import { API_URL, CUSTODIAN_ID, ECONIA_ADDR } from "@/env";
+import { API_URL, ECONIA_ADDR } from "@/env";
 import { useMarketAccountBalance } from "@/hooks/useMarketAccountBalance";
 import { type ApiMarket } from "@/types/api";
 import { type Side } from "@/types/global";
