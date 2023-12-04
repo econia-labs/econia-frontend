@@ -39,7 +39,7 @@ export const OrderEntry: React.FC<{
         </button>
       </div>
       <Tab.Group>
-        <Tab.List className="my-5 flex justify-evenly">
+        <Tab.List className="my-5 flex justify-center gap-[31.25px]">
           <Tab className="font-roboto-mono text-sm uppercase outline-none ui-selected:font-medium ui-selected:text-white ui-not-selected:font-light ui-not-selected:text-neutral-500">
             Limit
           </Tab>
