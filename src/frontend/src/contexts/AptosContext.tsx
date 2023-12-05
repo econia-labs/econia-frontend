@@ -11,7 +11,12 @@ import {
 import { toast } from "react-toastify";
 
 import { MAINNET_TOKEN_LIST, TESTNET_TOKEN_LIST } from "@/constants";
-import { NETWORK_NAME, RPC_NODE_URL } from "@/env";
+import {
+  NETWORK_NAME,
+  READ_ONLY_MESSAGE,
+  READ_ONLY_MODE,
+  RPC_NODE_URL,
+} from "@/env";
 
 type WalletContextState = ReturnType<typeof useWallet>;
 
@@ -43,6 +48,10 @@ export function AptosContextProvider({ children }: PropsWithChildren) {
     async (
       ...args: Parameters<WalletContextState["signAndSubmitTransaction"]>
     ) => {
+      if (READ_ONLY_MODE === 1) {
+        toast.error(READ_ONLY_MESSAGE);
+        return;
+      }
       let transaction = args[0];
       const options = args[1];
       if (isEntryFunctionPayload(transaction)) {
