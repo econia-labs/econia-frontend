@@ -82,6 +82,7 @@ export function ConnectWalletContextProvider({ children }: PropsWithChildren) {
       <AutoConnect />
       {children}
       <BaseModal
+        className="md:w-[650px]"
         isOpen={open}
         onClose={() => setOpen(false)}
         onBack={() => setOpen(false)}
