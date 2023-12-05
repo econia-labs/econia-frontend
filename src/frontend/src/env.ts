@@ -25,3 +25,7 @@ export const NETWORK_NAME = process.env.NEXT_PUBLIC_NETWORK_NAME;
 export const AUDIT_ADDR = process.env.NEXT_PUBLIC_AUDIT_ONLY_ADDR;
 export const UNCONNECTED_NOTICE_MESSAGE =
   process.env.NEXT_PUBLIC_UNCONNECTED_NOTICE_MESSAGE;
+export const READ_ONLY_MODE = Number(process.env.NEXT_PUBLIC_READ_ONLY);
+export const READ_ONLY_MESSAGE = String(
+  process.env.NEXT_PUBLIC_READ_ONLY_MESSAGE,
+);
