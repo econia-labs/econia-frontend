@@ -149,7 +149,7 @@ export function OrderbookTable({
     <div className="flex grow flex-col">
       {/* title row */}
       <div className="hidden border-b border-neutral-600 px-3 py-3 lg:block">
-        <div className="flex justify-center">
+        <div className="flex justify-between">
           <p className="font-jost text-base font-bold text-white">Order Book</p>
           {/* select */}
           {/* TODO: SHOW WHEN API IS UP */}
