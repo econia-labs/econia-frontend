@@ -102,23 +102,25 @@ export default function Faucet({
       <div className="flex h-screen flex-col">
         <Header logoHref={`/market/${allMarketData[0].market_id}`} />
         <main className="flex h-full w-full">
-          <div className="m-auto flex flex-wrap justify-center gap-8">
+          <div className="flex w-full">
             {TYPE_TAGS.map((typeTag, i) => (
               <div
-                className="mx-3 flex h-60 w-96 flex-col items-center justify-center border border-neutral-600 p-8"
+                className={`flex flex-1 flex-col items-center justify-center gap-10 ${
+                  i === 0 ? "border-r border-r-neutral-600" : ""
+                }`}
                 key={i}
               >
                 <h2 className="font-jost text-6xl font-bold text-white">
                   {coinInfoList[i].symbol}
                 </h2>
-                <p className="mt-2 font-roboto-mono text-gray-400">
+                <p className="font-roboto-mono text-gray-400">
                   Balance: {balanceQueries[i].data ?? "-"}{" "}
                   {coinInfoList[i].symbol}
                 </p>
-                <ConnectedButton className="mt-5 w-full">
+                <ConnectedButton>
                   <Button
                     variant="primary"
-                    className="mt-5 w-full"
+                    className="px-6 pt-3"
                     onClick={async () => await mintCoin(typeTag, i)}
                     disabled={isLoadingArray[i]}
                   >
