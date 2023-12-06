@@ -71,23 +71,23 @@ export const MarketOrderEntry: React.FC<{
         return;
       }
       const maxSize = balance?.quote_available / Number(price);
-      setValue(
-        "size",
-        `${Number(Number((percent / 100) * maxSize).toFixed(4))}`,
-      );
+
+      setSTotalSize(Number((percent / 100) * maxSize));
     }
     if (side === "sell") {
       if (!balance?.base_available) {
         return;
       }
-      setValue(
-        "size",
-        `${Number(
-          Number((balance.base_available * percent) / 100).toFixed(4),
-        )}`,
-      );
+      setSTotalSize(Number((balance.base_available * percent) / 100));
     }
   }, [percent, balance, side]);
+
+  const setSTotalSize = (value: number | string) => {
+    const v = value
+      ? Number(Number(value).toFixed(marketData.quote.decimals))
+      : value;
+    setValue("size", `${v}`);
+  };
 
   const { data: takerFeeDivisor } = useQuery(["takerFeeDivisor"], async () => {
     try {
@@ -295,8 +295,7 @@ export const MarketOrderEntry: React.FC<{
           }`}
           className="cursor-pointer"
           onClick={() => {
-            setValue(
-              "size",
+            setSTotalSize(
               balance?.base_available ? balance?.base_available.toString() : "",
             );
           }}

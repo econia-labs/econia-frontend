@@ -132,7 +132,9 @@ export const LimitOrderEntry: React.FC<{
       takerWeight = 1;
     }
     const sizeApplyFee = Number(totalSize) * takerWeight;
-    return `${Number(((sizeApplyFee * 1) / takerFeeDivisor).toFixed(4))}`;
+    return `${Number(
+      ((sizeApplyFee * 1) / takerFeeDivisor).toFixed(marketData.base.decimals),
+    )}`;
   }, [takerFeeDivisor, watchPrice, watchSize]);
 
   // useEffect(() => {
@@ -284,7 +286,9 @@ export const LimitOrderEntry: React.FC<{
       const maxSize = balance?.quote_available / Number(watchPrice);
       setValue(
         "size",
-        `${Number(Number((percent / 100) * maxSize).toFixed(4))}`,
+        `${Number(
+          Number((percent / 100) * maxSize).toFixed(marketData.base.decimals),
+        )}`,
       );
     }
     if (side === "sell") {
@@ -294,7 +298,9 @@ export const LimitOrderEntry: React.FC<{
       setValue(
         "size",
         `${Number(
-          Number((balance.base_available * percent) / 100).toFixed(4),
+          Number((balance.base_available * percent) / 100).toFixed(
+            marketData.base.decimals,
+          ),
         )}`,
       );
     }
@@ -303,12 +309,19 @@ export const LimitOrderEntry: React.FC<{
   useEffect(() => {
     // totalSize
     if (!Number(watchPrice) || !Number(watchSize)) {
-      setValue("totalSize", "");
+      setSTotalSize("");
       return;
     }
     const total = Number(watchSize) * Number(watchPrice);
-    setValue("totalSize", `${total}`);
+    setSTotalSize(total);
   }, [watchSize, watchPrice, side]);
+
+  const setSTotalSize = (value: number | string) => {
+    const v = value
+      ? Number(Number(value).toFixed(marketData.quote.decimals))
+      : value;
+    setValue("totalSize", `${v}`);
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -386,10 +399,10 @@ export const LimitOrderEntry: React.FC<{
               onChange: (e) => {
                 const price = Number(getValues("price"));
                 if (!isNaN(price) && !isNaN(e.target.value)) {
-                  const totalSize = (price * e.target.value).toFixed(4);
-                  setValue("totalSize", totalSize);
+                  const totalSize = (price * e.target.value).toString();
+                  setSTotalSize(totalSize);
                 } else {
-                  setValue("totalSize", "");
+                  setSTotalSize("");
                 }
               },
             })}
