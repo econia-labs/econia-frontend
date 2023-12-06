@@ -335,8 +335,8 @@ export const OrdersTable: React.FC<{
         <tbody>
           {!connected ? (
             <tr>
-              <td colSpan={7}>
-                <div className="flex h-[150px] flex-col items-center justify-center">
+              <td colSpan={10}>
+                <div className="flex h-[180px] flex-col items-center justify-center">
                   <ConnectedButton />
                 </div>
               </td>
@@ -365,7 +365,7 @@ export const OrdersTable: React.FC<{
             </>
           ) : data.length === 0 ? (
             <tr>
-              <td colSpan={7}>
+              <td colSpan={10}>
                 <div className="flex h-[150px] flex-col items-center justify-center text-sm font-light uppercase text-neutral-500">
                   No orders to show
                 </div>

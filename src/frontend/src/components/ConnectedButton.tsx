@@ -22,7 +22,7 @@ export const ConnectedButton: React.FC<
             connectWallet();
           }}
         >
-          Connect Wallet
+          CONNECT WALLET
         </Button>
       ) : (
         children
