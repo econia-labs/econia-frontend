@@ -25,6 +25,7 @@ import { MarketIconPair } from "./MarketIconPair";
 import { BaseModal } from "./modals/BaseModal";
 import { SelectMarketContent } from "./trade/DepositWithdrawModal/SelectMarketContent";
 import { useOrderBookData } from "@/features/hooks";
+import { useOrderEntry } from "@/contexts/OrderEntryContext";
 
 const DEFAULT_TOKEN_ICON = "/tokenImages/default.png";
 
@@ -74,6 +75,7 @@ export const StatsBar: React.FC<{
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { coinListClient } = useAptos();
   const { highestBid, lowestAsk, orderBook } = useOrderBookData();
+  const { setPrice } = useOrderEntry();
 
   useEffect(() => {
     if (router.asPath.includes("?recognized=false")) {
@@ -111,6 +113,7 @@ export const StatsBar: React.FC<{
       const data = await response.json();
       const priceStats = data[0];
       dispatch(setPriceStats(data[0]));
+
       const formattedPriceStats = Object.keys(priceStats).reduce(
         (acc: { [key: string]: number }, key) => {
           if (key === "price_change_percentage") {
@@ -130,6 +133,9 @@ export const StatsBar: React.FC<{
         },
         {},
       );
+      if (formattedPriceStats.last_price) {
+        setPrice(formattedPriceStats.last_price.toString());
+      }
       setIsFirstFetch(false);
       return formattedPriceStats;
     },

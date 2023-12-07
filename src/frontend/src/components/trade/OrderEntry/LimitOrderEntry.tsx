@@ -21,6 +21,7 @@ import { fromDecimalPrice, toDecimalPrice } from "@/utils/econia";
 import { useBalance } from "@/hooks/useBalance";
 import { useOrderBookData, usePriceStats } from "@/features/hooks";
 import RangeSlider from "@/components/slider-order/RangeSlider";
+import { useOrderBook } from "@/hooks/useOrderbook";
 type LimitFormValues = {
   price: string | undefined;
   size: string;
@@ -35,9 +36,9 @@ export const LimitOrderEntry: React.FC<{
   onDepositWithdrawClick?: () => void;
 }> = ({ marketData, side, onDepositWithdrawClick }) => {
   // const { price } = useOrderEntry();
-  const {
-    data: { last_price },
-  } = usePriceStats();
+  // const {
+  //   data: { last_price },
+  // } = usePriceStats();
   const { signAndSubmitTransaction, account, aptosClient } = useAptos();
   const {
     handleSubmit,
@@ -73,14 +74,23 @@ export const LimitOrderEntry: React.FC<{
   const watchPrice = watch("price", undefined);
 
   const watchSize = watch("size");
+  // const { selectedPrice } = useOrderBookData()
+
+  const { price } = useOrderEntry();
+
+  // useEffect(() => {
+  //   if (last_price) {
+  //     if (watchPrice === "" || watchPrice === undefined) {
+  //       setValue("price", (last_price / 1000).toString());
+  //     }
+  //   }
+  // }, [last_price]);
 
   useEffect(() => {
-    if (last_price) {
-      if (watchPrice === "" || watchPrice === undefined) {
-        setValue("price", (last_price / 1000).toString());
-      }
+    if (price) {
+      setValue("price", Number(Number(price).toFixed(3)).toString());
     }
-  }, [last_price]);
+  }, [price]);
 
   const { highestBid, lowestAsk } = useOrderBookData();
 
