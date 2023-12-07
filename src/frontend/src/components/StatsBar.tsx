@@ -169,7 +169,7 @@ export const StatsBar: React.FC<{
       </BaseModal>
       {/* Desktop */}
       <div className="hidden justify-between border-b border-neutral-600 px-3 py-3 md:flex lg:px-9">
-        <div className="flex overflow-x-clip whitespace-nowrap">
+        <div className="flex gap-14 overflow-x-clip whitespace-nowrap">
           <button
             className="flex items-center outline-none "
             onClick={() => {
