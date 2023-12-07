@@ -287,7 +287,7 @@ export const LimitOrderEntry: React.FC<{
       setValue(
         "size",
         `${Number(
-          Number((percent / 100) * maxSize).toFixed(marketData.base.decimals),
+          Number((percent / 100) * maxSize).toFixed(baseDecimalPlace),
         )}`,
       );
     }
@@ -299,7 +299,7 @@ export const LimitOrderEntry: React.FC<{
         "size",
         `${Number(
           Number((balance.base_available * percent) / 100).toFixed(
-            marketData.base.decimals,
+            baseDecimalPlace,
           ),
         )}`,
       );
@@ -315,11 +315,21 @@ export const LimitOrderEntry: React.FC<{
     const total = Number(watchSize) * Number(watchPrice);
     setSTotalSize(total);
   }, [watchSize, watchPrice, side]);
+  const baseDecimalPlace = Math.round(
+    Math.log(10 ** marketData.base.decimals / marketData.lot_size) /
+      Math.log(10),
+  );
 
   const setSTotalSize = (value: number | string) => {
-    const v = value
-      ? Number(Number(value).toFixed(marketData.quote.decimals))
-      : value;
+    const quoteDecimalPlace = Math.round(
+      Math.log(
+        1 /
+          (marketData.tick_size /
+            10 ** marketData.quote.decimals /
+            (marketData.lot_size / 10 ** marketData.base.decimals)),
+      ) / Math.log(10),
+    );
+    const v = value ? Number(Number(value).toFixed(quoteDecimalPlace)) : value;
     setValue("totalSize", `${v}`);
   };
 

@@ -83,9 +83,15 @@ export const MarketOrderEntry: React.FC<{
   }, [percent, balance, side]);
 
   const setSTotalSize = (value: number | string) => {
-    const v = value
-      ? Number(Number(value).toFixed(marketData.quote.decimals))
-      : value;
+    const quoteDecimalPlace = Math.round(
+      Math.log(
+        1 /
+          (marketData.tick_size /
+            10 ** marketData.quote.decimals /
+            (marketData.lot_size / 10 ** marketData.base.decimals)),
+      ) / Math.log(10),
+    );
+    const v = value ? Number(Number(value).toFixed(quoteDecimalPlace)) : value;
     setValue("size", `${v}`);
   };
 
