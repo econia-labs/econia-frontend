@@ -7,14 +7,12 @@ import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 
 import { useAptos } from "@/contexts/AptosContext";
+import { useOrderEntry } from "@/contexts/OrderEntryContext";
 import { API_URL } from "@/env";
+import { useOrderBookData } from "@/features/hooks";
 import { setPriceStats } from "@/features/priceStatsSlice";
 import { type ApiMarket } from "@/types/api";
-import {
-  fromDecimalPrice,
-  toDecimalPrice,
-  toDecimalSize,
-} from "@/utils/econia";
+import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 import { plusMinus } from "@/utils/formatter";
 import { TypeTag } from "@/utils/TypeTag";
 
@@ -24,8 +22,6 @@ import { TwitterIcon } from "./icons/TwitterIcon";
 import { MarketIconPair } from "./MarketIconPair";
 import { BaseModal } from "./modals/BaseModal";
 import { SelectMarketContent } from "./trade/DepositWithdrawModal/SelectMarketContent";
-import { useOrderBookData } from "@/features/hooks";
-import { useOrderEntry } from "@/contexts/OrderEntryContext";
 
 const DEFAULT_TOKEN_ICON = "/tokenImages/default.png";
 

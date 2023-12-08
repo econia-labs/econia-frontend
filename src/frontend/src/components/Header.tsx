@@ -119,7 +119,7 @@ export function Header({
             </NavItem>
           </div>
           <div className="flex flex-1 justify-end">
-            <ConnectedButton className="w-[156px] py-1">
+            <ConnectedButton className="py-1">
               <div className="flex items-center gap-4">
                 {onDepositWithdrawClick && (
                   <Button
