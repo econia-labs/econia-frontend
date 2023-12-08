@@ -146,11 +146,12 @@ export const OrdersTable: React.FC<{
             })}
           </span>
         ),
+        size: 200,
       }),
       columnHelper.accessor("order_type", {
         header: "Type",
         cell: (info) => info.getValue().toUpperCase() || "-",
-        size: 60,
+        size: 70,
       }),
       columnHelper.accessor("direction", {
         header: "Side",
@@ -194,6 +195,7 @@ export const OrdersTable: React.FC<{
             return "-";
           }
         },
+        size: 170,
       }),
       columnHelper.accessor("remaining_size", {
         header: "Remaining size",
@@ -247,7 +249,7 @@ export const OrdersTable: React.FC<{
           // TODO colors for other order statuses?
           return value.toUpperCase();
         },
-        size: 80,
+        size: 90,
       }),
       columnHelper.display({
         header: "Cancel",
