@@ -152,7 +152,7 @@ const DepositWithdrawForm: React.FC<{
           onSelectCoin={setSelectedCoin}
           startAdornment={mode === "deposit" ? "DEPOSIT COIN" : "WITHDRAW COIN"}
         />
-        <div className="mt-6">
+        <div className="mt-4">
           <Input
             value={amount}
             onChange={setAmount}
@@ -162,7 +162,7 @@ const DepositWithdrawForm: React.FC<{
             autoFocus={true}
           />
         </div>
-        <div className="mt-10 flex w-full justify-between">
+        <div className="mt-6 flex w-full justify-between">
           <p className="font-roboto-mono uppercase text-neutral-500">
             Available in market account
           </p>
@@ -212,20 +212,20 @@ export const DepositWithdrawContent: React.FC<{
   isRegistered: boolean;
 }> = ({ selectedMarket, isRegistered }) => {
   return (
-    <div className="w-full px-12 pb-10 pt-8">
+    <div className="px-8 pb-6 pt-6">
       <h2 className="font-jost text-3xl font-bold text-white">
         {selectedMarket.name.replace("-", " / ")}
       </h2>
       <Tab.Group>
-        <Tab.List className="mt-8 w-full">
-          <Tab className="w-1/2 border-b border-b-neutral-600 py-6 font-jost font-bold text-neutral-600 outline-none ui-selected:border-b-white ui-selected:text-white">
+        <Tab.List className="mt-5 w-full">
+          <Tab className="w-1/2 border-b border-b-neutral-600 py-4 font-jost font-bold text-neutral-600 outline-none ui-selected:border-b-white ui-selected:text-white">
             Deposit
           </Tab>
-          <Tab className="w-1/2 border-b border-b-neutral-600 py-6 font-jost font-bold text-neutral-600 outline-none ui-selected:border-b-white ui-selected:text-white">
+          <Tab className="w-1/2 border-b border-b-neutral-600 py-4 font-jost font-bold text-neutral-600 outline-none ui-selected:border-b-white ui-selected:text-white">
             Withdraw
           </Tab>
         </Tab.List>
-        <Tab.Panels className="mt-12 w-full">
+        <Tab.Panels className="mt-9 w-full">
           <Tab.Panel>
             <DepositWithdrawForm
               selectedMarket={selectedMarket}
