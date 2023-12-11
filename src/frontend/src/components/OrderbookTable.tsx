@@ -6,6 +6,8 @@ import { type ApiMarket } from "@/types/api";
 import { type Orderbook, type PriceLevel } from "@/types/global";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 import { calculateSpread } from "@/utils/formatter";
+import { useOrderBookData } from "@/features/hooks";
+import Tooltip from "rc-tooltip";
 // import { Listbox } from "@headlessui/react";
 // import ChevronDownIcon from "@heroicons/react/24/outline/ChevronDownIcon";
 // import CheckIcon from "@heroicons/react/24/outline/CheckIcon";
@@ -30,6 +32,7 @@ const Row: React.FC<{
 }> = ({ level, type, highestSize, marketData, updatedLevel }) => {
   const { setPrice } = useOrderEntry();
   const [flash, setFlash] = useState<"flash-red" | "flash-green" | "">("");
+  const { focus, setFocus } = useOrderBookData(marketData);
 
   useEffect(() => {
     if (updatedLevel == undefined) {
@@ -58,45 +61,90 @@ const Row: React.FC<{
   //   type === "bid" ? "rgba(110, 213, 163, 30%)" : "rgba(213, 110, 110, 30%)";
 
   return (
-    <div
-      className={` flash-bg-once px-3 ${flash} relative flex h-6 cursor-pointer items-center justify-between py-[1px] hover:ring-1 hover:ring-neutral-600`}
-      onClick={() => {
-        setPrice(price.toString());
+    <Tooltip
+      placement="left"
+      overlay={
+        focus.price === price ? (
+          <div className="w- h-fit  border bg-neutral-800 bg-noise px-4 py-2 text-neutral-100">
+            <div className="flex items-center justify-between gap-6">
+              <span>Average price </span>
+              <span>{focus.average}</span>
+            </div>
+            <div className="flex items-center justify-between gap-6">
+              <span>Sum {marketData.base.symbol} </span>
+              <span>{focus.totalBase}</span>
+            </div>
+            <div className="flex items-center justify-between gap-6">
+              <span>Sum {marketData.quote.symbol} </span>
+              <span>{focus.totalQuote}</span>
+            </div>
+          </div>
+        ) : null
+      }
+      overlayInnerStyle={{
+        width: "fit-content",
+        maxHeight: "fit-content",
+        padding: 0,
+        borderRadius: 0,
       }}
-      // https://github.com/econia-labs/econia/pull/371
-      // commenting out this change because it overrides orderbook flash
-      // style={{
-      //   background: `linear-gradient(
-      //     to left,
-      //     ${barColor},
-      //     ${barColor} ${barPercentage}%,
-      //     transparent ${barPercentage}%
-      //   )`,
-      // }}
     >
-      <div className={`flex w-full justify-between  lg:flex-row`}>
-        <div
-          className={`z-10  text-right font-roboto-mono text-xs ${
-            type === "ask" ? "text-red" : "text-green"
-          }`}
-        >
-          {price.toLocaleString()}
-        </div>
-        <div className={`z-10  py-0.5 font-roboto-mono text-xs text-white `}>
-          {Number(size).toLocaleString()}
-        </div>
-      </div>
       <div
-        className={`absolute  z-0 h-full ${
-          type === "ask"
-            ? "left-0 bg-red/30 lg:left-[unset] lg:right-0"
-            : "right-0 bg-green/30"
-        }`}
-        // dynamic taillwind?
+        onMouseOver={() => setFocus({ side: type, price })}
+        onMouseOut={() => setFocus({ side: "", price })}
+        className={`flash-bg-once relative px-3 ${flash} relative flex h-6 cursor-pointer items-center justify-between py-[1px] hover:ring-1 hover:ring-neutral-600`}
+        onClick={() => {
+          setPrice(price.toString());
+        }}
+        // https://github.com/econia-labs/econia/pull/371
+        // commenting out this change because it overrides orderbook flash
+        // style={{
+        //   background: `linear-gradient(
+        //     to left,
+        //     ${barColor},
+        //     ${barColor} ${barPercentage}%,
+        //     transparent ${barPercentage}%
+        //   )`,
+        // }}
+      >
+        <div className={`flex w-full justify-between  lg:flex-row`}>
+          <div
+            className={`z-10  text-right font-roboto-mono text-xs ${
+              type === "ask" ? "text-red" : "text-green"
+            }`}
+          >
+            {price.toLocaleString()}
+          </div>
+          <div className={`z-10  py-0.5 font-roboto-mono text-xs text-white `}>
+            {Number(size).toLocaleString()}
+          </div>
+        </div>
+        <div
+          className={`absolute  z-0 h-full ${
+            type === "ask"
+              ? "left-0 bg-red/30 lg:left-[unset] lg:right-0"
+              : "right-0 bg-green/30"
+          }`}
+          // dynamic taillwind?
 
-        style={{ width: `${(100 * level.size) / highestSize}%` }}
-      ></div>
-    </div>
+          style={{ width: `${(100 * level.size) / highestSize}%` }}
+        ></div>
+        <div
+          className={`mask pointer-events-none absolute left-0 top-0 w-full bg-white/[0.1] ${
+            (focus.side === "ask" && type === "ask" && price <= focus.price) ||
+            (focus.side === "bid" && type === "bid" && price >= focus.price)
+              ? "h-full"
+              : "h-0"
+          }`}
+        ></div>
+        {/* {focus.price === price && (
+          <div className="bg-noise bg-white/[0.1]  border absolute w-fit h-fit p-4 -left-[10px] top-0 z-50 text-neutral-100">
+            <div className="flex justify-between items-center">
+              <span>Average price </span><span>{'6.99'}</span>
+            </div>
+          </div>
+        )} */}
+      </div>
+    </Tooltip>
   );
 };
 
@@ -205,7 +253,7 @@ export function OrderbookTable({
         </div>
       </div>
       <div
-        className={`scrollbar-none relative flex h-[173px] grow overflow-y-auto lg:flex-col ${
+        className={`scrollbar-none relative flex h-[173px] grow lg:flex-col ${
           (data?.asks?.length ?? 0) < 12 || (data?.bids?.length ?? 0) < 14
             ? "flex items-center"
             : ""
@@ -275,7 +323,7 @@ export function OrderbookTable({
               </div>
             </div>
             {/* BID */}
-            <div className="scrollbar-none flex h-[calc((100%-26px)/2)] w-[calc(50%+0.5px)] grow flex-col overflow-auto lg:w-auto">
+            <div className="scrollbar-none flex h-[calc((100%-26px)/2)] w-[calc(50%+0.5px)] grow flex-col overflow-y-auto lg:w-auto">
               {data?.bids?.map((level) => (
                 <Row
                   level={level}

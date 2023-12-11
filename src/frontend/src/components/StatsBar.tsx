@@ -70,7 +70,7 @@ export const StatsBar: React.FC<{
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { coinListClient } = useAptos();
-  const { highestBid, lowestAsk, orderBook } = useOrderBookData();
+  const { highestBid, lowestAsk, orderBook } = useOrderBookData(selectedMarket);
   const { setPrice } = useOrderEntry();
 
   useEffect(() => {
