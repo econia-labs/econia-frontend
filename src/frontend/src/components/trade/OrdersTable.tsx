@@ -308,7 +308,7 @@ export const OrdersTable: React.FC<{
         className={"w-full table-fixed" + (className ? ` ${className}` : "")}
       >
         <thead
-          className="sticky top-0 h-8 bg-[#020202] shadow-[inset_0_-1px_0_theme(colors.neutral.600)]"
+          className="sticky top-0 h-10 bg-[#020202] shadow-[inset_0_-1px_0_theme(colors.neutral.600)]"
           style={{
             backgroundImage: `url(${bg.src})`,
           }}
