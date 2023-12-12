@@ -63,20 +63,23 @@ const Row: React.FC<{
   return (
     <Tooltip
       placement="left"
+      mouseLeaveDelay={0}
+      // showArrow={false}
+
       overlay={
-        focus.price === price ? (
+        focus.price === price && focus.side ? (
           <div className="w- h-fit  border bg-neutral-800 bg-noise px-4 py-2 text-neutral-100">
             <div className="flex items-center justify-between gap-6">
               <span>Average price </span>
-              <span>{focus.average}</span>
+              <span>{focus.average.toLocaleString()}</span>
             </div>
             <div className="flex items-center justify-between gap-6">
               <span>Sum {marketData.base.symbol} </span>
-              <span>{focus.totalBase}</span>
+              <span>{focus.totalBase.toLocaleString()}</span>
             </div>
             <div className="flex items-center justify-between gap-6">
               <span>Sum {marketData.quote.symbol} </span>
-              <span>{focus.totalQuote}</span>
+              <span>{focus.totalQuote.toLocaleString()}</span>
             </div>
           </div>
         ) : null
@@ -89,8 +92,8 @@ const Row: React.FC<{
       }}
     >
       <div
-        onMouseOver={() => setFocus({ side: type, price })}
-        onMouseOut={() => setFocus({ side: "", price })}
+        onMouseEnter={() => setFocus({ side: type, price })}
+        onMouseLeave={() => setFocus({ side: "", price })}
         className={`flash-bg-once relative px-3 ${flash} relative flex h-6 cursor-pointer items-center justify-between py-[1px] hover:ring-1 hover:ring-neutral-600`}
         onClick={() => {
           setPrice(price.toString());
@@ -285,10 +288,10 @@ export function OrderbookTable({
             ))}
           </div>
         ) : (
-          <div className="absolute flex h-auto w-full flex-row-reverse lg:block lg:h-full">
+          <div className="absolute flex h-full w-full flex-row-reverse lg:block ">
             {/* ASK */}
             <div
-              className="scrollbar-none flex h-[calc((100%-26px)/2)] w-[calc(50%-0.5px)] grow flex-col-reverse overflow-auto lg:w-auto lg:flex-col"
+              className="scrollbar-none flex h-full max-h-full w-[calc(50%-0.5px)] grow flex-col-reverse overflow-auto lg:h-[calc((100%-26px)/2)] lg:w-auto lg:flex-col"
               ref={centerRef}
             >
               {data?.asks
@@ -323,7 +326,7 @@ export function OrderbookTable({
               </div>
             </div>
             {/* BID */}
-            <div className="scrollbar-none flex h-[calc((100%-26px)/2)] w-[calc(50%+0.5px)] grow flex-col overflow-y-auto lg:w-auto">
+            <div className="scrollbar-none flex h-full w-[calc(50%+0.5px)] grow flex-col overflow-y-auto lg:h-[calc((100%-26px)/2)] lg:w-auto">
               {data?.bids?.map((level) => (
                 <Row
                   level={level}

@@ -34,7 +34,7 @@ export const useOrderBookData = (marketData: ApiMarket) => {
           size: b.size,
           marketData: marketData,
         }).toNumber();
-        return p < price ? size + a : a;
+        return p <= price ? size + a : a;
       };
     }
     return (a: number, b: PriceLevel) => {
@@ -47,7 +47,7 @@ export const useOrderBookData = (marketData: ApiMarket) => {
         marketData: marketData,
       }).toNumber();
 
-      return p > price ? size + a : a;
+      return p >= price ? size + a : a;
     };
   };
 
