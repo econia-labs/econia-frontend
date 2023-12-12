@@ -92,7 +92,7 @@ export const LimitOrderEntry: React.FC<{
     }
   }, [price]);
 
-  const { highestBid, lowestAsk } = useOrderBookData();
+  const { highestBid, lowestAsk } = useOrderBookData(marketData);
 
   const estimateFee = useMemo(() => {
     let totalSize = Number(watchPrice) * Number(watchSize);
