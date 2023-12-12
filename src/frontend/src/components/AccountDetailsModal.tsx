@@ -114,62 +114,40 @@ export const AccountDetailsModal: React.FC<{
         {/* card */}
         <div
           className={
-            "mb-4 flex h-[105px] w-[378px] justify-between border-[1px] border-neutral-600 px-[21px] py-[18px]"
+            "mb-4 flex justify-between border-[1px] border-neutral-600 px-9 py-7"
           }
         >
-          {/* left side */}
-          <div className="flex-1">
-            {/* input copy row 1 */}
-            <div className="mb-[15px] flex w-full items-center">
-              <div className="flex-1 border-[1px] border-neutral-600 px-2 py-1 text-xs uppercase tracking-[0.24px] text-white">
-                {/* invisible character,  */}
-                {showCopiedNotif ? "COPIED!" : shorten(account?.address) || "‎"}
-              </div>
-              <CopyIcon
-                className={"ml-4 h-4 w-4 cursor-pointer"}
-                onClick={copyToClipboard}
-              />
-            </div>
-            {/* row 2 */}
-            <Button
-              variant="secondary"
-              onClick={disconnectWallet}
-              className={
-                "flex items-center !px-3 !py-1 !text-[10px] !leading-[18px]"
-              }
-            >
-              Disconnect
-              <ExitIcon className="ml-2 inline-block h-4 w-4 text-center" />
-            </Button>
+          {/* Wallet Address */}
+          <div className="flex h-8 w-[137px] items-center justify-center gap-2 border-[1px] border-neutral-600 bg-white py-1 text-xs font-medium uppercase tracking-[0.24px]">
+            {/* invisible character,  */}
+            {showCopiedNotif ? (
+              "COPIED!"
+            ) : (
+              <>
+                {(
+                  <>
+                    {shorten(account?.address)}{" "}
+                    <CopyIcon
+                      className={"h-4 cursor-pointer text-black"}
+                      onClick={copyToClipboard}
+                    />{" "}
+                  </>
+                ) || "‎"}
+              </>
+            )}
           </div>
-          {/* right side */}
-          <div className="ml-[39px] flex-1">
-            <div className="ml-8 flex flex-col text-left">
-              <span className="align-text-top font-roboto-mono text-[10px] font-light text-neutral-500">
-                WALLET BALANCE
-              </span>
-              <p className="font-roboto-mono text-xs font-light text-white">
-                <span className="inline-block align-text-top text-white">
-                  {/* TODO wallet value */}
-                  $35.03
-                </span>
-              </p>
-            </div>
-            <div className="ml-8 text-left">
-              <span className="font-roboto-mono text-[10px] font-light text-neutral-500">
-                TOTAL IN ECONIA
-              </span>
-              <p className="font-roboto-mono text-xs font-light text-white">
-                <span className="inline-block text-white">
-                  {/* TODO wallet value */}
-                  $222,222.00
-                </span>
-              </p>
-            </div>
-          </div>
+          {/* Disconnect Button */}
+          <Button
+            variant="secondary"
+            onClick={disconnectWallet}
+            className={"flex h-8 w-[137px] items-center justify-center text-xs"}
+          >
+            Disconnect
+            <ExitIcon className="ml-2 inline-block h-4 w-4 text-center" />
+          </Button>
         </div>
         <p className="mb-3 font-jost text-sm font-bold text-white">
-          Market Accounts
+          Open Market Accounts
         </p>
         {/* market accounts */}
         {marketAccounts?.map((marketAccount) => (

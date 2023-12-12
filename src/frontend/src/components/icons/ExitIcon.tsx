@@ -4,54 +4,48 @@ export const ExitIcon: React.FC<React.SVGProps<SVGSVGElement>> = ({
 }) => {
   return (
     <svg
-      width="18"
-      height="14"
-      viewBox="0 0 18 14"
+      width="17"
+      height="13"
+      viewBox="0 0 17 13"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       id={id}
     >
-      <g clipPath="url(#clip0_5487_56117)">
+      <g clipPath="url(#clip0_5168_6230)">
         <path
-          d="M7.49483 7.43925L15.526 7.42102"
-          stroke="#565656"
+          d="M6.79064 6.97449L14.1614 6.95776"
+          stroke="white"
           strokeLinecap="square"
         />
         <path
-          d="M11.8784 3.53027L15.7878 7.43961L11.8784 11.3489"
-          stroke="#565656"
+          d="M10.814 3.38672L14.4018 6.97457L10.814 10.5624"
+          stroke="white"
           strokeLinecap="square"
         />
       </g>
       <line
-        x1="1.03149"
-        y1="1.39502"
-        x2="10.1932"
-        y2="1.39502"
-        stroke="#565656"
+        x1="0.858643"
+        y1="1.38599"
+        x2="9.26695"
+        y2="1.38599"
+        stroke="white"
       />
+      <line x1="0.858643" y1="11.7" x2="9.26695" y2="11.7" stroke="white" />
       <line
-        x1="1.03149"
-        y1="12.6333"
-        x2="10.1932"
-        y2="12.6333"
-        stroke="#565656"
-      />
-      <line
-        x1="1.18408"
-        y1="13.1333"
-        x2="1.18408"
-        y2="0.893066"
-        stroke="#565656"
+        x1="0.957764"
+        y1="12.2"
+        x2="0.957763"
+        y2="0.966275"
+        stroke="white"
       />
       <defs>
-        <clipPath id="clip0_5487_56117">
+        <clipPath id="clip0_5168_6230">
           <rect
-            width="8.79605"
-            height="8.79605"
+            width="8.07272"
+            height="8.07272"
             fill="white"
-            transform="translate(17.8611 7.43945) rotate(135)"
+            transform="translate(16.3044 6.97437) rotate(135)"
           />
         </clipPath>
       </defs>
