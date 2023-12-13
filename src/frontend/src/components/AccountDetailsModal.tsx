@@ -112,11 +112,7 @@ export const AccountDetailsModal: React.FC<{
           Account Details
         </p>
         {/* card */}
-        <div
-          className={
-            "mb-4 flex justify-between border-[1px] border-neutral-600 px-9 py-7"
-          }
-        >
+        <div className="mb-7 flex justify-between border-[1px] border-neutral-600 px-9 py-7">
           {/* Wallet Address */}
           <div className="flex h-8 w-[137px] items-center justify-center gap-2 border-[1px] border-neutral-600 bg-white py-1 text-xs font-medium uppercase tracking-[0.24px]">
             {/* invisible character,  */}
@@ -140,13 +136,13 @@ export const AccountDetailsModal: React.FC<{
           <Button
             variant="secondary"
             onClick={disconnectWallet}
-            className={"flex h-8 w-[137px] items-center justify-center text-xs"}
+            className="flex h-8 w-[130px] items-center justify-center text-xs !font-medium uppercase"
           >
             Disconnect
             <ExitIcon className="ml-2 inline-block h-4 w-4 text-center" />
           </Button>
         </div>
-        <p className="mb-3 font-jost text-sm font-bold text-white">
+        <p className="mb-7 font-jost font-bold text-white">
           Open Market Accounts
         </p>
         {/* market accounts */}
@@ -160,18 +156,16 @@ export const AccountDetailsModal: React.FC<{
       </div>
       {/* spacer to compensate for sticky bottom row */}
       {/* note, has to be same height as the sticky row -- iirc no way to do this dynamically as absolutely positioned elements take up 0 space */}
-      <div className="h-[36px]" />
+      <div className="h-[20px]" />
       {/* sticky bottom row */}
       {/* todo, height 80px but negative margin due to modal padding */}
-      <div className="absolute bottom-0 left-[50%] mb-[-24px] flex h-[84px] w-full min-w-[500px] translate-x-[-50%] items-center justify-center border-[1px] border-neutral-600 text-center">
+      <div className="absolute bottom-0 left-[50%] mb-[-24px] flex h-[84px] w-[90%] translate-x-[-50%] items-center justify-center bg-gradient-to-b from-transparent via-black to-black text-center">
         <Button
           variant="secondary"
           onClick={() => {
             onRegisterAccountClick();
           }}
-          className={
-            "flex h-[35px] w-[144px] items-center justify-center !px-3 !py-1 text-center !text-xs"
-          }
+          className="bg-white !px-[17.5px] text-xs !font-medium uppercase text-neutral-800"
         >
           Add New Account
         </Button>
