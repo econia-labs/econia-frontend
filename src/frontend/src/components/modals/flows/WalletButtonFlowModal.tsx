@@ -53,7 +53,7 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
 
   // TODO: change this after merge with ECO-319
   const { data: registeredMarkets } = useQuery(
-    ["userMarketAccounts", account?.address],
+    ["registeredMarkets", account?.address],
     async () => {
       // TODO pull registered markets from SDK (ECO-355)
       return await getAllMarket();
@@ -156,7 +156,7 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
             onAccountCreated={(status: boolean) => {
               if (status) {
                 queryClient.invalidateQueries({
-                  queryKey: ["userMarketAccounts"],
+                  queryKey: ["registeredMarkets"],
                 });
                 setFlowStep(FlowStep.AccountDetails);
               }
