@@ -223,7 +223,7 @@ export const StatsBar: React.FC<{
           <div className="hidden md:block">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
               LAST PRICE{" "}
-              <span className="text-[#565656]">{quoteSymbol || "-"}</span>
+              <span className="text-neutral-600">{quoteSymbol || "-"}</span>
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
               {isFetchingPriceInfo && isFirstFetch ? (

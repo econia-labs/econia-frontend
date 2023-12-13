@@ -154,7 +154,7 @@ export const SelectMarketContent: React.FC<{
         },
       }),
       columnHelper.accessor("price_change_as_percent_24hr", {
-        header: "24h change",
+        header: () => <div className="text-center">24h change</div>,
         cell: (info) => {
           const change = info.getValue();
           if (change == null) return "-";
@@ -267,7 +267,7 @@ export const SelectMarketContent: React.FC<{
           <table className="w-full table-fixed">
             <thead className="sticky top-0 z-10 h-16 bg-neutral-800 bg-noise pt-4">
               {table.getHeaderGroups().map((headerGroup) => (
-                <tr className="h-8 pt-4" key={headerGroup.id}>
+                <tr className="m-auto h-8 pt-4" key={headerGroup.id}>
                   {headerGroup.headers.map((header, i) => {
                     if (header.id === "name") {
                       if (
@@ -302,12 +302,7 @@ export const SelectMarketContent: React.FC<{
 
                     return (
                       <th
-                        className={
-                          `cursor-pointer select-none pt-4 text-left font-roboto-mono text-sm font-light uppercase text-neutral-500 ` +
-                          (header.id === "price_change_as_percent_24hr"
-                            ? "text-center"
-                            : "")
-                        }
+                        className={`cursor-pointer select-none pt-4 text-left font-roboto-mono text-sm font-light uppercase text-neutral-500`}
                         key={header.id}
                         onClick={header.column.getToggleSortingHandler()}
                         style={{ width: colWidths[i] }}
