@@ -34,7 +34,7 @@ import { useAllMarketsData } from ".";
 const colWidths = [
   230,
   undefined,
-  200,
+  180,
   undefined,
   undefined,
   undefined,
@@ -110,7 +110,9 @@ export const SelectMarketContent: React.FC<{
                 baseAssetIcon={baseAssetIcon}
                 quoteAssetIcon={quoteAssetIcon}
               />
-              <p className="my-auto ml-2">{info.getValue()}</p>
+              <p className="my-auto ml-2 text-base font-medium">
+                {info.getValue()}
+              </p>
             </div>
           );
         },
@@ -157,7 +159,11 @@ export const SelectMarketContent: React.FC<{
           const change = info.getValue();
           if (change == null) return "-";
           return (
-            <p className={change < 0 ? "text-red" : "text-green"}>
+            <p
+              className={
+                "text-center " + (change < 0 ? "text-red" : "text-green")
+              }
+            >
               {plusMinus(change)}
               {change.toLocaleString(undefined, { maximumFractionDigits: 2 })}%
             </p>
@@ -293,9 +299,15 @@ export const SelectMarketContent: React.FC<{
                         header.column.setFilterValue(undefined);
                       }
                     }
+
                     return (
                       <th
-                        className={`cursor-pointer select-none pt-4 text-left font-roboto-mono text-sm font-light uppercase text-neutral-500`}
+                        className={
+                          `cursor-pointer select-none pt-4 text-left font-roboto-mono text-sm font-light uppercase text-neutral-500 ` +
+                          (header.id === "price_change_as_percent_24hr"
+                            ? "text-center"
+                            : "")
+                        }
                         key={header.id}
                         onClick={header.column.getToggleSortingHandler()}
                         style={{ width: colWidths[i] }}
@@ -325,7 +337,7 @@ export const SelectMarketContent: React.FC<{
               ) : (
                 table.getRowModel().rows.map((row) => (
                   <tr
-                    className="h-24 cursor-pointer hover:bg-neutral-700"
+                    className="h-9 cursor-pointer hover:bg-neutral-700"
                     key={row.id}
                     onClick={() => {
                       const marketId = row.original.market_id;
@@ -337,7 +349,7 @@ export const SelectMarketContent: React.FC<{
                   >
                     {row.getVisibleCells().map((cell) => (
                       <td
-                        className="text-left font-roboto-mono text-sm font-light text-white"
+                        className="py-[10px] text-left font-roboto-mono text-sm font-light text-white"
                         key={cell.id}
                       >
                         {flexRender(
