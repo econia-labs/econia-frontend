@@ -12,11 +12,16 @@ import {
   useContext,
   useState,
   useEffect,
+  ReactElement,
 } from "react";
 import { toast } from "react-toastify";
 
 import { BaseModal } from "@/components/modals/BaseModal";
 import { ArrowIcon } from "@/components/icons/ArrowIcon";
+import PetraIcon from "@/components/icons/PetraIcon";
+import PontemIcon from "@/components/icons/PontemIcon";
+import MartianIcon from "@/components/icons/MartianIcon";
+import RiseIcon from "@/components/icons/RiseIcon";
 
 export type ConnectWalletContextState = {
   connectWallet: () => void;
@@ -70,6 +75,12 @@ const AutoConnect = () => {
 
   return null;
 };
+export const WALLET_ICON: { [key: string]: ReactElement } = {
+  petra: <PetraIcon />,
+  pontem: <PontemIcon />,
+  martian: <MartianIcon />,
+  rise: <RiseIcon />,
+};
 export function ConnectWalletContextProvider({ children }: PropsWithChildren) {
   const { connect, wallets } = useWallet();
   const [open, setOpen] = useState<boolean>(false);
@@ -82,16 +93,16 @@ export function ConnectWalletContextProvider({ children }: PropsWithChildren) {
       <AutoConnect />
       {children}
       <BaseModal
-        className="md:w-[650px]"
+        className="md:w-[600px]"
         isOpen={open}
         onClose={() => setOpen(false)}
         onBack={() => setOpen(false)}
       >
-        <div className="p-6">
-          <h2 className="mt-4 text-center font-jost text-3xl font-bold text-white">
+        <div className="px-[46px] py-[25.5px]">
+          <h2 className="text-center font-jost text-3xl font-bold text-white">
             Connect a Wallet
           </h2>
-          <p className="mt-4 text-center font-roboto-mono text-sm font-light text-white">
+          <p className="mt-4 text-center font-roboto-mono text-sm font-light leading-[30px] text-white">
             In order to use this site you must connect a wallet and allow the
             site to access your account.
           </p>
@@ -100,7 +111,7 @@ export function ConnectWalletContextProvider({ children }: PropsWithChildren) {
               <WalletItem
                 wallet={wallet}
                 key={wallet.name}
-                className="relative flex w-full items-center p-4 ring-1 ring-neutral-600 transition-all hover:ring-blue [&:hover>.arrow-wrapper]:bg-blue [&:hover>.arrow-wrapper]:ring-blue [&:hover>div>.arrow]:-rotate-45"
+                className="relative flex h-[45px] w-full items-center p-4 text-neutral-600 ring-1 ring-neutral-600 transition-all hover:text-blue hover:ring-blue [&:hover>.arrow-wrapper]:bg-blue [&:hover>.arrow-wrapper]:ring-blue [&:hover>div>.arrow]:-rotate-45"
                 onClick={() => {
                   try {
                     connect(wallet.name);
@@ -113,13 +124,14 @@ export function ConnectWalletContextProvider({ children }: PropsWithChildren) {
                   }
                 }}
               >
-                <Image
+                {/* <Image
                   src={wallet.icon}
                   height={36}
                   width={36}
                   alt={`${wallet.name} Wallet Icon`}
-                />
-                <p className="ml-4 font-jost text-lg font-medium text-neutral-500">
+                /> */}
+                {WALLET_ICON[wallet.name.toLowerCase()]}
+                <p className="ml-2 font-jost text-base font-medium text-neutral-500">
                   {wallet.readyState === WalletReadyState.NotDetected
                     ? `Install ${wallet.name} Wallet`
                     : `${wallet.name} Wallet`}
