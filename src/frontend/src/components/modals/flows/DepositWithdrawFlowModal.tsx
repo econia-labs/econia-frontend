@@ -85,7 +85,7 @@ export const DepositWithdrawFlowModal: React.FC<Props> = ({
   return (
     <>
       <BaseModal
-        className="w-[602px]"
+        className="h-[403.65px] w-[457.093px] p-0"
         isOpen={isOpen}
         onClose={onClose}
         showCloseButton={true}

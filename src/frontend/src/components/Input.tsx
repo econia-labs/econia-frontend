@@ -28,14 +28,14 @@ export const Input: React.FC<{
   }, [autoFocus]);
 
   return (
-    <div className="flex h-12 w-full items-baseline gap-2 border border-neutral-600 p-4">
+    <div className="flex h-10 w-full items-center gap-2 border border-neutral-600 p-4">
       {/* start adornment */}
-      <span className="flex h-full items-center whitespace-nowrap font-roboto-mono text-white">
+      <span className="flex h-full items-center whitespace-nowrap font-roboto-mono text-sm font-medium text-white">
         {startAdornment}
       </span>
       <input
         ref={inputRef}
-        className="h-full w-[100px] flex-1 bg-transparent text-right font-roboto-mono font-light text-neutral-400 outline-none"
+        className="flex-1 bg-transparent text-right font-roboto-mono font-light text-neutral-400 outline-none"
         value={value}
         placeholder={placeholder}
         onChange={(e) => {
