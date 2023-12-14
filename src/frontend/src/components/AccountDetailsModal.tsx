@@ -112,7 +112,7 @@ export const AccountDetailsModal: React.FC<{
           Account Details
         </p>
         {/* card */}
-        <div className="mb-7 flex justify-between border-[1px] border-neutral-600 px-9 py-7">
+        <div className="mb-7 flex justify-between gap-9 border-[1px] border-neutral-600 px-9 py-7">
           {/* Wallet Address */}
           <div className="flex h-8 w-[137px] items-center justify-center gap-2 border-[1px] border-neutral-600 bg-white py-1 text-xs font-medium uppercase tracking-[0.24px]">
             {/* invisible character,  */}
@@ -136,7 +136,7 @@ export const AccountDetailsModal: React.FC<{
           <Button
             variant="secondary"
             onClick={disconnectWallet}
-            className="flex h-8 w-[130px] items-center justify-center text-xs !font-medium uppercase"
+            className="flex h-8 w-[130px] items-center justify-center font-roboto-mono text-xs !font-medium uppercase"
           >
             Disconnect
             <ExitIcon className="ml-2 inline-block h-4 w-4 text-center" />
@@ -159,7 +159,7 @@ export const AccountDetailsModal: React.FC<{
       <div className="h-[20px]" />
       {/* sticky bottom row */}
       {/* todo, height 80px but negative margin due to modal padding */}
-      <div className="absolute bottom-0 left-[50%] mb-[-24px] flex h-[84px] w-[90%] translate-x-[-50%] items-center justify-center bg-gradient-to-b from-transparent via-black to-black text-center">
+      <div className="bg-noise-to-b absolute bottom-0 left-[50%] mb-[-24px] flex h-[84px] w-[90%] translate-x-[-50%] items-center justify-center from-transparent via-black to-black text-center">
         <Button
           variant="secondary"
           onClick={() => {
@@ -172,7 +172,7 @@ export const AccountDetailsModal: React.FC<{
       </div>
 
       {/* sticky fade out header */}
-      <div className="absolute left-[50%] top-[-24px] mb-[-24px] flex h-[48px] w-full min-w-[500px] translate-x-[-50%] border-[1px] border-b-0 border-neutral-600 bg-gradient-to-t from-transparent to-black"></div>
+      {/* <div className="absolute left-[50%] top-[-24px] mb-[-24px] flex h-[48px] w-full min-w-[500px] translate-x-[-50%] border-[1px] border-b-0 border-neutral-600 bg-gradient-to-t from-transparent to-black"></div> */}
     </div>
   );
 };
