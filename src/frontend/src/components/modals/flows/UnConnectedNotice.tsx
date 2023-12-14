@@ -18,14 +18,14 @@ const UnConnectedNotice = () => {
       onClose={() => setOpen(false)}
       showCloseButton={true}
       showBackButton={false}
-      className="!w-[500px]"
+      className="!h-[295px] !w-[460px]"
     >
       <div className="h-[400px] max-h-full w-full  p-4  md:p-10">
-        <div className="flex h-[400px] max-h-full w-[400px] max-w-full flex-col items-center justify-center font-jost">
-          <h1 className="mb-4 text-[32px] font-bold text-neutral-100">
+        <div className="flex h-[400px] max-h-full w-[315px] max-w-full flex-col items-center justify-center">
+          <h1 className="mb-2 font-jost text-[32px] font-bold text-neutral-100">
             Notice
           </h1>
-          <p className="text-sm text-neutral-500">
+          <p className="p-2 text-center align-middle font-roboto-mono text-sm font-light leading-6 text-neutral-500">
             {UNCONNECTED_NOTICE_MESSAGE}
           </p>
         </div>

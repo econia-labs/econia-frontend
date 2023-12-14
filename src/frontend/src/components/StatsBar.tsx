@@ -154,7 +154,7 @@ export const StatsBar: React.FC<{
           setIsModalOpen(false);
         }}
         showCloseButton={false}
-        className={"pl-0 pr-0"}
+        className={"p-0"}
       >
         <SelectMarketContent
           allMarketData={allMarketData}
@@ -222,7 +222,8 @@ export const StatsBar: React.FC<{
           {/* price */}
           <div className="hidden md:block">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
-              LAST PRICE ({quoteSymbol || "-"})
+              LAST PRICE{" "}
+              <span className="text-neutral-600">{quoteSymbol || "-"}</span>
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
               {isFetchingPriceInfo && isFirstFetch ? (
