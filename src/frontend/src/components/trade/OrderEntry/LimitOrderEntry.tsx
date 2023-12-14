@@ -108,10 +108,10 @@ export const LimitOrderEntry: React.FC<{
     if (
       side === "buy" &&
       Number(watchPrice) >=
-        toDecimalPrice({
-          price: Number(lowestAsk.price),
-          marketData,
-        }).toNumber()
+      toDecimalPrice({
+        price: Number(lowestAsk.price),
+        marketData,
+      }).toNumber()
     ) {
       totalSize =
         toDecimalPrice({
@@ -124,10 +124,10 @@ export const LimitOrderEntry: React.FC<{
     if (
       side === "sell" &&
       Number(watchPrice) <=
-        toDecimalPrice({
-          price: Number(highestBid.price),
-          marketData,
-        }).toNumber()
+      toDecimalPrice({
+        price: Number(highestBid.price),
+        marketData,
+      }).toNumber()
     ) {
       totalSize =
         toDecimalPrice({
@@ -327,16 +327,16 @@ export const LimitOrderEntry: React.FC<{
   }, [watchSize, watchPrice, side]);
   const baseDecimalPlace = Math.round(
     Math.log(10 ** marketData.base.decimals / marketData.lot_size) /
-      Math.log(10),
+    Math.log(10),
   );
 
   const setSTotalSize = (value: number | string) => {
     const quoteDecimalPlace = Math.round(
       Math.log(
         1 /
-          (marketData.tick_size /
-            10 ** marketData.quote.decimals /
-            (marketData.lot_size / 10 ** marketData.base.decimals)),
+        (marketData.tick_size /
+          10 ** marketData.quote.decimals /
+          (marketData.lot_size / 10 ** marketData.base.decimals)),
       ) / Math.log(10),
     );
     const v = value ? Number(Number(value).toFixed(quoteDecimalPlace)) : value;
@@ -453,7 +453,7 @@ export const LimitOrderEntry: React.FC<{
           label={`EST. FEE (${marketData.quote.symbol})`}
           value={estimateFee}
         />
-        <ConnectedButton className="w-full">
+        <ConnectedButton className="w-full py-[11px]">
           {isSufficient ? (
             <Button
               type="submit"
@@ -478,9 +478,8 @@ export const LimitOrderEntry: React.FC<{
         </ConnectedButton>
         <OrderEntryInfo
           label={`${marketData.base?.symbol} AVAILABLE`}
-          value={`${balance?.base_available ? balance?.base_available : "--"} ${
-            marketData.base?.symbol
-          }`}
+          value={`${balance?.base_available ? balance?.base_available : "--"} ${marketData.base?.symbol
+            }`}
           className="cursor-pointer"
           onClick={() => {
             setValue(
@@ -491,9 +490,8 @@ export const LimitOrderEntry: React.FC<{
         />
         <OrderEntryInfo
           label={`${marketData.quote?.symbol} AVAILABLE`}
-          value={`${
-            balance?.quote_available ? balance.quote_available : "--"
-          } ${marketData.quote?.symbol}`}
+          value={`${balance?.quote_available ? balance.quote_available : "--"
+            } ${marketData.quote?.symbol}`}
         />
       </div>
     </form>
