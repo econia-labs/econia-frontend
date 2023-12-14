@@ -356,7 +356,7 @@ export default function Market({ allMarketData, marketData }: Props) {
               </div>
             </div>
             <div className="flex h-[260px] max-w-full flex-col border border-neutral-600">
-              <div className="flex h-8 gap-4 bg-transparent pl-4 pt-2 lg:h-9 lg:pl-1 lg:pt-0">
+              <div className="flex h-8 gap-4 bg-transparent pl-4 pt-2 lg:pl-0 lg:pt-0">
                 <div className="flex gap-4 bg-transparent py-1 text-base lg:py-3 lg:pl-4">
                   <p
                     onClick={() => setTab("orders")}
