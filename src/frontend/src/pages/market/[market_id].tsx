@@ -1,11 +1,8 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { type MaybeHexString } from "aptos";
 import type { GetStaticPaths, GetStaticProps } from "next";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import Script from "next/script";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { toast } from "react-toastify";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { DepthChart } from "@/components/DepthChart";
 import { Header } from "@/components/Header";
@@ -17,11 +14,9 @@ import MobileOrderEntry from "@/components/trade/MobileOrderEntry";
 import { OrderEntry } from "@/components/trade/OrderEntry";
 import { OrdersTable } from "@/components/trade/OrdersTable";
 import { TradeHistoryTable } from "@/components/trade/TradeHistoryTable";
-import { useAptos } from "@/contexts/AptosContext";
 import { OrderEntryContextProvider } from "@/contexts/OrderEntryContext";
 import { useOrderBook } from "@/hooks/useOrderbook";
-import type { ApiMarket, ApiOrder, ApiPriceLevel } from "@/types/api";
-import { type Orderbook } from "@/types/global";
+import type { ApiMarket } from "@/types/api";
 import { getAllMarket } from "@/utils/helpers";
 
 import {
@@ -47,10 +42,6 @@ type PathParams = {
 };
 
 export default function Market({ allMarketData, marketData }: Props) {
-  const { account } = useAptos();
-  const queryClient = useQueryClient();
-  const ws = useRef<WebSocket | undefined>(undefined);
-  const prevAddress = useRef<MaybeHexString | undefined>(undefined);
   const [tab, setTab] = useState<"orders" | "order-book" | "trade-histories">(
     "orders",
   );
