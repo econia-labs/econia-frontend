@@ -213,9 +213,9 @@ export const OrdersTable: React.FC<{
           const total = info.getValue();
           return total
             ? `${toDecimalSize({
-              size: total,
-              marketData,
-            }).toNumber()} ${baseSymbol}`
+                size: total,
+                marketData,
+              }).toNumber()} ${baseSymbol}`
             : "-";
         },
       }),
@@ -326,9 +326,9 @@ export const OrdersTable: React.FC<{
                 {header.isPlaceholder
                   ? null
                   : flexRender(
-                    header.column.columnDef.header,
-                    header.getContext(),
-                  )}
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
                 {sortLabel.get(header.column.getIsSorted())}
               </th>
             ))}
@@ -343,12 +343,13 @@ export const OrdersTable: React.FC<{
               <tr>
                 {table.getAllColumns().map((column, i) => (
                   <td
-                    className={`${i === 0
-                      ? "pl-4 text-left text-neutral-500"
-                      : i === 6
+                    className={`${
+                      i === 0
+                        ? "pl-4 text-left text-neutral-500"
+                        : i === 6
                         ? ""
                         : ""
-                      }`}
+                    }`}
                     key={column.id}
                   >
                     <div className={"pr-3"}>
@@ -382,13 +383,11 @@ export const OrdersTable: React.FC<{
           )}
         </tbody>
       </table>
-      {!isLoading &&
-        data &&
-        data.length === 0 && (
-          <div className="flex h-[calc(100%-32px)] tracking-[0.2px] font-roboto-mono flex-col items-center justify-center text-[10px] font-light uppercase text-neutral-500">
-            no orders to show
-          </div>
-        )}
+      {!isLoading && data && data.length === 0 && (
+        <div className="flex h-[calc(100%-32px)] flex-col items-center justify-center font-roboto-mono text-[10px] font-light uppercase tracking-[0.2px] text-neutral-500">
+          no orders to show
+        </div>
+      )}
     </div>
   );
 };

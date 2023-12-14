@@ -30,8 +30,9 @@ const NavItem: React.FC<
         href={href}
         target="_blank"
         rel="noreferrer"
-        className={`cursor-pointer font-roboto-mono text-xl font-medium uppercase tracking-wide transition-all md:text-lg ${active ? "text-neutral-100" : "text-neutral-500 hover:text-blue"
-          } ${className ? className : ""}`}
+        className={`cursor-pointer font-roboto-mono text-xl font-medium uppercase tracking-wide transition-all md:text-lg ${
+          active ? "text-neutral-100" : "text-neutral-500 hover:text-blue"
+        } ${className ? className : ""}`}
       >
         {children}
       </a>
@@ -41,8 +42,9 @@ const NavItem: React.FC<
   return (
     <Link
       href={href}
-      className={`cursor-pointer font-roboto-mono text-xl font-medium  uppercase tracking-wide transition-all md:text-lg ${active ? "text-neutral-100" : "text-neutral-500 hover:text-blue"
-        }`}
+      className={`cursor-pointer font-roboto-mono text-xl font-medium  uppercase tracking-wide transition-all md:text-lg ${
+        active ? "text-neutral-100" : "text-neutral-500 hover:text-blue"
+      }`}
     >
       {children}
     </Link>
@@ -122,7 +124,7 @@ export function Header({
                 {onDepositWithdrawClick && (
                   <Button
                     variant="secondary"
-                    className="whitespace-nowrap !font-roboto-mono !text-base !font-bold uppercase !leading-[22px] py-[7px]"
+                    className="whitespace-nowrap py-[7px] !font-roboto-mono !text-base !font-bold uppercase !leading-[22px]"
                     onClick={onDepositWithdrawClick}
                   >
                     Deposit / Withdraw
@@ -131,12 +133,11 @@ export function Header({
                 <Button
                   variant="primary"
                   onClick={onWalletButtonClick}
-                  className="whitespace-nowrap !font-roboto-mono !text-base !font-bold uppercase !leading-[22px] py-[7px]"
+                  className="whitespace-nowrap py-[7px] !font-roboto-mono !text-base !font-bold uppercase !leading-[22px]"
                 >
                   {shorten(account?.address)}
                 </Button>
               </div>
-
             </ConnectedButton>
           </div>
         </nav>
@@ -163,8 +164,9 @@ const SlidingMenu = ({
 
   return (
     <div
-      className={`transition-width fixed right-0 top-16 z-30 flex h-full flex-col overflow-x-hidden bg-neutral-800 bg-noise pt-4 duration-300 ease-in-out ${isOpen ? "w-full" : "w-0"
-        }`}
+      className={`transition-width fixed right-0 top-16 z-30 flex h-full flex-col overflow-x-hidden bg-neutral-800 bg-noise pt-4 duration-300 ease-in-out ${
+        isOpen ? "w-full" : "w-0"
+      }`}
     >
       <div className="mb-8  flex flex-col  items-start justify-between gap-6 px-6">
         {/* {menuList.map((item: MenuItem, index: number) => {
@@ -279,12 +281,14 @@ const HeaderMobile = ({
           onClick={toggleMenu}
         >
           <OpenMenuIcon
-            className={`transition duration-300 ease-in-out ${isOpen ? "translate-y-[6px] rotate-[135deg]" : ""
-              }`}
+            className={`transition duration-300 ease-in-out ${
+              isOpen ? "translate-y-[6px] rotate-[135deg]" : ""
+            }`}
           />
           <OpenMenuIcon
-            className={`transition duration-300 ease-in-out ${isOpen ? "-translate-y-[6.5px] rotate-45" : ""
-              }`}
+            className={`transition duration-300 ease-in-out ${
+              isOpen ? "-translate-y-[6.5px] rotate-45" : ""
+            }`}
           />
         </div>
       </div>
