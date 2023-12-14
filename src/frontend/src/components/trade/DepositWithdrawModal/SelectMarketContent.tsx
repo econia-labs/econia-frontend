@@ -179,7 +179,8 @@ export const SelectMarketContent: React.FC<{
               {isRecognized ? (
                 <RecognizedIcon className="m-auto h-5 w-5" />
               ) : (
-                <NotRecognizedIcon className="m-auto h-5 w-5" />
+                <></>
+                // <NotRecognizedIcon className="m-auto h-5 w-5" />
               )}
             </div>
           );
