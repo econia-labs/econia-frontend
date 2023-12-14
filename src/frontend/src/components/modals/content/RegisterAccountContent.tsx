@@ -1,5 +1,6 @@
 import { entryFunctions } from "@econia-labs/sdk";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { toast } from "react-toastify";
 
 import { Button } from "@/components/Button";
 import { NO_CUSTODIAN } from "@/constants";
@@ -7,7 +8,6 @@ import { useAptos } from "@/contexts/AptosContext";
 import { ECONIA_ADDR } from "@/env";
 import { type ApiMarket } from "@/types/api";
 import { TypeTag } from "@/utils/TypeTag";
-import { toast } from "react-toastify";
 
 type RegisterAccountContentProps = {
   selectedMarket?: ApiMarket;
