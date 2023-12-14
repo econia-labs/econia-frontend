@@ -265,7 +265,7 @@ export const MarketOrderEntry: React.FC<{
           label={`EST. FEE (${marketData.quote.symbol})`}
           value={estimateFee}
         />
-        <ConnectedButton className="w-full">
+        <ConnectedButton className="w-full py-[11px]">
           {/* <Button
             variant={side === "buy" ? "green" : "red"}
             className={`w-full`}

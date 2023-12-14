@@ -383,18 +383,10 @@ export const OrdersTable: React.FC<{
           )}
         </tbody>
       </table>
-      {!connected ? (
-        <div className="flex h-[calc(100%-32px)] flex-col items-center justify-center text-white">
-          <ConnectedButton />
+      {!isLoading && data && data.length === 0 && (
+        <div className="flex h-[calc(100%-32px)] flex-col items-center justify-center font-roboto-mono text-[10px] font-light uppercase tracking-[0.2px] text-neutral-500">
+          no orders to show
         </div>
-      ) : (
-        !isLoading &&
-        data &&
-        data.length === 0 && (
-          <div className="flex h-[calc(100%-32px)] flex-col items-center justify-center text-sm font-light uppercase text-neutral-500">
-            No orders to show
-          </div>
-        )
       )}
     </div>
   );

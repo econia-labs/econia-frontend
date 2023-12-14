@@ -453,7 +453,7 @@ export const LimitOrderEntry: React.FC<{
           label={`EST. FEE (${marketData.quote.symbol})`}
           value={estimateFee}
         />
-        <ConnectedButton className="w-full">
+        <ConnectedButton className="w-full py-[11px]">
           {isSufficient ? (
             <Button
               type="submit"
