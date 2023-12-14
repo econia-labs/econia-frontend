@@ -154,7 +154,7 @@ export const StatsBar: React.FC<{
           setIsModalOpen(false);
         }}
         showCloseButton={false}
-        className={"p-0"}
+        className={"!p-0"}
       >
         <SelectMarketContent
           allMarketData={allMarketData}
