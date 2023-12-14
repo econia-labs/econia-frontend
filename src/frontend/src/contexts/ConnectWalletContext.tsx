@@ -97,6 +97,7 @@ export function ConnectWalletContextProvider({ children }: PropsWithChildren) {
         isOpen={open}
         onClose={() => setOpen(false)}
         onBack={() => setOpen(false)}
+        showCloseButton={true}
       >
         <div className="px-[46px] py-[25.5px]">
           <h2 className="text-center font-jost text-3xl font-bold text-white">
