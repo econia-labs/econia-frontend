@@ -316,7 +316,7 @@ export const OrdersTable: React.FC<{
           <tr>
             {table.getFlatHeaders().map((header) => (
               <th
-                className="cursor-pointer select-none py-0.5 text-left font-roboto-mono text-sm font-light uppercase text-neutral-500 shadow-[inset_0_-1px_0_theme(colors.neutral.600)]"
+                className="cursor-pointer select-none text-left font-roboto-mono text-xs font-normal uppercase tracking-[0.24px] text-neutral-500"
                 key={header.id}
                 onClick={header.column.getToggleSortingHandler()}
                 style={{
