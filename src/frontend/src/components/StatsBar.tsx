@@ -23,7 +23,7 @@ import { MarketIconPair } from "./MarketIconPair";
 import { BaseModal } from "./modals/BaseModal";
 import { SelectMarketContent } from "./trade/DepositWithdrawModal/SelectMarketContent";
 
-const DEFAULT_TOKEN_ICON = "/tokenImages/default.png";
+const DEFAULT_TOKEN_ICON = "/tokenImages/default.svg";
 
 const SocialMediaIcons: React.FC<{ className?: string }> = ({ className }) => {
   return (
@@ -95,7 +95,6 @@ export const StatsBar: React.FC<{
         coinListClient.getCoinInfoByFullName(
           TypeTag.fromApiCoin(selectedMarket.quote).toString(),
         )?.logo_url ?? DEFAULT_TOKEN_ICON;
-
       return { baseAssetIcon, quoteAssetIcon };
     },
   );
