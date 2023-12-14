@@ -22,17 +22,17 @@ const SelectCoinInput: React.FC<{
   onSelectCoin: (coin: ApiCoin) => void;
 }> = ({ coins, startAdornment, selectedCoin, onSelectCoin }) => {
   return (
-    <div className="flex h-12 w-full items-center border border-neutral-600 p-4">
+    <div className="flex h-10 w-full items-center border border-neutral-600 p-4">
       <Menu as="div" className="relative inline-block w-full text-left">
         <Menu.Button className="flex w-full items-center justify-between">
-          <p className="font-roboto-mono font-medium uppercase text-white">
+          <p className="font-roboto-mono text-sm font-medium uppercase text-white">
             {startAdornment}
           </p>
           <div className="flex cursor-pointer items-center gap-2">
-            <p className="whitespace-nowrap font-roboto-mono text-white">
+            <p className="whitespace-nowrap font-roboto-mono text-sm font-medium text-white">
               {selectedCoin?.symbol}
             </p>
-            <ChevronDownIcon className="h-[24px] w-[24px] fill-white" />
+            <ChevronDownIcon className="h-[18.06px] w-[17px] fill-white" />
           </div>
         </Menu.Button>
         <Menu.Items className="absolute right-0 top-0 rounded-md bg-neutral-800 ring-1 ring-black ring-opacity-5 focus:outline-none">
@@ -152,7 +152,7 @@ const DepositWithdrawForm: React.FC<{
           onSelectCoin={setSelectedCoin}
           startAdornment={mode === "deposit" ? "DEPOSIT COIN" : "WITHDRAW COIN"}
         />
-        <div className="mt-4">
+        <div className="mt-3">
           <Input
             value={amount}
             onChange={setAmount}
@@ -162,19 +162,19 @@ const DepositWithdrawForm: React.FC<{
             autoFocus={true}
           />
         </div>
-        <div className="mt-6 flex w-full justify-between">
-          <p className="font-roboto-mono uppercase text-neutral-500">
+        <div className="mt-[17.51px] flex w-full justify-between">
+          <p className="font-roboto-mono text-[13px] font-light uppercase tracking-[0.26px] text-neutral-500">
             Available in market account
           </p>
-          <p className="font-roboto-mono text-neutral-500">
+          <p className="font-roboto-mono text-[13px] font-light uppercase tracking-[0.26px] text-neutral-500">
             {marketAccountBalance ?? "--"} {selectedCoin.symbol}
           </p>
         </div>
-        <div className="mt-4 flex w-full justify-between">
-          <p className="font-roboto-mono uppercase text-neutral-500">
+        <div className="mt-3 flex w-full justify-between">
+          <p className="font-roboto-mono text-[13px] font-light uppercase tracking-[0.26px] text-neutral-500">
             In Wallet
           </p>
-          <p className="font-roboto-mono text-neutral-500">
+          <p className="font-roboto-mono text-[13px] font-light uppercase tracking-[0.26px] text-neutral-500">
             {balance ?? "--"} {selectedCoin.symbol}
           </p>
         </div>
@@ -183,7 +183,7 @@ const DepositWithdrawForm: React.FC<{
             variant="primary"
             onClick={handleSubmit}
             disabledReason={disabledReason}
-            className="mt-8 w-full"
+            className="mt-[15px] w-full pb-[13px] pt-[15px] text-sm !font-medium uppercase"
             disabled={Number(amount) === 0}
           >
             {Number(amount) === 0
@@ -212,20 +212,20 @@ export const DepositWithdrawContent: React.FC<{
   isRegistered: boolean;
 }> = ({ selectedMarket, isRegistered }) => {
   return (
-    <div className="px-8 pb-6 pt-6">
-      <h2 className="font-jost text-3xl font-bold text-white">
+    <div className="px-[34.79px] pb-[33px] pt-[37px]">
+      <h2 className="font-jost text-xl font-bold text-white">
         {selectedMarket.name.replace("-", " / ")}
       </h2>
       <Tab.Group>
         <Tab.List className="mt-5 w-full">
-          <Tab className="w-1/2 border-b border-b-neutral-600 py-4 font-jost font-bold text-neutral-600 outline-none ui-selected:border-b-white ui-selected:text-white">
+          <Tab className="w-1/2 border-b border-b-neutral-600 py-2 font-jost font-bold text-neutral-600 outline-none ui-selected:border-b-white ui-selected:text-white">
             Deposit
           </Tab>
-          <Tab className="w-1/2 border-b border-b-neutral-600 py-4 font-jost font-bold text-neutral-600 outline-none ui-selected:border-b-white ui-selected:text-white">
+          <Tab className="w-1/2 border-b border-b-neutral-600 py-2 font-jost font-bold text-neutral-600 outline-none ui-selected:border-b-white ui-selected:text-white">
             Withdraw
           </Tab>
         </Tab.List>
-        <Tab.Panels className="mt-9 w-full">
+        <Tab.Panels className="mt-7 w-full">
           <Tab.Panel>
             <DepositWithdrawForm
               selectedMarket={selectedMarket}

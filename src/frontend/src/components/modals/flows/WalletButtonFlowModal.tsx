@@ -45,7 +45,7 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
 }) => {
   const [market, setMarket] = useState(selectedMarket);
   const [flowStep, setFlowStep] = useState(FlowStep.Closed);
-  const [filteredMarkets, setFilteredMarkets] = useState<ApiMarket[]>([]);
+  // const [filteredMarkets, setFilteredMarkets] = useState<ApiMarket[]>([]);
   const [selectedMarketToRegister, setSelectedMarketToRegister] =
     useState<ApiMarket>();
   const { account } = useWallet();
@@ -53,7 +53,7 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
 
   // TODO: change this after merge with ECO-319
   const { data: registeredMarkets } = useQuery(
-    ["userMarketAccounts", account?.address],
+    ["registeredMarkets", account?.address],
     async () => {
       // TODO pull registered markets from SDK (ECO-355)
       return await getAllMarket();
@@ -66,7 +66,7 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
     setFlowStep(FlowStep.DepositWithdraw);
   };
   const onRegisterAccountClick = () => {
-    if (filteredMarkets.length == 0) {
+    if (allMarketData.length == 0) {
       toast.info("No unregistered markets available!");
       return;
     }
@@ -95,19 +95,19 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
     }
 
     // on modal action, we want to refetch the user's registered markets
-    if (allMarketData && registeredMarkets) {
-      const filtered = allMarketData.filter(({ market_id }) => {
-        if (
-          registeredMarkets.find(
-            (registeredMarket) => registeredMarket.market_id === market_id,
-          )
-        ) {
-          return false;
-        }
-        return true;
-      });
-      setFilteredMarkets(filtered);
-    }
+    // if (allMarketData && registeredMarkets) {
+    //   const filtered = allMarketData.filter(({ market_id }) => {
+    //     if (
+    //       registeredMarkets.find(
+    //         (registeredMarket) => registeredMarket.market_id === market_id,
+    //       )
+    //     ) {
+    //       return false;
+    //     }
+    //     return true;
+    //   });
+    //   setFilteredMarkets(filtered);
+    // }
 
     // TODO: refetch registered markets on chain registration OR flow step change
   }, [isOpen, flowStep, onClose, allMarketData, registeredMarkets]);
@@ -151,12 +151,12 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
         <BaseModal isOpen={isOpen} onClose={onClose} showCloseButton={true}>
           <RegisterAccountContent
             // if user hasn't selected one through modal, automatically select the first one that user doesnt have an account for
-            selectedMarket={selectedMarketToRegister || filteredMarkets[0]}
+            selectedMarket={selectedMarketToRegister || allMarketData[0]}
             selectMarket={onMarketSelectClick}
             onAccountCreated={(status: boolean) => {
               if (status) {
                 queryClient.invalidateQueries({
-                  queryKey: ["userMarketAccounts"],
+                  queryKey: ["createMarketAccount"],
                 });
                 setFlowStep(FlowStep.AccountDetails);
               }
@@ -172,7 +172,7 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
           className={"pl-0 pr-0"}
         >
           <SelectMarketContent
-            allMarketData={filteredMarkets}
+            allMarketData={allMarketData}
             onSelectMarket={selectMarketCallback}
           />
         </BaseModal>

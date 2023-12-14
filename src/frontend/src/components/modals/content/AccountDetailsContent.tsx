@@ -47,7 +47,7 @@ export const AccountDetailsContent: React.FC<AccountDetailsContentProps> = ({
 }) => {
   const { account, disconnect } = useWallet();
   const { data: registeredMarkets } = useQuery(
-    ["userMarketAccounts", account?.address],
+    ["registeredMarkets", account?.address],
     async () => {
       // TODO pull registered markets from SDK (ECO-355)
       const allMarketData = await getAllMarket();
