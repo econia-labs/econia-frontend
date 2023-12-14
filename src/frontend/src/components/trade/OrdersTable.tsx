@@ -308,7 +308,7 @@ export const OrdersTable: React.FC<{
         className={"w-full table-fixed" + (className ? ` ${className}` : "")}
       >
         <thead
-          className="sticky top-0 h-8 bg-[#020202] shadow-[inset_0_-1px_0_theme(colors.neutral.600)]"
+          className="sticky top-0 h-10 bg-[#020202] shadow-[inset_0_-1px_0_theme(colors.neutral.600)]"
           style={{
             backgroundImage: `url(${bg.src})`,
           }}
@@ -336,13 +336,7 @@ export const OrdersTable: React.FC<{
         </thead>
         <tbody>
           {!connected ? (
-            <tr>
-              <td colSpan={10}>
-                <div className="flex h-[180px] flex-col items-center justify-center">
-                  <ConnectedButton />
-                </div>
-              </td>
-            </tr>
+            <></>
           ) : isLoading || !data ? (
             <>
               {/* temporarily removing skeletong to help UX and reduce glitchyness. see: ECO-230 */}
@@ -365,15 +359,8 @@ export const OrdersTable: React.FC<{
                 ))}
               </tr>
             </>
-          ) : data.length === 0 ? (
-            <tr>
-              <td colSpan={10}>
-                <div className="flex h-[150px] flex-col items-center justify-center text-sm font-light uppercase text-neutral-500">
-                  No orders to show
-                </div>
-              </td>
-            </tr>
           ) : (
+            data.length !== 0 &&
             table.getRowModel().rows.map((row) => (
               <tr
                 className="cursor-pointer transition-colors hover:bg-neutral-700"
@@ -396,6 +383,19 @@ export const OrdersTable: React.FC<{
           )}
         </tbody>
       </table>
+      {!connected ? (
+        <div className="flex h-[calc(100%-32px)] flex-col items-center justify-center text-white">
+          <ConnectedButton />
+        </div>
+      ) : (
+        !isLoading &&
+        data &&
+        data.length === 0 && (
+          <div className="flex h-[calc(100%-32px)] flex-col items-center justify-center text-sm font-light uppercase text-neutral-500">
+            No orders to show
+          </div>
+        )
+      )}
     </div>
   );
 };

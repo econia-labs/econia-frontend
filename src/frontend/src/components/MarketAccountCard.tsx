@@ -50,7 +50,7 @@ export const MarketAccountCard: React.FC<{
   const toggleExpanded = () => setExpanded(!expanded);
   const { coinListClient } = useAptos();
 
-  const DEFAULT_TOKEN_ICON = "/tokenImages/default.png";
+  const DEFAULT_TOKEN_ICON = "/tokenImages/default.svg";
 
   const baseAssetIcon = marketAccountData
     ? coinListClient.getCoinInfoByFullName(
@@ -98,17 +98,13 @@ export const MarketAccountCard: React.FC<{
   };
 
   return (
-    <div
-      className={
-        "mb-4 flex min-h-[105px] w-[378px] justify-between  border-[1px] border-neutral-600 px-[21px] py-[18px]"
-      }
-    >
+    <div className="mb-4 flex w-[378px] items-center justify-between gap-11 border-[1px] border-neutral-600 pb-[17px] pl-5 pr-14 pt-[13px]">
       {/* left side */}
-      <div className="flex-1">
+      <div>
         {/* input copy row 1 */}
         <div className="mb-[9px] flex items-center">
           <div className="text-white">
-            <div className="flex items-center text-sm font-bold">
+            <div className="flex items-center font-bold">
               <MarketIconPair
                 size={16}
                 baseAssetIcon={baseAssetIcon}
@@ -120,18 +116,18 @@ export const MarketAccountCard: React.FC<{
             {/* row2 within row1 */}
             <div>
               <div
-                className="ml-[27.42px] cursor-pointer text-left text-[10px] text-neutral-500"
+                className="ml-[27.42px] text-left text-xs uppercase text-neutral-500"
                 onClick={toggleExpanded}
               >
-                LAYERZERO {/** TODO */}
-                <ChevronDownIcon
+                Native | Layerzero {/** TODO */}
+                {/* <ChevronDownIcon
                   className={`inline-block h-4 w-4 text-center duration-150 ${
                     expanded && "rotate-180"
                   }`}
-                />
+                /> */}
               </div>
               {/* expand container */}
-              <div className="relative overflow-hidden">
+              {/* <div className="relative overflow-hidden">
                 <div
                   className={`reveal-container ml-[27.42px] ${
                     expanded && "revealed"
@@ -141,7 +137,7 @@ export const MarketAccountCard: React.FC<{
                   <div>LOT SIZE: {lot_size.toLocaleString()}</div>
                   <div>TICK SIZE: {tick_size.toLocaleString()}</div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -152,32 +148,29 @@ export const MarketAccountCard: React.FC<{
             onDepositWithdrawClick(market);
           }}
           className={
-            "flex items-center !px-3 !py-1 !text-[10px] !leading-[18px]"
+            "flex items-center !px-[18px] pt-[10px] !text-xs !font-medium uppercase !leading-[11.5px]"
           }
         >
-          Deposit / Withdraw
+          Deposit/withdraw
         </Button>
       </div>
+
       {/* right side */}
-      <div className="ml-[39px] flex-1">
-        <div className="ml-8 flex flex-col text-left">
-          <span className="align-text-top font-roboto-mono text-[10px] font-light text-neutral-500">
+      <div>
+        <div className="text-left">
+          <span className="font-roboto-mono text-xs font-light text-neutral-500">
             {base_symbol} BALANCE
           </span>
-          <p className="font-roboto-mono text-xs font-light text-white">
-            <span className="inline-block align-text-top text-white">
-              {fromRawCoinAmount(base_available || 0, base_decimals || 0)}
-            </span>
+          <p className="font-roboto-mono text-[13px] font-medium text-white">
+            {fromRawCoinAmount(base_available || 0, base_decimals || 0)}
           </p>
         </div>
-        <div className="ml-8 text-left">
-          <span className="font-roboto-mono text-[10px] font-light text-neutral-500">
+        <div className="text-left">
+          <span className="font-roboto-mono text-xs font-light text-neutral-500">
             {quote_symbol} BALANCE
           </span>
-          <p className="font-roboto-mono text-xs font-light text-white">
-            <span className="inline-block text-white">
-              {fromRawCoinAmount(quote_available || 0, quote_decimals || 0)}
-            </span>
+          <p className="font-roboto-mono text-[13px] font-medium text-white">
+            {fromRawCoinAmount(quote_available || 0, quote_decimals || 0)}
           </p>
         </div>
       </div>

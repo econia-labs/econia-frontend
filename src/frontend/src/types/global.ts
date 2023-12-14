@@ -10,6 +10,13 @@ export type Orderbook = {
   asks: PriceLevel[];
   updatedLevel?: PriceLevel;
   isLoading?: boolean;
+  focus: {
+    side: string;
+    price: number;
+    totalBase: string | number;
+    totalQuote: string | number;
+    average: string | number;
+  };
 };
 export type Precision =
   | "0.01"

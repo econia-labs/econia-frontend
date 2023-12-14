@@ -23,7 +23,7 @@ import { MarketIconPair } from "./MarketIconPair";
 import { BaseModal } from "./modals/BaseModal";
 import { SelectMarketContent } from "./trade/DepositWithdrawModal/SelectMarketContent";
 
-const DEFAULT_TOKEN_ICON = "/tokenImages/default.png";
+const DEFAULT_TOKEN_ICON = "/tokenImages/default.svg";
 
 const SocialMediaIcons: React.FC<{ className?: string }> = ({ className }) => {
   return (
@@ -70,7 +70,7 @@ export const StatsBar: React.FC<{
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { coinListClient } = useAptos();
-  const { highestBid, lowestAsk, orderBook } = useOrderBookData();
+  const { highestBid, lowestAsk, orderBook } = useOrderBookData(selectedMarket);
   const { setPrice } = useOrderEntry();
 
   useEffect(() => {
@@ -95,7 +95,6 @@ export const StatsBar: React.FC<{
         coinListClient.getCoinInfoByFullName(
           TypeTag.fromApiCoin(selectedMarket.quote).toString(),
         )?.logo_url ?? DEFAULT_TOKEN_ICON;
-
       return { baseAssetIcon, quoteAssetIcon };
     },
   );
@@ -154,7 +153,7 @@ export const StatsBar: React.FC<{
           setIsModalOpen(false);
         }}
         showCloseButton={false}
-        className={"pl-0 pr-0"}
+        className={"!p-0"}
       >
         <SelectMarketContent
           allMarketData={allMarketData}
@@ -171,7 +170,7 @@ export const StatsBar: React.FC<{
       </BaseModal>
       {/* Desktop */}
       <div className="hidden justify-between border-b border-neutral-600 px-3 py-3 md:flex lg:px-9">
-        <div className="flex gap-14 overflow-x-clip whitespace-nowrap">
+        <div className="flex gap-10 overflow-x-clip whitespace-nowrap">
           <button
             className="flex items-center outline-none "
             onClick={() => {
@@ -182,9 +181,9 @@ export const StatsBar: React.FC<{
               baseAssetIcon={iconData?.baseAssetIcon}
               quoteAssetIcon={iconData?.quoteAssetIcon}
             />
-            <div className="min-w-[130px] lg:min-w-[160px]">
-              <div className="flex font-roboto-mono text-base font-medium text-neutral-300">
-                {selectedMarket.name}
+            <div className="ml-2 min-w-[130px] lg:min-w-[160px]">
+              <div className="flex gap-3 font-roboto-mono text-base font-medium text-neutral-300">
+                {baseSymbol} - {quoteSymbol}
                 <ChevronDownIcon className="my-auto ml-1 h-[18px] w-[18px] text-white" />
               </div>
             </div>
@@ -223,7 +222,7 @@ export const StatsBar: React.FC<{
           <div className="hidden md:block">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
               LAST PRICE{" "}
-              <span className="text-[#565656]">{quoteSymbol || "-"}</span>
+              <span className="text-neutral-600">{quoteSymbol || "-"}</span>
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
               {isFetchingPriceInfo && isFirstFetch ? (

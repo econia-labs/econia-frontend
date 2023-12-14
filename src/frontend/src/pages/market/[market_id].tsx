@@ -1,11 +1,8 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { type MaybeHexString } from "aptos";
 import type { GetStaticPaths, GetStaticProps } from "next";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import Script from "next/script";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { toast } from "react-toastify";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { DepthChart } from "@/components/DepthChart";
 import { Header } from "@/components/Header";
@@ -17,11 +14,9 @@ import MobileOrderEntry from "@/components/trade/MobileOrderEntry";
 import { OrderEntry } from "@/components/trade/OrderEntry";
 import { OrdersTable } from "@/components/trade/OrdersTable";
 import { TradeHistoryTable } from "@/components/trade/TradeHistoryTable";
-import { useAptos } from "@/contexts/AptosContext";
 import { OrderEntryContextProvider } from "@/contexts/OrderEntryContext";
 import { useOrderBook } from "@/hooks/useOrderbook";
-import type { ApiMarket, ApiOrder, ApiPriceLevel } from "@/types/api";
-import { type Orderbook } from "@/types/global";
+import type { ApiMarket } from "@/types/api";
 import { getAllMarket } from "@/utils/helpers";
 
 import {
@@ -47,10 +42,6 @@ type PathParams = {
 };
 
 export default function Market({ allMarketData, marketData }: Props) {
-  const { account } = useAptos();
-  const queryClient = useQueryClient();
-  const ws = useRef<WebSocket | undefined>(undefined);
-  const prevAddress = useRef<MaybeHexString | undefined>(undefined);
   const [tab, setTab] = useState<"orders" | "order-book" | "trade-histories">(
     "orders",
   );
@@ -176,117 +167,117 @@ export default function Market({ allMarketData, marketData }: Props) {
   // }, [marketData?.market_id, account?.address]);
 
   // Handle incoming WebSocket messages
-  useEffect(() => {
-    if (marketData?.market_id == null || ws.current == null) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (marketData?.market_id == null || ws.current == null) {
+  //     return;
+  //   }
 
-    ws.current.onmessage = (message) => {
-      const msg = JSON.parse(message.data);
+  //   ws.current.onmessage = (message) => {
+  //     const msg = JSON.parse(message.data);
 
-      if (msg.event === "update") {
-        if (msg.channel === "orders") {
-          const { order_status, market_order_id }: ApiOrder = msg.data;
-          switch (order_status) {
-            // TODO further discuss what toast text should be
-            case "open":
-              toast.success(
-                `Order with order ID ${market_order_id} placed successfully.`,
-              );
-              break;
-            case "filled":
-              toast.success(`Order with order ID ${market_order_id} filled.`);
-              break;
-            case "cancelled":
-              toast.warn(`Order with order ID ${market_order_id} cancelled.`);
-              break;
-            case "evicted":
-              toast.warn(`Order with order ID ${market_order_id} evicted.`);
-              break;
-          }
-        } else if (msg.channel === "price_levels") {
-          const priceLevel: ApiPriceLevel = msg.data;
-          queryClient.setQueriesData(
-            ["orderbook", marketData.market_id],
-            (prevData: Orderbook | undefined) => {
-              if (prevData == null) {
-                return undefined;
-              }
-              if (priceLevel.side === "buy") {
-                for (const [i, lvl] of prevData.bids.entries()) {
-                  if (priceLevel.price === lvl.price) {
-                    return {
-                      bids: [
-                        ...prevData.bids.slice(0, i),
-                        { price: priceLevel.price, size: priceLevel.size },
-                        ...prevData.bids.slice(i + 1),
-                      ],
-                      asks: prevData.asks,
-                      updatedLevel: { ...priceLevel },
-                    };
-                  } else if (priceLevel.price > lvl.price) {
-                    return {
-                      bids: [
-                        ...prevData.bids.slice(0, i),
-                        { price: priceLevel.price, size: priceLevel.size },
-                        ...prevData.bids.slice(i),
-                      ],
-                      asks: prevData.asks,
-                      updatedLevel: { ...priceLevel },
-                    };
-                  }
-                }
-                return {
-                  bids: [
-                    ...prevData.bids,
-                    { price: priceLevel.price, size: priceLevel.size },
-                  ],
-                  asks: prevData.asks,
-                  updatedLevel: { ...priceLevel },
-                };
-              } else {
-                for (const [i, lvl] of prevData.asks.entries()) {
-                  if (priceLevel.price === lvl.price) {
-                    return {
-                      bids: prevData.bids,
-                      asks: [
-                        ...prevData.asks.slice(0, i),
-                        { price: priceLevel.price, size: priceLevel.size },
-                        ...prevData.asks.slice(i + 1),
-                      ],
-                      updatedLevel: { ...priceLevel },
-                    };
-                  } else if (priceLevel.price < lvl.price) {
-                    return {
-                      bids: prevData.bids,
-                      asks: [
-                        ...prevData.asks.slice(0, i),
-                        { price: priceLevel.price, size: priceLevel.size },
-                        ...prevData.asks.slice(i),
-                      ],
-                      updatedLevel: { ...priceLevel },
-                    };
-                  }
-                }
-                return {
-                  bids: prevData.bids,
-                  asks: [
-                    ...prevData.asks,
-                    { price: priceLevel.price, size: priceLevel.size },
-                  ],
-                  updatedLevel: { ...priceLevel },
-                };
-              }
-            },
-          );
-        } else {
-          // TODO
-        }
-      } else {
-        // TODO
-      }
-    };
-  }, [marketData, account?.address, queryClient]);
+  //     if (msg.event === "update") {
+  //       if (msg.channel === "orders") {
+  //         const { order_status, market_order_id }: ApiOrder = msg.data;
+  //         switch (order_status) {
+  //           // TODO further discuss what toast text should be
+  //           case "open":
+  //             toast.success(
+  //               `Order with order ID ${market_order_id} placed successfully.`,
+  //             );
+  //             break;
+  //           case "filled":
+  //             toast.success(`Order with order ID ${market_order_id} filled.`);
+  //             break;
+  //           case "cancelled":
+  //             toast.warn(`Order with order ID ${market_order_id} cancelled.`);
+  //             break;
+  //           case "evicted":
+  //             toast.warn(`Order with order ID ${market_order_id} evicted.`);
+  //             break;
+  //         }
+  //       } else if (msg.channel === "price_levels") {
+  //         const priceLevel: ApiPriceLevel = msg.data;
+  //         queryClient.setQueriesData(
+  //           ["orderbook", marketData.market_id],
+  //           (prevData: Orderbook | undefined) => {
+  //             if (prevData == null) {
+  //               return undefined;
+  //             }
+  //             if (priceLevel.side === "buy") {
+  //               for (const [i, lvl] of prevData.bids.entries()) {
+  //                 if (priceLevel.price === lvl.price) {
+  //                   return {
+  //                     bids: [
+  //                       ...prevData.bids.slice(0, i),
+  //                       { price: priceLevel.price, size: priceLevel.size },
+  //                       ...prevData.bids.slice(i + 1),
+  //                     ],
+  //                     asks: prevData.asks,
+  //                     updatedLevel: { ...priceLevel },
+  //                   };
+  //                 } else if (priceLevel.price > lvl.price) {
+  //                   return {
+  //                     bids: [
+  //                       ...prevData.bids.slice(0, i),
+  //                       { price: priceLevel.price, size: priceLevel.size },
+  //                       ...prevData.bids.slice(i),
+  //                     ],
+  //                     asks: prevData.asks,
+  //                     updatedLevel: { ...priceLevel },
+  //                   };
+  //                 }
+  //               }
+  //               return {
+  //                 bids: [
+  //                   ...prevData.bids,
+  //                   { price: priceLevel.price, size: priceLevel.size },
+  //                 ],
+  //                 asks: prevData.asks,
+  //                 updatedLevel: { ...priceLevel },
+  //               };
+  //             } else {
+  //               for (const [i, lvl] of prevData.asks.entries()) {
+  //                 if (priceLevel.price === lvl.price) {
+  //                   return {
+  //                     bids: prevData.bids,
+  //                     asks: [
+  //                       ...prevData.asks.slice(0, i),
+  //                       { price: priceLevel.price, size: priceLevel.size },
+  //                       ...prevData.asks.slice(i + 1),
+  //                     ],
+  //                     updatedLevel: { ...priceLevel },
+  //                   };
+  //                 } else if (priceLevel.price < lvl.price) {
+  //                   return {
+  //                     bids: prevData.bids,
+  //                     asks: [
+  //                       ...prevData.asks.slice(0, i),
+  //                       { price: priceLevel.price, size: priceLevel.size },
+  //                       ...prevData.asks.slice(i),
+  //                     ],
+  //                     updatedLevel: { ...priceLevel },
+  //                   };
+  //                 }
+  //               }
+  //               return {
+  //                 bids: prevData.bids,
+  //                 asks: [
+  //                   ...prevData.asks,
+  //                   { price: priceLevel.price, size: priceLevel.size },
+  //                 ],
+  //                 updatedLevel: { ...priceLevel },
+  //               };
+  //             }
+  //           },
+  //         );
+  //       } else {
+  //         // TODO
+  //       }
+  //     } else {
+  //       // TODO
+  //     }
+  //   };
+  // }, [marketData, account?.address, queryClient]);
 
   useEffect(() => {
     const f = () => {
@@ -365,7 +356,7 @@ export default function Market({ allMarketData, marketData }: Props) {
               </div>
             </div>
             <div className="flex h-[260px] max-w-full flex-col border border-neutral-600">
-              <div className="flex h-8 gap-4 bg-transparent pl-4 pt-2 lg:h-9 lg:pl-1 lg:pt-1">
+              <div className="flex h-8 gap-4 bg-transparent pl-4 pt-2 lg:h-9 lg:pl-1 lg:pt-0">
                 <div className="flex gap-4 bg-transparent py-1 text-base lg:py-3 lg:pl-4">
                   <p
                     onClick={() => setTab("orders")}
@@ -420,7 +411,7 @@ export default function Market({ allMarketData, marketData }: Props) {
               )}
             </div>
           </div>
-          <div className="hidden w-0 pr-3 pt-3 lg:flex lg:min-w-[268px] ">
+          <div className="hidden w-0  pt-3 lg:flex lg:min-w-[268px] ">
             <div className="flex w-full flex-col border border-neutral-600">
               <OrderbookTable
                 marketData={marketData}
