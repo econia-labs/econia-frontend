@@ -171,7 +171,7 @@ export const StatsBar: React.FC<{
       </BaseModal>
       {/* Desktop */}
       <div className="hidden justify-between border-b border-neutral-600 px-3 py-3 md:flex lg:px-9">
-        <div className="flex gap-14 overflow-x-clip whitespace-nowrap">
+        <div className="flex gap-10 overflow-x-clip whitespace-nowrap">
           <button
             className="flex items-center outline-none "
             onClick={() => {
@@ -182,9 +182,9 @@ export const StatsBar: React.FC<{
               baseAssetIcon={iconData?.baseAssetIcon}
               quoteAssetIcon={iconData?.quoteAssetIcon}
             />
-            <div className="min-w-[130px] lg:min-w-[160px]">
-              <div className="flex font-roboto-mono text-base font-medium text-neutral-300">
-                {selectedMarket.name}
+            <div className="ml-2 min-w-[130px] lg:min-w-[160px]">
+              <div className="flex gap-3 font-roboto-mono text-base font-medium text-neutral-300">
+                {baseSymbol} - {quoteSymbol}
                 <ChevronDownIcon className="my-auto ml-1 h-[18px] w-[18px] text-white" />
               </div>
             </div>
