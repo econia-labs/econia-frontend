@@ -22,7 +22,7 @@ export const Button: React.FC<
     <button
       {...props}
       className={[
-        "px-4 py-2 text-center font-jost text-lg font-semibold disabled:cursor-not-allowed",
+        "px-4 py-2 text-center font-roboto-mono text-lg font-semibold disabled:cursor-not-allowed",
         variantStyle,
         props.className,
       ].join(" ")}
