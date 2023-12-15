@@ -165,7 +165,7 @@ export const AccountDetailsModal: React.FC<{
           onClick={() => {
             onRegisterAccountClick();
           }}
-          className="bg-white !px-[17.5px] text-xs !font-medium uppercase text-neutral-800"
+          className="bg-white !px-[17.5px] text-xs !font-bold uppercase text-neutral-800"
         >
           Add New Account
         </Button>
