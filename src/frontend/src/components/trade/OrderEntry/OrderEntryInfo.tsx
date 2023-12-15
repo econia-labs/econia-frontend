@@ -6,7 +6,7 @@ export const OrderEntryInfo: React.FC<{
 }> = ({ label, value, onClick, className }) => {
   return (
     <div
-      className={`flex justify-between font-roboto-mono text-xs font-light text-neutral-500 ${className}`}
+      className={`flex justify-between font-roboto-mono text-xs font-light text-neutral-600 ${className}`}
       onClick={onClick}
     >
       <p>{label}</p>

@@ -261,11 +261,8 @@ export const MarketOrderEntry: React.FC<{
       </div>
       <hr className="my-4 border-neutral-600" />
       <div className="mx-4 mb-4 flex flex-col gap-4">
-        <OrderEntryInfo
-          label={`EST. FEE (${marketData.quote.symbol})`}
-          value={estimateFee}
-        />
-        <ConnectedButton className="w-full py-[11px]">
+        <OrderEntryInfo label={`EST. FEE `} value={estimateFee} />
+        <ConnectedButton className="w-full">
           {/* <Button
             variant={side === "buy" ? "green" : "red"}
             className={`w-full`}
@@ -296,9 +293,7 @@ export const MarketOrderEntry: React.FC<{
         </ConnectedButton>
         <OrderEntryInfo
           label={`${marketData.base?.symbol} AVAILABLE`}
-          value={`${balance?.base_available ? balance?.base_available : "--"} ${
-            marketData.base?.symbol
-          }`}
+          value={`${balance?.base_available ? balance?.base_available : "--"}`}
           className="cursor-pointer"
           onClick={() => {
             setSTotalSize(
@@ -308,9 +303,7 @@ export const MarketOrderEntry: React.FC<{
         />
         <OrderEntryInfo
           label={`${marketData.quote?.symbol} AVAILABLE`}
-          value={`${
-            balance?.quote_available ? balance.quote_available : "--"
-          } ${marketData.quote?.symbol}`}
+          value={`${balance?.quote_available ? balance.quote_available : "--"}`}
         />
       </div>
     </form>
