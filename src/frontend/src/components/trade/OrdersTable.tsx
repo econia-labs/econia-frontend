@@ -66,20 +66,6 @@ export const OrdersTable: React.FC<{
     },
   );
 
-  const sortLabel = useMemo(() => {
-    const map = new Map<SortDirection | false, ReactNode>();
-    map.set(false, null);
-    map.set(
-      "asc",
-      <ChevronUpIcon className="absolute top-0 ml-0.5 inline-block h-4 w-4 translate-y-1/2" />,
-    );
-    map.set(
-      "desc",
-      <ChevronDownIcon className="absolute top-0 ml-0.5 inline-block h-4 w-4 translate-y-1/2" />,
-    );
-    return map;
-  }, []);
-
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setSelectedOrder(null);
@@ -329,7 +315,6 @@ export const OrdersTable: React.FC<{
                       header.column.columnDef.header,
                       header.getContext(),
                     )}
-                {sortLabel.get(header.column.getIsSorted())}
               </th>
             ))}
           </tr>
