@@ -449,10 +449,7 @@ export const LimitOrderEntry: React.FC<{
       </div>
       <hr className="my-4 border-neutral-600" />
       <div className="flex flex-col gap-4 md:mx-4 md:mb-4">
-        <OrderEntryInfo
-          label={`EST. FEE (${marketData.quote.symbol})`}
-          value={estimateFee}
-        />
+        <OrderEntryInfo label={`EST. FEE`} value={estimateFee} />
         <ConnectedButton className="w-full">
           {isSufficient ? (
             <Button
@@ -478,9 +475,7 @@ export const LimitOrderEntry: React.FC<{
         </ConnectedButton>
         <OrderEntryInfo
           label={`${marketData.base?.symbol} AVAILABLE`}
-          value={`${balance?.base_available ? balance?.base_available : "--"} ${
-            marketData.base?.symbol
-          }`}
+          value={`${balance?.base_available ? balance?.base_available : "--"}`}
           className="cursor-pointer"
           onClick={() => {
             setValue(
@@ -491,9 +486,7 @@ export const LimitOrderEntry: React.FC<{
         />
         <OrderEntryInfo
           label={`${marketData.quote?.symbol} AVAILABLE`}
-          value={`${
-            balance?.quote_available ? balance.quote_available : "--"
-          } ${marketData.quote?.symbol}`}
+          value={`${balance?.quote_available ? balance.quote_available : "--"}`}
         />
       </div>
     </form>
