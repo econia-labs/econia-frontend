@@ -15,7 +15,7 @@ export const ConnectedButton: React.FC<
     <>
       {!connected ? (
         <Button
-          className={`whitespace-nowrap text-[16px]/6 ${className}`}
+          className={`w-[182px] whitespace-nowrap !font-roboto-mono !text-base !font-bold !leading-[22px] tracking-[0.32px] text-neutral-700 ${className}`}
           variant="primary"
           onClick={(e) => {
             e.preventDefault();

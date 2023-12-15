@@ -181,7 +181,11 @@ export const TradeHistoryTable: React.FC<{
                 <td
                   className={`text-xs ${
                     i === 0
-                      ? "pl-4 text-left"
+                      ? `pl-4 text-left ${
+                          cell.row.original.maker_side
+                            ? "text-green"
+                            : "text-red"
+                        }`
                       : i === 1
                       ? "text-left"
                       : "pr-4 text-right"

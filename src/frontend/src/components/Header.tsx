@@ -119,12 +119,12 @@ export function Header({
             </NavItem>
           </div>
           <div className="flex flex-1 justify-end">
-            <ConnectedButton className="py-1">
+            <ConnectedButton className="py-[7px]">
               <div className="flex items-center gap-4">
                 {onDepositWithdrawClick && (
                   <Button
                     variant="secondary"
-                    className="whitespace-nowrap text-[16px]/6"
+                    className="whitespace-nowrap py-[7px] !font-roboto-mono !text-base !font-bold uppercase !leading-[22px]"
                     onClick={onDepositWithdrawClick}
                   >
                     Deposit / Withdraw
@@ -133,7 +133,7 @@ export function Header({
                 <Button
                   variant="primary"
                   onClick={onWalletButtonClick}
-                  className="whitespace-nowrap font-roboto-mono text-[16px]/6 !font-medium uppercase"
+                  className="whitespace-nowrap py-[7px] !font-roboto-mono !text-base !font-bold uppercase !leading-[22px]"
                 >
                   {shorten(account?.address)}
                 </Button>
@@ -198,7 +198,7 @@ const SlidingMenu = ({
         </NavItem>
       </div>
       <div className="px-6">
-        <ConnectedButton className="w-[182px] py-[6px] !font-roboto-mono !text-base !font-bold uppercase leading-[22px]">
+        <ConnectedButton className="w-[182px] py-[7px] !font-roboto-mono !text-base !font-bold uppercase leading-[22px]">
           <div className="flex items-center gap-4">
             {/* {onDepositWithdrawClick && (
               <Button
@@ -254,7 +254,7 @@ const HeaderMobile = ({
       {/* Connection buttons */}
       <div className="flex h-[69px] items-center  gap-5">
         {!isOpen && (
-          <ConnectedButton className="w-[182px] py-[6px] !font-roboto-mono !text-base !font-bold uppercase leading-[22px]">
+          <ConnectedButton className="w-[182px] py-[7px] !font-roboto-mono !text-base !font-bold uppercase leading-[22px]">
             <div className="flex items-center gap-4">
               {/* {onDepositWithdrawClick && (
             <Button
