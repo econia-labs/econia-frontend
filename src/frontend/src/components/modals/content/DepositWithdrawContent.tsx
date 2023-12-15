@@ -22,9 +22,9 @@ const SelectCoinInput: React.FC<{
   onSelectCoin: (coin: ApiCoin) => void;
 }> = ({ coins, startAdornment, selectedCoin, onSelectCoin }) => {
   return (
-    <div className="flex h-10 w-full items-center border border-neutral-600 p-4">
+    <div className="flex h-10 w-full items-center border border-neutral-600 p-4 pr-0">
       <Menu as="div" className="relative inline-block w-full text-left">
-        <Menu.Button className="flex w-full items-center justify-between">
+        <Menu.Button className="flex w-full items-center justify-between pr-4">
           <p className="font-roboto-mono text-sm font-medium uppercase text-white">
             {startAdornment}
           </p>
@@ -35,15 +35,17 @@ const SelectCoinInput: React.FC<{
             <ChevronDownIcon className="h-[18.06px] w-[17px] fill-white" />
           </div>
         </Menu.Button>
-        <Menu.Items className="absolute right-0 top-0 rounded-md bg-neutral-800 ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <Menu.Items className="absolute right-[-1px] top-[calc(100%+16px)]  border border-neutral-600 bg-neutral-800  bg-noise ring-1 ring-black ring-opacity-5 focus:outline-none">
           {coins.map((coin) => (
             <Menu.Item
               as="div"
               key={coin.account_address}
               onClick={() => onSelectCoin(coin)}
-              className="cursor-pointer items-center border border-white p-4 text-left font-roboto-mono hover:bg-neutral-600"
+              className="cursor-pointer items-center px-5 py-2 text-left font-roboto-mono hover:bg-neutral-600"
             >
-              <p className="whitespace-nowrap text-white">{coin.symbol}</p>
+              <p className="whitespace-nowrap text-sm leading-[18px] text-white">
+                {coin.symbol}
+              </p>
             </Menu.Item>
           ))}
         </Menu.Items>
