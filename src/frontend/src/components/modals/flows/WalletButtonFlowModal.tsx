@@ -70,7 +70,8 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
       toast.info("No unregistered markets available!");
       return;
     }
-    setFlowStep(FlowStep.RegisterAccount);
+    // setFlowStep(FlowStep.RegisterAccount);
+    setFlowStep(FlowStep.MarketSelect);
   };
   const onMarketSelectClick = () => {
     setFlowStep(FlowStep.MarketSelect);
@@ -149,7 +150,16 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
         </BaseModal>
       )}
       {flowStep === FlowStep.RegisterAccount && (
-        <BaseModal isOpen={isOpen} onClose={onClose} showCloseButton={true}>
+        <BaseModal
+          className="h-[327px] w-[342px] px-9 py-10"
+          isOpen={isOpen}
+          onClose={onClose}
+          showCloseButton={true}
+          showBackButton={true}
+          onBack={() => {
+            setFlowStep(FlowStep.MarketSelect);
+          }}
+        >
           <RegisterAccountContent
             // if user hasn't selected one through modal, automatically select the first one that user doesnt have an account for
             selectedMarket={selectedMarketToRegister || allMarketData[0]}
@@ -171,6 +181,10 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
           onClose={onClose}
           showCloseButton={true}
           className={"pl-0 pr-0"}
+          showBackButton={true}
+          onBack={() => {
+            setFlowStep(FlowStep.AccountDetails);
+          }}
         >
           <SelectMarketContent
             allMarketData={allMarketData}
