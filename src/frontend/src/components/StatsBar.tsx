@@ -89,8 +89,8 @@ export const StatsBar: React.FC<{
     async () => {
       const baseAssetIcon = selectedMarket.base
         ? coinListClient.getCoinInfoByFullName(
-            TypeTag.fromApiCoin(selectedMarket.base).toString(),
-          )?.logo_url
+          TypeTag.fromApiCoin(selectedMarket.base).toString(),
+        )?.logo_url
         : DEFAULT_TOKEN_ICON;
       const quoteAssetIcon =
         coinListClient.getCoinInfoByFullName(
@@ -171,7 +171,7 @@ export const StatsBar: React.FC<{
       </BaseModal>
       {/* Desktop */}
       <div className="hidden justify-between border-b border-neutral-600 px-3 py-3 md:flex lg:px-9">
-        <div className="flex gap-10 overflow-x-clip whitespace-nowrap">
+        <div className="flex gap-12 overflow-x-clip whitespace-nowrap">
           <button
             className="flex items-center outline-none "
             onClick={() => {
@@ -202,11 +202,10 @@ export const StatsBar: React.FC<{
                 )}
               </span>
               <span
-                className={`ml-1 inline-block min-w-[6em] text-base ${
-                  (priceInfo?.price_change_nominal || 0) < 0
-                    ? "text-red"
-                    : "text-green"
-                }`}
+                className={`ml-1 inline-block min-w-[6em] text-base ${(priceInfo?.price_change_nominal || 0) < 0
+                  ? "text-red"
+                  : "text-green"
+                  }`}
               >
                 {isFetchingPriceInfo && isFirstFetch ? (
                   <Skeleton />
@@ -252,11 +251,10 @@ export const StatsBar: React.FC<{
               </span>
               {priceInfo?.price_change_percentage != undefined && (
                 <span
-                  className={`ml-2 ${
-                    (priceInfo?.price_change_percentage || 0) < 0
-                      ? "text-red"
-                      : "text-green"
-                  }`}
+                  className={`ml-2 ${(priceInfo?.price_change_percentage || 0) < 0
+                    ? "text-red"
+                    : "text-green"
+                    }`}
                 >
                   {isFetchingPriceInfo && isFirstFetch ? (
                     <Skeleton />
@@ -334,8 +332,8 @@ export const StatsBar: React.FC<{
                   undefined,
                   priceInfo.quote_volume > 10000
                     ? {
-                        maximumFractionDigits: 0,
-                      }
+                      maximumFractionDigits: 0,
+                    }
                     : {},
                 )
               ) : (
@@ -348,21 +346,21 @@ export const StatsBar: React.FC<{
         <SocialMediaIcons className={"my-auto hidden md:block"} />
       </div>
       {/* Mobile */}
-      <div className="border-b border-neutral-600 px-3 py-4 md:hidden">
+      <div className="flex h-[120px] flex-shrink-0 flex-col justify-center border-b border-neutral-600 px-[39.99px] md:hidden">
         <div className="flex w-full justify-between">
-          <div className="flex items-center">
+          <div className="flex h-fit items-center">
             <MarketIconPair
               baseAssetIcon={iconData?.baseAssetIcon}
               quoteAssetIcon={iconData?.quoteAssetIcon}
             />
-            <div className="ml-5 min-w-[160px]">
+            <div className="ml-4 min-w-[160px]">
               <button
                 className="flex font-roboto-mono text-base font-medium text-neutral-300"
                 onClick={() => {
                   setIsModalOpen(true);
                 }}
               >
-                {selectedMarket.name}
+                {selectedMarket.name.split("-").join("  -  ")}
                 <ChevronDownIcon className="my-auto ml-5 h-[18px] w-[18px] text-white" />
               </button>
             </div>
@@ -379,11 +377,10 @@ export const StatsBar: React.FC<{
                 )}
               </span>
               <span
-                className={`block  text-xs ${
-                  (priceInfo?.price_change_nominal || 0) < 0
-                    ? "text-red"
-                    : "text-green"
-                }`}
+                className={`block  text-xs ${(priceInfo?.price_change_nominal || 0) < 0
+                  ? "text-red"
+                  : "text-green"
+                  }`}
               >
                 {isFetchingPriceInfo && isFirstFetch ? (
                   <Skeleton />
@@ -397,7 +394,7 @@ export const StatsBar: React.FC<{
             </p>
           </div>
         </div>
-        <div className="mt-4 flex gap-3">
+        <div className="mt-[5.73px] flex gap-4 pl-[6.52px]">
           {/* 24 hr high */}
           <div className="flex gap-3">
             <span className="font-roboto-mono text-xs font-light uppercase text-neutral-500">
@@ -451,7 +448,7 @@ export const StatsBar: React.FC<{
             </span>
           </div>
         </div>
-        <div className="mt-1 flex gap-3">
+        <div className="mt-1 flex gap-4 pl-[6.52px]">
           {/* 24 hr high */}
           <div className="flex gap-3">
             <span className="min-w-[28.81px] font-roboto-mono text-xs font-light uppercase text-neutral-500">
