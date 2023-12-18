@@ -171,7 +171,7 @@ export const StatsBar: React.FC<{
       </BaseModal>
       {/* Desktop */}
       <div className="hidden justify-between border-b border-neutral-600 px-3 py-3 md:flex lg:px-9">
-        <div className="flex gap-12 overflow-x-clip whitespace-nowrap">
+        <div className="flex  overflow-x-clip whitespace-nowrap">
           <button
             className="flex items-center outline-none "
             onClick={() => {
@@ -220,7 +220,7 @@ export const StatsBar: React.FC<{
             </p>
           </div>
           {/* price */}
-          <div className="hidden md:block">
+          <div className="ml-[28.83px] hidden md:block">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
               LAST PRICE <TokenSymbol symbol={quoteSymbol} />
             </span>
@@ -235,7 +235,7 @@ export const StatsBar: React.FC<{
             </p>
           </div>
           {/* 24 hr */}
-          <div className="ml-4 hidden md:block lg:ml-8">
+          <div className="ml-4 hidden md:block lg:ml-[21.4px]">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
               24H CHANGE
             </span>
@@ -272,7 +272,7 @@ export const StatsBar: React.FC<{
             </p>
           </div>
           {/* 24 hr high */}
-          <div className="ml-4 hidden md:block lg:ml-8">
+          <div className="ml-4 hidden md:block lg:ml-[28.83px]">
             <span className="font-roboto-mono text-xs font-light uppercase text-neutral-500">
               24h high
             </span>
@@ -287,7 +287,7 @@ export const StatsBar: React.FC<{
             </p>
           </div>
           {/* 24 hr low */}
-          <div className="ml-4 hidden md:block lg:ml-8">
+          <div className="ml-4 hidden md:block lg:ml-[21.4px]">
             <span className="font-roboto-mono text-xs font-light uppercase text-neutral-500">
               24h low
             </span>
@@ -302,7 +302,7 @@ export const StatsBar: React.FC<{
             </p>
           </div>
           {/* 24 hr main */}
-          <div className="ml-4 hidden md:block lg:ml-8">
+          <div className="ml-4 hidden md:block lg:ml-[21.4px]">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
               24H VOLUME <TokenSymbol symbol={baseSymbol} />
             </span>
@@ -322,7 +322,7 @@ export const StatsBar: React.FC<{
             </p>
           </div>
           {/* 24 hr pair */}
-          <div className="ml-4 hidden md:block lg:ml-8">
+          <div className="ml-4 hidden md:block lg:ml-5">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
               24H VOLUME <TokenSymbol symbol={quoteSymbol} />
             </span>
