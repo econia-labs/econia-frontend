@@ -8,7 +8,7 @@ interface ImageWithFallbackProps extends ImageProps {
 }
 
 const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
-  fallback = "/tokenImages/default.png",
+  fallback = "/tokenImages/default.svg",
   alt,
   src,
   ...props
@@ -17,7 +17,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
 };
 
 // copy paste from statsbar, think about making a unified component later
-const DEFAULT_TOKEN_ICON = "/tokenImages/default.png";
+const DEFAULT_TOKEN_ICON = "/tokenImages/default.svg";
 type MarketIconPairProps = {
   baseAssetIcon?: string;
   quoteAssetIcon?: string;

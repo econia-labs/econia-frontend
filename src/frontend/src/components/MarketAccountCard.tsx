@@ -50,7 +50,7 @@ export const MarketAccountCard: React.FC<{
   const toggleExpanded = () => setExpanded(!expanded);
   const { coinListClient } = useAptos();
 
-  const DEFAULT_TOKEN_ICON = "/tokenImages/default.png";
+  const DEFAULT_TOKEN_ICON = "/tokenImages/default.svg";
 
   const baseAssetIcon = marketAccountData
     ? coinListClient.getCoinInfoByFullName(

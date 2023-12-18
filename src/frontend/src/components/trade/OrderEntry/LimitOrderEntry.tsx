@@ -1,27 +1,25 @@
 import { entryFunctions, type order } from "@econia-labs/sdk";
+import { useQuery } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/Button";
 import { ConnectedButton } from "@/components/ConnectedButton";
+import RangeSlider from "@/components/slider-order/RangeSlider";
 import { useAptos } from "@/contexts/AptosContext";
 import { useOrderEntry } from "@/contexts/OrderEntryContext";
-import { API_URL, ECONIA_ADDR } from "@/env";
-import { useMarketAccountBalance } from "@/hooks/useMarketAccountBalance";
+import { ECONIA_ADDR } from "@/env";
+import { useOrderBookData } from "@/features/hooks";
+import { useBalance } from "@/hooks/useBalance";
 import { type ApiMarket } from "@/types/api";
 import { type Side } from "@/types/global";
 import { toRawCoinAmount } from "@/utils/coin";
+import { fromDecimalPrice, toDecimalPrice } from "@/utils/econia";
 import { TypeTag } from "@/utils/TypeTag";
 
 import { OrderEntryInfo } from "./OrderEntryInfo";
 import { OrderEntryInputWrapper } from "./OrderEntryInputWrapper";
-import { useQuery } from "@tanstack/react-query";
-import { fromDecimalPrice, toDecimalPrice } from "@/utils/econia";
-import { useBalance } from "@/hooks/useBalance";
-import { useOrderBookData, usePriceStats } from "@/features/hooks";
-import RangeSlider from "@/components/slider-order/RangeSlider";
-import { useOrderBook } from "@/hooks/useOrderbook";
 type LimitFormValues = {
   price: string | undefined;
   size: string;
@@ -35,11 +33,7 @@ export const LimitOrderEntry: React.FC<{
   side: Side;
   onDepositWithdrawClick?: () => void;
 }> = ({ marketData, side, onDepositWithdrawClick }) => {
-  // const { price } = useOrderEntry();
-  // const {
-  //   data: { last_price },
-  // } = usePriceStats();
-  const { signAndSubmitTransaction, account, aptosClient } = useAptos();
+  const { signAndSubmitTransaction, aptosClient } = useAptos();
   const {
     handleSubmit,
     register,
@@ -90,7 +84,7 @@ export const LimitOrderEntry: React.FC<{
     if (price) {
       setValue("price", Number(Number(price).toFixed(3)).toString());
     }
-  }, [price]);
+  }, [price, setValue]);
 
   const { highestBid, lowestAsk } = useOrderBookData(marketData);
 
@@ -449,24 +443,21 @@ export const LimitOrderEntry: React.FC<{
       </div>
       <hr className="my-4 border-neutral-600" />
       <div className="flex flex-col gap-4 md:mx-4 md:mb-4">
-        <OrderEntryInfo
-          label={`EST. FEE (${marketData.quote.symbol})`}
-          value={estimateFee}
-        />
+        <OrderEntryInfo label={`EST. FEE`} value={estimateFee} />
         <ConnectedButton className="w-full">
           {isSufficient ? (
             <Button
               type="submit"
               variant={side === "buy" ? "green" : "red"}
-              className="w-full text-[16px]/6"
+              className="py-[10px] !text-base !font-bold tracking-[0.32px]"
             >
-              {side === "buy" ? "Buy" : "Sell"} {marketData.base?.symbol}
+              {side === "buy" ? "BUY" : "SELL"} {marketData.base?.symbol}
             </Button>
           ) : (
             <Button
               type="submit"
               variant={"primary"}
-              className="w-full !bg-blue text-[16px]/6"
+              className="whitespace-nowrap !bg-blue py-[10px] !text-base !font-bold uppercase leading-[22px] tracking-[0.32px]"
               onClick={(e) => {
                 e.preventDefault();
                 onDepositWithdrawClick && onDepositWithdrawClick();
@@ -478,9 +469,7 @@ export const LimitOrderEntry: React.FC<{
         </ConnectedButton>
         <OrderEntryInfo
           label={`${marketData.base?.symbol} AVAILABLE`}
-          value={`${balance?.base_available ? balance?.base_available : "--"} ${
-            marketData.base?.symbol
-          }`}
+          value={`${balance?.base_available ? balance?.base_available : "--"}`}
           className="cursor-pointer"
           onClick={() => {
             setValue(
@@ -491,9 +480,7 @@ export const LimitOrderEntry: React.FC<{
         />
         <OrderEntryInfo
           label={`${marketData.quote?.symbol} AVAILABLE`}
-          value={`${
-            balance?.quote_available ? balance.quote_available : "--"
-          } ${marketData.quote?.symbol}`}
+          value={`${balance?.quote_available ? balance.quote_available : "--"}`}
         />
       </div>
     </form>

@@ -131,6 +131,7 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
       )}
       {flowStep === FlowStep.DepositWithdraw && (
         <BaseModal
+          className="!w-[457.093px] !p-0"
           isOpen={flowStep === FlowStep.DepositWithdraw}
           onClose={onClose}
           // custom step, so we don't want to close the modal when the user clicks the close button

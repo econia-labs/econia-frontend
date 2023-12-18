@@ -12,6 +12,8 @@ import { API_URL } from "@/env";
 import { type ApiMarket, type TradeHistory } from "@/types/api";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 
+import { TokenSymbol } from "../TokenSymbol";
+
 const columnHelper = createColumnHelper<TradeHistory>();
 
 export const TradeHistoryTable: React.FC<{
@@ -43,7 +45,12 @@ export const TradeHistoryTable: React.FC<{
             marketData,
           }).toNumber();
         },
-        header: () => `PRICE (${quoteSymbol || "-"})`,
+        // header: () => `PRICE (${quoteSymbol || "-"})`,
+        header: () => (
+          <span>
+            PRICE <TokenSymbol symbol={quoteSymbol} smallSymbol />
+          </span>
+        ),
       }),
       columnHelper.accessor("size", {
         cell: (info) => {
@@ -53,7 +60,12 @@ export const TradeHistoryTable: React.FC<{
             marketData,
           }).toNumber();
         },
-        header: () => `AMOUNT (${baseSymbol || "-"})`,
+        // header: () => `AMOUNT (${baseSymbol || "-"})`,
+        header: () => (
+          <span>
+            AMOUNT <TokenSymbol symbol={baseSymbol} smallSymbol />
+          </span>
+        ),
       }),
       columnHelper.accessor("time", {
         cell: (info) => {
@@ -106,7 +118,7 @@ export const TradeHistoryTable: React.FC<{
               <th
                 className={`text-xs ${
                   i === 0
-                    ? "pl-4 text-left"
+                    ? "pl-3 text-left"
                     : i === 1
                     ? "text-left"
                     : "pr-4 text-right"
@@ -125,7 +137,7 @@ export const TradeHistoryTable: React.FC<{
         ))}
       </thead>
       <tbody>
-        <tr className="sticky top-[18px] bg-neutral-800 bg-noise md:top-[82px]">
+        <tr className="sticky top-[20px] bg-neutral-800 bg-noise md:top-[68px]">
           <td colSpan={7} className="py-2">
             <div className="h-[1px] bg-neutral-600"></div>
           </td>
@@ -170,7 +182,11 @@ export const TradeHistoryTable: React.FC<{
                 <td
                   className={`text-xs ${
                     i === 0
-                      ? "pl-4 text-left"
+                      ? `pl-4 text-left ${
+                          cell.row.original.maker_side
+                            ? "text-green"
+                            : "text-red"
+                        }`
                       : i === 1
                       ? "text-left"
                       : "pr-4 text-right"

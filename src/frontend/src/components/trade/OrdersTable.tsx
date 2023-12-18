@@ -66,20 +66,6 @@ export const OrdersTable: React.FC<{
     },
   );
 
-  const sortLabel = useMemo(() => {
-    const map = new Map<SortDirection | false, ReactNode>();
-    map.set(false, null);
-    map.set(
-      "asc",
-      <ChevronUpIcon className="absolute top-0 ml-0.5 inline-block h-4 w-4 translate-y-1/2" />,
-    );
-    map.set(
-      "desc",
-      <ChevronDownIcon className="absolute top-0 ml-0.5 inline-block h-4 w-4 translate-y-1/2" />,
-    );
-    return map;
-  }, []);
-
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setSelectedOrder(null);
@@ -316,7 +302,7 @@ export const OrdersTable: React.FC<{
           <tr>
             {table.getFlatHeaders().map((header) => (
               <th
-                className="cursor-pointer select-none py-0.5 text-left font-roboto-mono text-sm font-light uppercase text-neutral-500 shadow-[inset_0_-1px_0_theme(colors.neutral.600)]"
+                className="cursor-pointer select-none text-left font-roboto-mono text-xs font-normal uppercase tracking-[0.24px] text-neutral-500 transition-all hover:text-blue"
                 key={header.id}
                 onClick={header.column.getToggleSortingHandler()}
                 style={{
@@ -329,7 +315,6 @@ export const OrdersTable: React.FC<{
                       header.column.columnDef.header,
                       header.getContext(),
                     )}
-                {sortLabel.get(header.column.getIsSorted())}
               </th>
             ))}
           </tr>
@@ -363,7 +348,7 @@ export const OrdersTable: React.FC<{
             data.length !== 0 &&
             table.getRowModel().rows.map((row) => (
               <tr
-                className="cursor-pointer transition-colors hover:bg-neutral-700"
+                className="cursor-pointer transition-colors hover:bg-neutral-600/30"
                 key={row.id}
                 onClick={() => {
                   setIsModalOpen(true);
@@ -383,18 +368,10 @@ export const OrdersTable: React.FC<{
           )}
         </tbody>
       </table>
-      {!connected ? (
-        <div className="flex h-[calc(100%-32px)] flex-col items-center justify-center text-white">
-          <ConnectedButton />
+      {!isLoading && data && data.length === 0 && (
+        <div className="flex h-[calc(100%-32px)] flex-col items-center justify-center font-roboto-mono text-[10px] font-light uppercase tracking-[0.2px] text-neutral-500">
+          no orders to show
         </div>
-      ) : (
-        !isLoading &&
-        data &&
-        data.length === 0 && (
-          <div className="flex h-[calc(100%-32px)] flex-col items-center justify-center text-sm font-light uppercase text-neutral-500">
-            No orders to show
-          </div>
-        )
       )}
     </div>
   );

@@ -18,10 +18,10 @@ const UnConnectedNotice = () => {
       onClose={() => setOpen(false)}
       showCloseButton={true}
       showBackButton={false}
-      className="!h-[295px] !w-[460px]"
+      className="max-width-full !h-[295px] !w-[460px]"
     >
       <div className="h-[400px] max-h-full w-full  p-4  md:p-10">
-        <div className="flex h-[400px] max-h-full w-[315px] max-w-full flex-col items-center justify-center">
+        <div className="flex h-[400px] max-h-full max-w-full flex-col items-center justify-center">
           <h1 className="mb-2 font-jost text-[32px] font-bold text-neutral-100">
             Notice
           </h1>
