@@ -1,5 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { ChevronLeftIcon } from "@heroicons/react/20/solid";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import React, { Fragment, type PropsWithChildren } from "react";
 
 import bg from "../../../public/bg.png";
@@ -59,10 +59,10 @@ export const BaseModal: React.FC<
               <Dialog.Title as="div">
                 {showBackButton && (
                   <div
-                    className="absolute left-[24px] top-[24px] flex cursor-pointer items-center justify-center font-roboto-mono text-neutral-500 transition-all hover:text-white"
+                    className="absolute left-[23px] top-[20px] flex cursor-pointer items-center justify-center gap-[9.53px] font-roboto-mono text-sm font-normal text-neutral-500 transition-all hover:text-white"
                     onClick={onBack}
                   >
-                    <ChevronLeftIcon width={24} height={24} />
+                    <ChevronLeftIcon width={11} height={10} />
                     Back
                   </div>
                 )}
