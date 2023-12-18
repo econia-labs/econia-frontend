@@ -124,16 +124,16 @@ export function Header({
                 {onDepositWithdrawClick && (
                   <Button
                     variant="secondary"
-                    className="whitespace-nowrap py-[7px] !font-roboto-mono !text-base !font-bold uppercase !leading-[22px]"
+                    className="whitespace-nowrap px-[15px] pb-2 pt-[10px] !font-roboto-mono !text-base !font-medium uppercase !leading-[18px] tracking-[0.32px]"
                     onClick={onDepositWithdrawClick}
                   >
-                    Deposit / Withdraw
+                    Deposit/Withdraw
                   </Button>
                 )}
                 <Button
                   variant="primary"
                   onClick={onWalletButtonClick}
-                  className="whitespace-nowrap py-[7px] !font-roboto-mono !text-base !font-bold uppercase !leading-[22px]"
+                  className="whitespace-nowrap px-[17.5px] pb-2 pt-[10px] !font-roboto-mono !text-base !font-bold uppercase !leading-[18px] tracking-[0.32px]"
                 >
                   {shorten(account?.address)}
                 </Button>
