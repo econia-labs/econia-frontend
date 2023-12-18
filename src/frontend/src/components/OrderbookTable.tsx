@@ -229,10 +229,10 @@ export function OrderbookTable({
           </Listbox> */}
         </div>
         <div className="mt-3 flex justify-between">
-          <p className="font-roboto-mono text-xs text-neutral-500">
+          <p className="font-roboto-mono text-xs font-light text-neutral-500">
             PRICE <TokenSymbol symbol={marketData.quote.symbol} smallSymbol />
           </p>
-          <p className="font-roboto-mono text-xs text-neutral-500">
+          <p className="font-roboto-mono text-xs font-light text-neutral-500">
             TOTAL SIZE{" "}
             <TokenSymbol symbol={marketData.base?.symbol} smallSymbol />
           </p>
