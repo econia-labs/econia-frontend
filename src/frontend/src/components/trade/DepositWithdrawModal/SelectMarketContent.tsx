@@ -34,7 +34,7 @@ import { useAllMarketsData } from ".";
 const colWidths = [
   230,
   undefined,
-  180,
+  undefined,
   undefined,
   undefined,
   undefined,
@@ -171,11 +171,13 @@ export const SelectMarketContent: React.FC<{
         },
       }),
       columnHelper.accessor("is_recognized", {
-        header: "Recognized",
+        header: () => (
+          <div className="flex items-center justify-center">Recognized</div>
+        ),
         cell: (info) => {
           const isRecognized = info.getValue();
           return (
-            <div className="flex pr-8">
+            <div className="flex items-center justify-center">
               {isRecognized ? (
                 <RecognizedIcon className="m-auto h-5 w-5" />
               ) : (
