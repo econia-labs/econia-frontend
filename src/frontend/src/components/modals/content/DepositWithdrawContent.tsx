@@ -41,7 +41,7 @@ const SelectCoinInput: React.FC<{
               as="div"
               key={coin.account_address}
               onClick={() => onSelectCoin(coin)}
-              className="cursor-pointer items-center px-5 py-2 text-left font-roboto-mono hover:bg-neutral-600"
+              className="cursor-pointer items-center px-5 py-2 text-left font-roboto-mono hover:bg-neutral-600/30"
             >
               <p className="whitespace-nowrap text-sm leading-[18px] text-white">
                 {coin.symbol}
