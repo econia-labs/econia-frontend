@@ -11,6 +11,7 @@ import Skeleton from "react-loading-skeleton";
 import { API_URL } from "@/env";
 import { type ApiMarket, type TradeHistory } from "@/types/api";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
+
 import { TokenSymbol } from "../TokenSymbol";
 
 const columnHelper = createColumnHelper<TradeHistory>();
@@ -136,7 +137,7 @@ export const TradeHistoryTable: React.FC<{
         ))}
       </thead>
       <tbody>
-        <tr className="sticky top-[18px] bg-neutral-800 bg-noise md:top-[82px]">
+        <tr className="sticky top-[20px] bg-neutral-800 bg-noise md:top-[68px]">
           <td colSpan={7} className="py-2">
             <div className="h-[1px] bg-neutral-600"></div>
           </td>
