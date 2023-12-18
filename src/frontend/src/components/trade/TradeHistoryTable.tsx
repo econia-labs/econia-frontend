@@ -11,6 +11,7 @@ import Skeleton from "react-loading-skeleton";
 import { API_URL } from "@/env";
 import { type ApiMarket, type TradeHistory } from "@/types/api";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
+import { TokenSymbol } from "../TokenSymbol";
 
 const columnHelper = createColumnHelper<TradeHistory>();
 
@@ -43,7 +44,12 @@ export const TradeHistoryTable: React.FC<{
             marketData,
           }).toNumber();
         },
-        header: () => `PRICE (${quoteSymbol || "-"})`,
+        // header: () => `PRICE (${quoteSymbol || "-"})`,
+        header: () => (
+          <span>
+            PRICE <TokenSymbol symbol={quoteSymbol} smallSymbol />
+          </span>
+        ),
       }),
       columnHelper.accessor("size", {
         cell: (info) => {
@@ -53,7 +59,12 @@ export const TradeHistoryTable: React.FC<{
             marketData,
           }).toNumber();
         },
-        header: () => `AMOUNT (${baseSymbol || "-"})`,
+        // header: () => `AMOUNT (${baseSymbol || "-"})`,
+        header: () => (
+          <span>
+            AMOUNT <TokenSymbol symbol={baseSymbol} smallSymbol />
+          </span>
+        ),
       }),
       columnHelper.accessor("time", {
         cell: (info) => {
@@ -106,7 +117,7 @@ export const TradeHistoryTable: React.FC<{
               <th
                 className={`text-xs ${
                   i === 0
-                    ? "pl-4 text-left"
+                    ? "pl-3 text-left"
                     : i === 1
                     ? "text-left"
                     : "pr-4 text-right"

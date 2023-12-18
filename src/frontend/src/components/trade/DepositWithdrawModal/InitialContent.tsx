@@ -81,6 +81,7 @@ export const InitialContent: React.FC<{
       )}
       {!marketAccounts || !marketAccount ? (
         <Button
+          className="!font-bold"
           onClick={async () => {
             if (!selectedMarket?.base) return;
             const payload = entryFunctions.registerMarketAccount(
@@ -100,7 +101,11 @@ export const InitialContent: React.FC<{
           Create Account
         </Button>
       ) : (
-        <Button variant="primary" onClick={depositWithdraw}>
+        <Button
+          className="!font-bold"
+          variant="primary"
+          onClick={depositWithdraw}
+        >
           Deposit / Withdraw
         </Button>
       )}

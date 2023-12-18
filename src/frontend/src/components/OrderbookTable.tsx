@@ -8,6 +8,7 @@ import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 import { calculateSpread } from "@/utils/formatter";
 import { useOrderBookData } from "@/features/hooks";
 import Tooltip from "rc-tooltip";
+import { TokenSymbol } from "./TokenSymbol";
 // import { Listbox } from "@headlessui/react";
 // import ChevronDownIcon from "@heroicons/react/24/outline/ChevronDownIcon";
 // import CheckIcon from "@heroicons/react/24/outline/CheckIcon";
@@ -229,10 +230,11 @@ export function OrderbookTable({
         </div>
         <div className="mt-3 flex justify-between">
           <p className="font-roboto-mono text-xs text-neutral-500">
-            PRICE ({marketData.quote.symbol})
+            PRICE <TokenSymbol symbol={marketData.quote.symbol} smallSymbol />
           </p>
           <p className="font-roboto-mono text-xs text-neutral-500">
-            TOTAL SIZE ({marketData.base?.symbol})
+            TOTAL SIZE{" "}
+            <TokenSymbol symbol={marketData.base?.symbol} smallSymbol />
           </p>
         </div>
       </div>
@@ -240,18 +242,18 @@ export function OrderbookTable({
       <div className="flex justify-between border-b border-neutral-600 pb-[10px] lg:mb-2 lg:hidden">
         <div className="flex w-[50%] justify-between px-3">
           <p className="font-roboto-mono text-xs text-neutral-500">
-            BID ({marketData.quote?.symbol})
+            BID <TokenSymbol symbol={marketData.quote?.symbol} />
           </p>
           <p className="font-roboto-mono text-xs text-neutral-500">
-            AMOUNT ({marketData.base.symbol})
+            AMOUNT <TokenSymbol symbol={marketData.base.symbol} />
           </p>
         </div>
         <div className="flex w-[50%] justify-between px-3">
           <p className="font-roboto-mono text-xs text-neutral-500">
-            ASK ({marketData.quote?.symbol})
+            ASK <TokenSymbol symbol={marketData.quote?.symbol} />
           </p>
           <p className="font-roboto-mono text-xs text-neutral-500">
-            AMOUNT ({marketData.base.symbol})
+            AMOUNT <TokenSymbol symbol={marketData.base.symbol} />
           </p>
         </div>
       </div>

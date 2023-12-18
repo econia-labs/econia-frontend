@@ -22,6 +22,7 @@ import { TwitterIcon } from "./icons/TwitterIcon";
 import { MarketIconPair } from "./MarketIconPair";
 import { BaseModal } from "./modals/BaseModal";
 import { SelectMarketContent } from "./trade/DepositWithdrawModal/SelectMarketContent";
+import { TokenSymbol } from "./TokenSymbol";
 
 const DEFAULT_TOKEN_ICON = "/tokenImages/default.svg";
 
@@ -221,8 +222,7 @@ export const StatsBar: React.FC<{
           {/* price */}
           <div className="hidden md:block">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
-              LAST PRICE{" "}
-              <span className="text-neutral-600">{quoteSymbol || "-"}</span>
+              LAST PRICE <TokenSymbol symbol={quoteSymbol} />
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
               {isFetchingPriceInfo && isFirstFetch ? (
@@ -304,7 +304,7 @@ export const StatsBar: React.FC<{
           {/* 24 hr main */}
           <div className="ml-4 hidden md:block lg:ml-8">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
-              24H VOLUME ({baseSymbol || "-"})
+              24H VOLUME <TokenSymbol symbol={baseSymbol} />
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
               {isFetchingPriceInfo && isFirstFetch ? (
@@ -324,7 +324,7 @@ export const StatsBar: React.FC<{
           {/* 24 hr pair */}
           <div className="ml-4 hidden md:block lg:ml-8">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
-              24H VOLUME ({quoteSymbol || "-"})
+              24H VOLUME <TokenSymbol symbol={quoteSymbol} />
             </span>
             <p className="font-roboto-mono text-xs font-light text-white">
               {isFetchingPriceInfo && isFirstFetch ? (
@@ -433,7 +433,7 @@ export const StatsBar: React.FC<{
           </div>
           <div className="flex gap-3">
             <span className="min-w-[75px] font-roboto-mono text-xs  font-light text-neutral-500">
-              VOL({baseSymbol || "-"})
+              VOL <TokenSymbol symbol={baseSymbol} />
             </span>
             <span className="min-w-[4em] font-roboto-mono text-xs font-normal text-white">
               {isFetchingPriceInfo && isFirstFetch ? (
@@ -487,7 +487,7 @@ export const StatsBar: React.FC<{
           </div>
           <div className="flex gap-3">
             <span className="min-w-[75px] font-roboto-mono text-xs font-light text-neutral-500">
-              VOL({quoteSymbol || "-"})
+              VOL <TokenSymbol symbol={quoteSymbol} />
             </span>
             <span className="min-w-[4em] font-roboto-mono text-xs font-normal text-white">
               {isFetchingPriceInfo && isFirstFetch ? (

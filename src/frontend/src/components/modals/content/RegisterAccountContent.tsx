@@ -35,6 +35,7 @@ export const RegisterAccountContent: React.FC<RegisterAccountContentProps> = ({
         </div>
       )}
       <Button
+        className="!font-bold"
         onClick={async () => {
           if (selectedMarket?.base == null) {
             toast.error("Generic markets not supported");
