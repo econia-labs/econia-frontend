@@ -89,8 +89,8 @@ export const StatsBar: React.FC<{
     async () => {
       const baseAssetIcon = selectedMarket.base
         ? coinListClient.getCoinInfoByFullName(
-          TypeTag.fromApiCoin(selectedMarket.base).toString(),
-        )?.logo_url
+            TypeTag.fromApiCoin(selectedMarket.base).toString(),
+          )?.logo_url
         : DEFAULT_TOKEN_ICON;
       const quoteAssetIcon =
         coinListClient.getCoinInfoByFullName(
@@ -202,10 +202,11 @@ export const StatsBar: React.FC<{
                 )}
               </span>
               <span
-                className={`ml-1 inline-block min-w-[6em] text-base ${(priceInfo?.price_change_nominal || 0) < 0
-                  ? "text-red"
-                  : "text-green"
-                  }`}
+                className={`ml-1 inline-block min-w-[6em] text-base ${
+                  (priceInfo?.price_change_nominal || 0) < 0
+                    ? "text-red"
+                    : "text-green"
+                }`}
               >
                 {isFetchingPriceInfo && isFirstFetch ? (
                   <Skeleton />
@@ -251,10 +252,11 @@ export const StatsBar: React.FC<{
               </span>
               {priceInfo?.price_change_percentage != undefined && (
                 <span
-                  className={`ml-2 ${(priceInfo?.price_change_percentage || 0) < 0
-                    ? "text-red"
-                    : "text-green"
-                    }`}
+                  className={`ml-2 ${
+                    (priceInfo?.price_change_percentage || 0) < 0
+                      ? "text-red"
+                      : "text-green"
+                  }`}
                 >
                   {isFetchingPriceInfo && isFirstFetch ? (
                     <Skeleton />
@@ -332,8 +334,8 @@ export const StatsBar: React.FC<{
                   undefined,
                   priceInfo.quote_volume > 10000
                     ? {
-                      maximumFractionDigits: 0,
-                    }
+                        maximumFractionDigits: 0,
+                      }
                     : {},
                 )
               ) : (
@@ -377,10 +379,11 @@ export const StatsBar: React.FC<{
                 )}
               </span>
               <span
-                className={`block  text-xs ${(priceInfo?.price_change_nominal || 0) < 0
-                  ? "text-red"
-                  : "text-green"
-                  }`}
+                className={`block  text-xs ${
+                  (priceInfo?.price_change_nominal || 0) < 0
+                    ? "text-red"
+                    : "text-green"
+                }`}
               >
                 {isFetchingPriceInfo && isFirstFetch ? (
                   <Skeleton />
