@@ -121,7 +121,7 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
           onClose={onClose}
           showCloseButton={true}
           showBackButton={false}
-          className="!w-[500px]"
+          className="h-[545px] !w-[457px]"
         >
           <AccountDetailsModal
             onClose={onClose}

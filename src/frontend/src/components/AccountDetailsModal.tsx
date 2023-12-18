@@ -108,13 +108,13 @@ export const AccountDetailsModal: React.FC<{
   return (
     <div className="relative flex flex-col items-center gap-6 font-roboto-mono">
       <div className="scrollbar-none mt-[-24px] max-h-[524px] min-h-[524px] overflow-auto">
-        <p className="mb-8 mt-[36px] font-jost text-xl font-bold text-white">
+        <p className="mb-8 mt-[28px] font-jost text-xl font-bold text-white">
           Account Details
         </p>
         {/* card */}
         <div className="mb-7 flex justify-between gap-9 border-[1px] border-neutral-600 px-9 py-7">
           {/* Wallet Address */}
-          <div className="flex h-8 w-[137px] items-center justify-center gap-2 border-[1px] border-neutral-600 bg-white py-1 text-xs font-medium uppercase tracking-[0.24px]">
+          <div className="flex h-[30px] w-[137px] items-center justify-center gap-2 border-[1px] border-neutral-600 bg-white py-1 text-xs font-medium uppercase tracking-[0.24px]">
             {/* invisible character,  */}
             {showCopiedNotif ? (
               "COPIED!"
@@ -136,13 +136,13 @@ export const AccountDetailsModal: React.FC<{
           <Button
             variant="secondary"
             onClick={disconnectWallet}
-            className="flex h-8 w-[130px] items-center justify-center font-roboto-mono text-xs !font-medium uppercase"
+            className="flex h-[30px] w-[130px] items-center justify-center font-roboto-mono text-xs !font-medium uppercase"
           >
             Disconnect
             <ExitIcon className="ml-2 inline-block h-4 w-4 text-center" />
           </Button>
         </div>
-        <p className="mb-7 font-jost font-bold text-white">
+        <p className="mb-[26.8px] font-jost font-bold text-white">
           Open Market Accounts
         </p>
         {/* market accounts */}
@@ -153,19 +153,33 @@ export const AccountDetailsModal: React.FC<{
             marketAccountData={marketAccount}
           />
         ))}
+        {marketAccounts?.map((marketAccount) => (
+          <MarketAccountCard
+            key={marketAccount.market_id.toString() + "deposit card"}
+            onDepositWithdrawClick={onDepositWithdrawClick}
+            marketAccountData={marketAccount}
+          />
+        ))}
+        {marketAccounts?.map((marketAccount) => (
+          <MarketAccountCard
+            key={marketAccount.market_id.toString() + "deposit card"}
+            onDepositWithdrawClick={onDepositWithdrawClick}
+            marketAccountData={marketAccount}
+          />
+        ))}
       </div>
       {/* spacer to compensate for sticky bottom row */}
       {/* note, has to be same height as the sticky row -- iirc no way to do this dynamically as absolutely positioned elements take up 0 space */}
-      <div className="h-[20px]" />
+      {/* <div className="h-[20px]" /> */}
       {/* sticky bottom row */}
       {/* todo, height 80px but negative margin due to modal padding */}
-      <div className="bg-noise-to-b absolute bottom-0 left-[50%] mb-[-24px] flex h-[84px] w-[90%] translate-x-[-50%] items-center justify-center from-transparent via-black to-black text-center">
+      <div className="add-new-account-bg absolute bottom-0 left-[50%] mb-[-19px] flex h-[120px] !w-[455px] translate-x-[-50%] items-end justify-center">
         <Button
           variant="secondary"
           onClick={() => {
             onRegisterAccountClick();
           }}
-          className="bg-white !px-[17.5px] text-xs !font-bold uppercase text-neutral-800"
+          className="mb-[17.4px] h-fit bg-white !px-[17.5px] text-xs !font-bold uppercase text-neutral-800"
         >
           Add New Account
         </Button>
