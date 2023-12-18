@@ -153,26 +153,7 @@ export const AccountDetailsModal: React.FC<{
             marketAccountData={marketAccount}
           />
         ))}
-        {marketAccounts?.map((marketAccount) => (
-          <MarketAccountCard
-            key={marketAccount.market_id.toString() + "deposit card"}
-            onDepositWithdrawClick={onDepositWithdrawClick}
-            marketAccountData={marketAccount}
-          />
-        ))}
-        {marketAccounts?.map((marketAccount) => (
-          <MarketAccountCard
-            key={marketAccount.market_id.toString() + "deposit card"}
-            onDepositWithdrawClick={onDepositWithdrawClick}
-            marketAccountData={marketAccount}
-          />
-        ))}
       </div>
-      {/* spacer to compensate for sticky bottom row */}
-      {/* note, has to be same height as the sticky row -- iirc no way to do this dynamically as absolutely positioned elements take up 0 space */}
-      {/* <div className="h-[20px]" /> */}
-      {/* sticky bottom row */}
-      {/* todo, height 80px but negative margin due to modal padding */}
       <div className="add-new-account-bg absolute bottom-0 left-[50%] mb-[-19px] flex h-[120px] !w-[455px] translate-x-[-50%] items-end justify-center">
         <Button
           variant="secondary"
@@ -184,9 +165,6 @@ export const AccountDetailsModal: React.FC<{
           Add New Account
         </Button>
       </div>
-
-      {/* sticky fade out header */}
-      {/* <div className="absolute left-[50%] top-[-24px] mb-[-24px] flex h-[48px] w-full min-w-[500px] translate-x-[-50%] border-[1px] border-b-0 border-neutral-600 bg-gradient-to-t from-transparent to-black"></div> */}
     </div>
   );
 };
