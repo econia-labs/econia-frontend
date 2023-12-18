@@ -333,7 +333,7 @@ export const SelectMarketContent: React.FC<{
               ) : (
                 table.getRowModel().rows.map((row) => (
                   <tr
-                    className="h-9 cursor-pointer hover:bg-neutral-700"
+                    className="h-9 cursor-pointer hover:bg-neutral-600/30"
                     key={row.id}
                     onClick={() => {
                       const marketId = row.original.market_id;

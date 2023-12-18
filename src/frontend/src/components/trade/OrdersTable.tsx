@@ -348,7 +348,7 @@ export const OrdersTable: React.FC<{
             data.length !== 0 &&
             table.getRowModel().rows.map((row) => (
               <tr
-                className="cursor-pointer transition-colors hover:bg-neutral-700"
+                className="cursor-pointer transition-colors hover:bg-neutral-600/30"
                 key={row.id}
                 onClick={() => {
                   setIsModalOpen(true);
