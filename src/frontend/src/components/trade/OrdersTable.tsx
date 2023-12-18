@@ -302,7 +302,7 @@ export const OrdersTable: React.FC<{
           <tr>
             {table.getFlatHeaders().map((header) => (
               <th
-                className="cursor-pointer select-none text-left font-roboto-mono text-xs font-normal uppercase tracking-[0.24px] text-neutral-500"
+                className="cursor-pointer select-none text-left font-roboto-mono text-xs font-normal uppercase tracking-[0.24px] text-neutral-500 transition-all hover:text-blue"
                 key={header.id}
                 onClick={header.column.getToggleSortingHandler()}
                 style={{
