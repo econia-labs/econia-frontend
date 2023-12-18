@@ -1,28 +1,23 @@
 import { entryFunctions, type order } from "@econia-labs/sdk";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/Button";
 import { ConnectedButton } from "@/components/ConnectedButton";
+import RangeSlider from "@/components/slider-order/RangeSlider";
 import { useAptos } from "@/contexts/AptosContext";
-import { API_URL, ECONIA_ADDR } from "@/env";
-import { useMarketAccountBalance } from "@/hooks/useMarketAccountBalance";
+import { ECONIA_ADDR } from "@/env";
+import { usePriceStats } from "@/features/hooks";
+import { useBalance } from "@/hooks/useBalance";
 import { type ApiMarket } from "@/types/api";
 import { type Side } from "@/types/global";
 import { toRawCoinAmount } from "@/utils/coin";
+import { toDecimalPrice } from "@/utils/econia";
 import { TypeTag } from "@/utils/TypeTag";
 
 import { OrderEntryInfo } from "./OrderEntryInfo";
 import { OrderEntryInputWrapper } from "./OrderEntryInputWrapper";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
-import { useBalance } from "@/hooks/useBalance";
-import { usePriceStats } from "@/features/hooks";
-import {
-  fromDecimalCoin,
-  fromDecimalPrice,
-  toDecimalPrice,
-} from "@/utils/econia";
-import RangeSlider from "@/components/slider-order/RangeSlider";
 type MarketFormValues = {
   size: string;
 };
@@ -32,7 +27,7 @@ export const MarketOrderEntry: React.FC<{
   side: Side;
   onDepositWithdrawClick?: () => void;
 }> = ({ marketData, side, onDepositWithdrawClick }) => {
-  const { signAndSubmitTransaction, account, aptosClient } = useAptos();
+  const { signAndSubmitTransaction, aptosClient } = useAptos();
   const [percent, setPercent] = useState(0);
   const {
     handleSubmit,
@@ -42,17 +37,6 @@ export const MarketOrderEntry: React.FC<{
     watch,
     formState: { errors },
   } = useForm<MarketFormValues>();
-
-  // const baseBalance = useMarketAccountBalance(
-  //   account?.address,
-  //   marketData.market_id,
-  //   marketData.base,
-  // );
-  // const quoteBalance = useMarketAccountBalance(
-  //   account?.address,
-  //   marketData.market_id,
-  //   marketData.quote,
-  // );
 
   const { balance } = useBalance(marketData);
 
@@ -263,25 +247,19 @@ export const MarketOrderEntry: React.FC<{
       <div className="mx-4 mb-4 flex flex-col gap-4">
         <OrderEntryInfo label={`EST. FEE `} value={estimateFee} />
         <ConnectedButton className="w-full">
-          {/* <Button
-            variant={side === "buy" ? "green" : "red"}
-            className={`w-full`}
-          >
-            {side === "buy" ? "Buy" : "Sell"} {marketData.base?.symbol}
-          </Button> */}
           {isSufficient ? (
             <Button
               type="submit"
               variant={side === "buy" ? "green" : "red"}
-              className="w-full text-[16px]/6"
+              className="py-[10px] !text-base !font-bold tracking-[0.32px]"
             >
-              {side === "buy" ? "Buy" : "Sell"} {marketData.base?.symbol}
+              {side === "buy" ? "BUY" : "SELL"} {marketData.base?.symbol}
             </Button>
           ) : (
             <Button
               type="submit"
               variant={"primary"}
-              className="w-full !bg-blue text-[16px]/6"
+              className="w-full whitespace-nowrap !bg-blue py-[10px] !text-base !font-bold uppercase leading-[22px] tracking-[0.32px]"
               onClick={(e) => {
                 e.preventDefault();
                 onDepositWithdrawClick && onDepositWithdrawClick();
