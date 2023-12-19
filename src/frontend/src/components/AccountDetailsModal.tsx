@@ -107,7 +107,7 @@ export const AccountDetailsModal: React.FC<{
 
   return (
     <div className="relative flex flex-col items-center gap-6 font-roboto-mono">
-      <div className="scrollbar-none mt-[-24px] max-h-[524px] min-h-[524px] overflow-auto">
+      <div className="scrollbar-none mt-[-24px] h-[543px] overflow-auto">
         <p className="mb-8 mt-[28px] font-jost text-xl font-bold text-white">
           Account Details
         </p>
@@ -154,7 +154,7 @@ export const AccountDetailsModal: React.FC<{
           />
         ))}
       </div>
-      <div className="add-new-account-bg absolute bottom-0 left-[50%] mb-[-19px] flex h-[120px] !w-[455px] translate-x-[-50%] items-end justify-center">
+      <div className="add-new-account-bg absolute bottom-[19px] left-[50%] mb-[-19px] flex h-[120px] !w-[455px] translate-x-[-50%] items-end justify-center">
         <Button
           variant="secondary"
           onClick={() => {
