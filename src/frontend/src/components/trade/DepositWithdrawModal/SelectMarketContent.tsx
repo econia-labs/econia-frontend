@@ -15,7 +15,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useRouter } from "next/router";
-import { type ReactNode, useMemo, useState } from "react";
+import { type ReactNode, useMemo, useState, useEffect } from "react";
 
 import { NotRecognizedIcon } from "@/components/icons/NotRecognizedIcon";
 import { RecognizedIcon } from "@/components/icons/RecognizedIcon";
@@ -30,6 +30,7 @@ import { plusMinus } from "@/utils/formatter";
 import { TypeTag } from "@/utils/TypeTag";
 
 import { useAllMarketsData } from ".";
+import { useWindowSize } from "@uidotdev/usehooks";
 
 const colWidths = [
   230,
@@ -57,6 +58,7 @@ export const SelectMarketContent: React.FC<{
   const [selectedTab, setSelectedTab] = useState(0);
 
   const [sorting, setSorting] = useState<SortingState>([]);
+  const { width } = useWindowSize();
 
   const marketDataWithNames: MarketSelectData[] = useMemo(() => {
     if (!marketsData) return [];
@@ -100,6 +102,7 @@ export const SelectMarketContent: React.FC<{
   const columns = useMemo(
     () => [
       columnHelper.accessor("name", {
+        id: "name",
         header: () => <div className="pl-8">Name</div>,
         cell: (info) => {
           const { baseAssetIcon, quoteAssetIcon } = info.row.original;
@@ -119,6 +122,7 @@ export const SelectMarketContent: React.FC<{
         enableSorting: false,
       }),
       columnHelper.accessor("last_fill_price_24hr", {
+        id: "last_fill_price_24hr",
         header: "price",
         cell: (info) => {
           const price = info.getValue();
@@ -137,6 +141,7 @@ export const SelectMarketContent: React.FC<{
         enableSorting: false,
       }),
       columnHelper.accessor("base_volume_24h", {
+        id: "base_volume_24h",
         header: "24h volume",
         cell: (info) => {
           // const marketData = info.row.original;
@@ -154,6 +159,7 @@ export const SelectMarketContent: React.FC<{
         },
       }),
       columnHelper.accessor("price_change_as_percent_24hr", {
+        id: "price_change_as_percent_24hr",
         header: () => <div className="text-center">24h change</div>,
         cell: (info) => {
           const change = info.getValue();
@@ -171,6 +177,7 @@ export const SelectMarketContent: React.FC<{
         },
       }),
       columnHelper.accessor("is_recognized", {
+        id: "is_recognized",
         header: () => (
           <div className="flex items-center justify-center">Recognized</div>
         ),
@@ -190,6 +197,7 @@ export const SelectMarketContent: React.FC<{
         enableSorting: false,
       }),
       columnHelper.accessor("market_id", {
+        id: "market_id",
         header: () => <div className="pr-8 text-right">Market ID</div>,
         cell: (info) => {
           const marketId = info.getValue();
@@ -230,6 +238,38 @@ export const SelectMarketContent: React.FC<{
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
+
+  useEffect(() => {
+    if (width === null) return;
+
+    const nameCol = table.getColumn("name");
+    const priceCol = table.getColumn("last_fill_price_24hr");
+    const baseVolumeCol = table.getColumn("base_volume_24h");
+    const priceChangeCol = table.getColumn("price_change_as_percent_24hr");
+    const isRecognizedCol = table.getColumn("is_recognized");
+    const marketIdCol = table.getColumn("market_id");
+
+    table.getAllColumns().map((col) => col.toggleVisibility(false));
+
+    if (width < 640) {
+      // do something
+      return;
+    }
+
+    if (width >= 640) {
+      [nameCol, priceCol, baseVolumeCol].map((col) =>
+        col?.toggleVisibility(true),
+      );
+    }
+
+    if (width >= 768) {
+      isRecognizedCol?.toggleVisibility(true);
+    }
+
+    if (width >= 1024) {
+      [priceChangeCol, marketIdCol].map((col) => col?.toggleVisibility(true));
+    }
+  }, [table, width]);
 
   return (
     <div className="flex max-h-[560px] min-h-[560px] w-full flex-col items-center overflow-y-hidden">
