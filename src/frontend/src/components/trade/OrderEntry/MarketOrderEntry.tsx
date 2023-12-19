@@ -251,7 +251,7 @@ export const MarketOrderEntry: React.FC<{
             <Button
               type="submit"
               variant={side === "buy" ? "green" : "red"}
-              className="py-[10px] !text-base !font-bold tracking-[0.32px]"
+              className="py-[10px] !text-base !font-bold !leading-5 tracking-[0.32px]"
             >
               {side === "buy" ? "BUY" : "SELL"} {marketData.base?.symbol}
             </Button>
@@ -259,7 +259,7 @@ export const MarketOrderEntry: React.FC<{
             <Button
               type="submit"
               variant={"primary"}
-              className="w-full whitespace-nowrap !bg-blue py-[10px] !text-base !font-bold uppercase leading-[22px] tracking-[0.32px]"
+              className="w-full whitespace-nowrap !bg-blue py-[10px] !text-base !font-bold uppercase !leading-5 tracking-[0.32px]"
               onClick={(e) => {
                 e.preventDefault();
                 onDepositWithdrawClick && onDepositWithdrawClick();
