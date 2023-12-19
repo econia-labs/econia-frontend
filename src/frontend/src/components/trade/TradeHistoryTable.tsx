@@ -45,9 +45,8 @@ export const TradeHistoryTable: React.FC<{
             marketData,
           }).toNumber();
         },
-        // header: () => `PRICE (${quoteSymbol || "-"})`,
         header: () => (
-          <span>
+          <span className="flex gap-[2px] whitespace-nowrap">
             PRICE <TokenSymbol symbol={quoteSymbol} smallSymbol />
           </span>
         ),
@@ -60,9 +59,8 @@ export const TradeHistoryTable: React.FC<{
             marketData,
           }).toNumber();
         },
-        // header: () => `AMOUNT (${baseSymbol || "-"})`,
         header: () => (
-          <span>
+          <span className="flex gap-[2px] whitespace-nowrap">
             AMOUNT <TokenSymbol symbol={baseSymbol} smallSymbol />
           </span>
         ),
@@ -137,7 +135,7 @@ export const TradeHistoryTable: React.FC<{
         ))}
       </thead>
       <tbody>
-        <tr className="sticky top-[20px] bg-neutral-800 bg-noise md:top-[68px]">
+        <tr className="sticky top-[18px] bg-neutral-800 bg-noise md:top-[66px]">
           <td colSpan={7} className="py-2">
             <div className="h-[1px] bg-neutral-600"></div>
           </td>
