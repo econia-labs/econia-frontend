@@ -185,7 +185,7 @@ const DepositWithdrawForm: React.FC<{
             variant="primary"
             onClick={handleSubmit}
             disabledReason={disabledReason}
-            className="mt-[15px] w-full pb-[13px] pt-[15px] text-sm !font-medium uppercase !leading-3"
+            className="mt-[15px] w-full pb-[13px] pt-[15px] text-sm uppercase !leading-3"
             disabled={Number(amount) === 0}
           >
             {Number(amount) === 0

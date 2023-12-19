@@ -124,7 +124,7 @@ export function Header({
                 {onDepositWithdrawClick && (
                   <Button
                     variant="secondary"
-                    className="whitespace-nowrap px-[15px] pb-2 pt-[10px] !font-roboto-mono !text-base !font-medium uppercase !leading-[18px] tracking-[0.32px]"
+                    className="whitespace-nowrap px-[15px] pb-2 pt-[10px] uppercase !leading-[18px] tracking-[0.32px]"
                     onClick={onDepositWithdrawClick}
                   >
                     Deposit/Withdraw
@@ -133,7 +133,7 @@ export function Header({
                 <Button
                   variant="primary"
                   onClick={onWalletButtonClick}
-                  className="whitespace-nowrap px-[17.5px] pb-2 pt-[10px] !font-roboto-mono !text-base !font-bold uppercase !leading-[18px] tracking-[0.32px]"
+                  className="whitespace-nowrap px-[17.5px] pb-2 pt-[10px] uppercase !leading-[18px] tracking-[0.32px]"
                 >
                   {shorten(account?.address)}
                 </Button>
@@ -198,7 +198,7 @@ const SlidingMenu = ({
         </NavItem>
       </div>
       <div className="px-[46px]">
-        <ConnectedButton className="w-[182px] py-[7px] !font-roboto-mono !text-base !font-bold uppercase leading-[22px]">
+        <ConnectedButton className="w-[182px] py-[7px] uppercase leading-[22px]">
           <div className="flex items-center gap-4">
             {/* {onDepositWithdrawClick && (
               <Button
@@ -212,7 +212,7 @@ const SlidingMenu = ({
             <Button
               variant="primary"
               onClick={onWalletButtonClick}
-              className="whitespace-nowrap py-[6px] font-roboto-mono !text-base !font-bold uppercase leading-[22px]"
+              className="whitespace-nowrap py-[6px] uppercase leading-[22px]"
             >
               {shorten(account?.address)}
             </Button>

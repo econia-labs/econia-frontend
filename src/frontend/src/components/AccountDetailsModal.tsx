@@ -136,7 +136,7 @@ export const AccountDetailsModal: React.FC<{
           <Button
             variant="secondary"
             onClick={disconnectWallet}
-            className="flex h-[30px] w-[130px] items-center justify-center font-roboto-mono text-xs !font-medium uppercase"
+            className="flex h-[30px] w-[130px] items-center justify-center font-roboto-mono text-xs uppercase"
           >
             Disconnect
             <ExitIcon className="ml-2 inline-block h-4 w-4 text-center" />
@@ -156,11 +156,11 @@ export const AccountDetailsModal: React.FC<{
       </div>
       <div className="add-new-account-bg absolute bottom-[19px] left-[50%] mb-[-19px] flex h-[120px] !w-[455px] translate-x-[-50%] items-end justify-center">
         <Button
-          variant="secondary"
+          variant="primary"
           onClick={() => {
             onRegisterAccountClick();
           }}
-          className="mb-[17.4px] h-fit bg-white !px-[17.5px] text-xs !font-bold uppercase text-neutral-800"
+          className="mb-[17.4px] h-fit !px-[17.5px] text-xs uppercase"
         >
           Add New Account
         </Button>
