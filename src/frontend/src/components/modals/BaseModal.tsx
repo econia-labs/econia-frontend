@@ -68,7 +68,7 @@ export const BaseModal: React.FC<
                 )}
                 {showCloseButton && (
                   <div
-                    className={`hover:bg-blue-100 absolute right-0 top-0 z-50 flex h-[50px] w-[50px] cursor-pointer items-center justify-center border-b border-l transition-all [&>svg>path]:stroke-neutral-500 [&>svg>path]:transition-all [&>svg>path]:hover:stroke-neutral-100 ${
+                    className={`hover:bg-blue-100 absolute right-0 top-0 !z-50 flex h-[50px] w-[50px] cursor-pointer items-center justify-center border-b border-l bg-black bg-noise transition-all [&>svg>path]:stroke-neutral-500 [&>svg>path]:transition-all [&>svg>path]:hover:stroke-neutral-100 ${
                       hoveringOnCloseButton
                         ? "border-b-blue border-l-blue bg-blue"
                         : "border-b-neutral-600 border-l-neutral-600"

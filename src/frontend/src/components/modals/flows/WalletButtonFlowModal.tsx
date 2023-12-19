@@ -151,7 +151,7 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
       )}
       {flowStep === FlowStep.RegisterAccount && (
         <BaseModal
-          className="h-[327px] w-[342px] px-9 py-10"
+          className="h-[327px] !w-[342px] px-9 py-10"
           isOpen={isOpen}
           onClose={onClose}
           showCloseButton={true}
