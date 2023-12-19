@@ -168,7 +168,7 @@ const SlidingMenu = ({
         isOpen ? "w-full" : "w-0"
       }`}
     >
-      <div className="mb-8  flex flex-col  items-start justify-between gap-6 px-6">
+      <div className="mb-8  flex flex-col  items-start justify-between gap-6 px-[46px]">
         {/* {menuList.map((item: MenuItem, index: number) => {
           return (
             <MenuItem
@@ -197,7 +197,7 @@ const SlidingMenu = ({
           <ArrowRightIcon className="inline-block h-3 w-3 -rotate-45" />
         </NavItem>
       </div>
-      <div className="px-6">
+      <div className="px-[46px]">
         <ConnectedButton className="w-[182px] py-[7px] !font-roboto-mono !text-base !font-bold uppercase leading-[22px]">
           <div className="flex items-center gap-4">
             {/* {onDepositWithdrawClick && (
@@ -240,7 +240,7 @@ const HeaderMobile = ({
   };
 
   return (
-    <header className="flex h-[69px] items-center justify-between border-b border-neutral-600 px-3 py-4 md:hidden ">
+    <header className="flex h-[76px] items-center justify-between border-b border-neutral-600 py-4 pl-[46px] pr-[21.49px] md:hidden ">
       <div className="flex items-center">
         <Link
           href={logoHref}
@@ -253,29 +253,6 @@ const HeaderMobile = ({
 
       {/* Connection buttons */}
       <div className="flex h-[69px] items-center  gap-5">
-        {!isOpen && (
-          <ConnectedButton className="w-[182px] py-[7px] !font-roboto-mono !text-base !font-bold uppercase leading-[22px]">
-            <div className="flex items-center gap-4">
-              {/* {onDepositWithdrawClick && (
-            <Button
-              variant="secondary"
-              className="whitespace-nowrap text-[16px]/6"
-              onClick={onDepositWithdrawClick}
-            >
-              Deposit / Withdraw
-            </Button>
-          )} */}
-              <Button
-                variant="primary"
-                onClick={onWalletButtonClick}
-                className="whitespace-nowrap py-[6px] font-roboto-mono !text-base !font-bold uppercase leading-[22px]"
-              >
-                {shorten(account?.address)}
-              </Button>
-            </div>
-          </ConnectedButton>
-        )}
-
         <div
           className="flex flex-col items-end gap-[8px] text-white"
           onClick={toggleMenu}

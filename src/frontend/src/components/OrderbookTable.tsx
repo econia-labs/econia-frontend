@@ -69,18 +69,24 @@ const Row: React.FC<{
 
       overlay={
         focus.price === price && focus.side ? (
-          <div className="w- h-fit  border bg-neutral-800 bg-noise px-4 py-2 text-neutral-100">
+          <div className="w- h-fit  border border-neutral-600 bg-neutral-800 bg-noise px-4 py-2 font-roboto-mono text-neutral-500">
             <div className="flex items-center justify-between gap-6">
               <span>Average price </span>
-              <span>{focus.average.toLocaleString()}</span>
+              <span className="text-white">
+                {focus.average.toLocaleString()}
+              </span>
             </div>
             <div className="flex items-center justify-between gap-6">
               <span>Sum {marketData.base.symbol} </span>
-              <span>{focus.totalBase.toLocaleString()}</span>
+              <span className="text-white">
+                {focus.totalBase.toLocaleString()}
+              </span>
             </div>
             <div className="flex items-center justify-between gap-6">
               <span>Sum {marketData.quote.symbol} </span>
-              <span>{focus.totalQuote.toLocaleString()}</span>
+              <span className="text-white">
+                {focus.totalQuote.toLocaleString()}
+              </span>
             </div>
           </div>
         ) : null
@@ -229,10 +235,10 @@ export function OrderbookTable({
           </Listbox> */}
         </div>
         <div className="mt-3 flex justify-between">
-          <p className="font-roboto-mono text-xs text-neutral-500">
+          <p className="font-roboto-mono text-xs font-light text-neutral-500">
             PRICE <TokenSymbol symbol={marketData.quote.symbol} smallSymbol />
           </p>
-          <p className="font-roboto-mono text-xs text-neutral-500">
+          <p className="font-roboto-mono text-xs font-light text-neutral-500">
             TOTAL SIZE{" "}
             <TokenSymbol symbol={marketData.base?.symbol} smallSymbol />
           </p>

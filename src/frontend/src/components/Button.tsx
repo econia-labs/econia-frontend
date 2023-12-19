@@ -4,8 +4,17 @@ export const Button: React.FC<
   React.ButtonHTMLAttributes<HTMLButtonElement> & {
     variant: "primary" | "outlined" | "secondary" | "green" | "red";
     disabledReason?: string | null;
+    loadingText?: string;
   }
-> = ({ variant, disabled, disabledReason, children, onClick, ...props }) => {
+> = ({
+  variant,
+  disabled,
+  disabledReason,
+  loadingText,
+  children,
+  onClick,
+  ...props
+}) => {
   const variantStyle =
     variant === "primary"
       ? "bg-neutral-100 text-neutral-800"
@@ -39,7 +48,11 @@ export const Button: React.FC<
       }}
       disabled={disabled || !!disabledReason || loading}
     >
-      {disabledReason ? disabledReason : loading ? "Loading..." : children}
+      {disabledReason
+        ? disabledReason
+        : loading
+        ? loadingText || "Loading..."
+        : children}
     </button>
   );
 };

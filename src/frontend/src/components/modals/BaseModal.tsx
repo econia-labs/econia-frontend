@@ -1,5 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { ChevronLeftIcon } from "@heroicons/react/20/solid";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import React, { Fragment, type PropsWithChildren } from "react";
 
 import bg from "../../../public/bg.png";
@@ -59,16 +59,16 @@ export const BaseModal: React.FC<
               <Dialog.Title as="div">
                 {showBackButton && (
                   <div
-                    className="absolute left-[24px] top-[24px] flex cursor-pointer items-center justify-center font-roboto-mono text-neutral-500 transition-all hover:text-white"
+                    className="absolute left-[23px] top-[20px] flex cursor-pointer items-center justify-center gap-[9.53px] font-roboto-mono text-sm font-normal text-neutral-500 transition-all hover:text-white"
                     onClick={onBack}
                   >
-                    <ChevronLeftIcon width={24} height={24} />
+                    <ChevronLeftIcon width={11} height={10} />
                     Back
                   </div>
                 )}
                 {showCloseButton && (
                   <div
-                    className={`hover:bg-blue-100 absolute right-0 top-0 z-50 flex h-[50px] w-[50px] cursor-pointer items-center justify-center border-b border-l transition-all [&>svg>path]:stroke-neutral-500 [&>svg>path]:transition-all [&>svg>path]:hover:stroke-neutral-100 ${
+                    className={`hover:bg-blue-100 absolute right-0 top-0 !z-50 flex h-[50px] w-[50px] cursor-pointer items-center justify-center border-b border-l bg-black bg-noise transition-all [&>svg>path]:stroke-neutral-500 [&>svg>path]:transition-all [&>svg>path]:hover:stroke-neutral-100 ${
                       hoveringOnCloseButton
                         ? "border-b-blue border-l-blue bg-blue"
                         : "border-b-neutral-600 border-l-neutral-600"

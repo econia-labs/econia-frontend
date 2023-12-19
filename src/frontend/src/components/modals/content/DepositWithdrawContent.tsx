@@ -199,9 +199,10 @@ const DepositWithdrawForm: React.FC<{
           <Button
             variant="primary"
             onClick={handleRegisterMarketAccount}
-            className="relative z-50 mt-8 w-full !font-bold"
+            className="relative z-50 mt-8 w-full pb-[13px] pt-[15px] text-sm !font-bold uppercase leading-[11.5px] tracking-[0.28px]"
+            loadingText="Creating account.."
           >
-            Create Account
+            create a market account
           </Button>
         )}
       </div>

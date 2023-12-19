@@ -98,7 +98,7 @@ export const MarketAccountCard: React.FC<{
   };
 
   return (
-    <div className="mb-4 flex w-[378px] items-center justify-between gap-11 border-[1px] border-neutral-600 pb-[17px] pl-5 pr-14 pt-[13px]">
+    <div className="mb-4 flex h-[107px] w-[378px] items-center justify-between gap-11 border-[1px] border-neutral-600 pb-[16px] pl-5 pr-14 pt-[15px]">
       {/* left side */}
       <div>
         {/* input copy row 1 */}
