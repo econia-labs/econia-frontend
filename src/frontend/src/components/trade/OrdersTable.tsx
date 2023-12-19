@@ -1,18 +1,16 @@
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { type Side } from "@econia-labs/sdk/dist/src/order";
 import { sideToBoolean } from "@econia-labs/sdk/dist/src/utils";
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 import { useQuery } from "@tanstack/react-query";
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  type SortDirection,
   type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { type ReactNode, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 
 import { useAptos } from "@/contexts/AptosContext";
@@ -21,7 +19,6 @@ import { type ApiMarket, type ApiOrder } from "@/types/api";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 
 import bg from "../../../public/bg.png";
-import { ConnectedButton } from "../ConnectedButton";
 import { BaseModal } from "../modals/BaseModal";
 import { OrderDetailsModalContent } from "./OrderDetailsModalContent";
 
@@ -33,7 +30,7 @@ export const OrdersTable: React.FC<{
   marketData: ApiMarket;
 }> = ({ className, market_id, marketData }) => {
   const { signAndSubmitTransaction } = useAptos();
-  const { base, quote } = marketData;
+  const { base, quote, name } = marketData;
   const { symbol: baseSymbol } = base;
   const { symbol: quoteSymbol } = quote;
   const { connected, account } = useWallet();
@@ -120,97 +117,136 @@ export const OrdersTable: React.FC<{
       columnHelper.accessor("created_at", {
         header: () => <span className="pl-4">Time Placed</span>,
         cell: (info) => (
-          <span className="pl-4 text-neutral-500">
-            {new Date(info.getValue()).toLocaleString("en-US", {
-              month: "numeric",
-              day: "2-digit",
-              year: "2-digit",
-              hour: "numeric",
-              minute: "numeric",
-              second: "numeric",
-              hour12: true,
-            })}
+          <span className="flex gap-2 pl-4 text-neutral-500">
+            <span>
+              {new Date(info.getValue()).toLocaleString("en-US", {
+                month: "numeric",
+                day: "2-digit",
+                year: "2-digit",
+              })}
+            </span>
+            <span>
+              {new Date(info.getValue()).toLocaleString("en-US", {
+                hour: "numeric",
+                minute: "numeric",
+                second: "numeric",
+                hour12: false,
+              })}
+            </span>
           </span>
         ),
-        size: 200,
+        size: 174.19,
+      }),
+      columnHelper.display({
+        header: "Name",
+        cell: () => name,
+        size: 105,
       }),
       columnHelper.accessor("order_type", {
         header: "Type",
         cell: (info) => info.getValue().toUpperCase() || "-",
-        size: 70,
+        size: 75,
       }),
       columnHelper.accessor("direction", {
         header: "Side",
         cell: (info) => {
           const direction = info.getValue();
-          switch (direction) {
-            case "buy":
-              return "BID";
-            case "sell":
-              return "ASK";
-            default:
-              return direction.toUpperCase();
+          if (direction === "bid" || direction === "buy") {
+            return <span className="text-green">BID</span>;
+          } else {
+            return <span className="text-red">ASK</span>;
           }
         },
-        size: 50,
+        size: 60,
       }),
       columnHelper.accessor("price", {
         header: "Limit price",
         cell: (info) => {
           const price = info.getValue();
-          if (price) {
-            return `${toDecimalPrice({
-              price,
-              marketData,
-            }).toNumber()} ${quoteSymbol}`;
+          if (price !== null && typeof price === "number") {
+            return (
+              <>
+                <span>
+                  {toDecimalPrice({
+                    price,
+                    marketData,
+                  }).toNumber()}
+                </span>
+                <span className="ml-2 text-neutral-600">{quoteSymbol}</span>
+              </>
+            );
           } else {
-            return "-";
+            return "";
           }
         },
+        size: 112,
       }),
       columnHelper.accessor("average_execution_price", {
-        header: "AVG EXECUTION PRICE",
+        header: "AVG EXEC. PRICE",
         cell: (info) => {
           const avg = info.getValue();
-          if (avg) {
-            return `${toDecimalPrice({
-              price: avg,
-              marketData,
-            }).toNumber()} ${quoteSymbol}`;
+          if (avg !== null) {
+            return (
+              <>
+                <span>
+                  {toDecimalPrice({
+                    price: avg,
+                    marketData,
+                  }).toNumber()}
+                </span>
+                <span className="ml-2 text-neutral-600">{quoteSymbol}</span>
+              </>
+            );
           } else {
-            return "-";
+            return "";
           }
         },
-        size: 170,
+        size: 142,
       }),
       columnHelper.accessor("remaining_size", {
-        header: "Remaining size",
+        header: "RMNG SIZE",
         cell: (info) => {
           const remaining = info.getValue();
-          return `${toDecimalSize({
-            size: remaining,
-            marketData,
-          }).toNumber()} ${baseSymbol}`;
+          return (
+            <>
+              <span>
+                {toDecimalSize({
+                  size: remaining,
+                  marketData,
+                }).toNumber()}
+              </span>
+              <span className="ml-2 text-neutral-600">{baseSymbol}</span>
+            </>
+          );
         },
+        size: 112,
       }),
       columnHelper.accessor("total_filled", {
         header: "Total",
         cell: (info) => {
           const total = info.getValue();
-          return total
-            ? `${toDecimalSize({
-                size: total,
-                marketData,
-              }).toNumber()} ${baseSymbol}`
-            : "-";
+          if (total !== null)
+            return (
+              <>
+                <span>
+                  {toDecimalSize({
+                    size: total,
+                    marketData,
+                  }).toNumber()}
+                </span>
+                <span className="ml-2 text-neutral-600">{baseSymbol}</span>
+              </>
+            );
+          return "";
         },
+        size: 112,
       }),
       columnHelper.display({
-        header: "Total volume",
+        header: "Total VOL.",
         cell: (info) => {
           const row = info.row.original;
           const { total_filled, average_execution_price } = row;
-          if (!total_filled || !average_execution_price) return "-";
+          if (!total_filled || !average_execution_price) return "";
           const convertedAvgPrice = toDecimalPrice({
             price: average_execution_price,
             marketData,
@@ -224,28 +260,37 @@ export const OrdersTable: React.FC<{
             maximumFractionDigits: 5,
           })} ${quoteSymbol}`;
         },
+        size: 142,
       }),
       columnHelper.accessor("order_status", {
         header: "Status",
         cell: (info) => {
-          const value = info.getValue();
-          if (value === "open") {
-            return <span className="text-green">{value.toUpperCase()}</span>;
+          const status = info.getValue();
+          let className = "";
+          switch (status) {
+            case "open":
+              className = "text-blue";
+              break;
+            case "cancelled":
+              className = "text-red";
+              break;
+            case "closed":
+              className = "text-green";
+              break;
           }
-          // TODO colors for other order statuses?
-          return value.toUpperCase();
+          return <span className={className}>{status.toUpperCase()}</span>;
         },
-        size: 90,
+        size: 97,
       }),
       columnHelper.display({
         header: "Cancel",
         cell: (info) => {
           const orderInfo = info.row.original;
           const { order_status: status } = orderInfo;
-          if (status !== "open") return "N/A";
+          if (status !== "open") return "";
           return (
             <button
-              className="text-red"
+              className="text-red hover:text-[#DC2B2B]"
               onClick={(e) => {
                 e.stopPropagation();
                 cancelOrder(orderInfo);
@@ -258,7 +303,7 @@ export const OrdersTable: React.FC<{
         size: 60,
       }),
     ],
-    [baseSymbol, cancelOrder, marketData, quoteSymbol],
+    [baseSymbol, cancelOrder, marketData, name, quoteSymbol],
   );
 
   const table = useReactTable({
@@ -357,7 +402,7 @@ export const OrdersTable: React.FC<{
               >
                 {row.getVisibleCells().map((cell) => (
                   <td
-                    className="h-7 py-0.5 text-left font-roboto-mono text-sm font-light text-white"
+                    className="h-7 py-2 text-left font-roboto-mono text-xs font-normal leading-[18px] tracking-[0.24px] text-white"
                     key={cell.id}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
