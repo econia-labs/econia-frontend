@@ -73,28 +73,35 @@ export const TradeHistoryTable: React.FC<{
           const timeDifference = currentTime.getTime() - timestamp.getTime();
           const hoursDifference = timeDifference / (1000 * 60 * 60);
           // If the trade is from more than 24 hours ago, show the date
+          if (hoursDifference < 24)
+            return (
+              <span className="whitespace-nowrap">
+                {new Date(timestampString).toLocaleString("en", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                  hour12: false,
+                })}
+              </span>
+            );
           return (
-            <span className={hoursDifference < 24 ? "whitespace-nowrap" : ""}>
-              {new Date(timestampString).toLocaleString(
-                "en-US",
-                hoursDifference > 24
-                  ? {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                      hour12: false,
-                    }
-                  : {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                      hour12: true,
-                    },
-              )}
-            </span>
+            <div className="flex flex-col">
+              <span>
+                {new Date(timestampString).toLocaleString("en", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "2-digit",
+                })}
+              </span>
+              <span>
+                {new Date(timestampString).toLocaleString("en", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                  hour12: false,
+                })}
+              </span>
+            </div>
           );
         },
         header: () => "TIME",
@@ -178,7 +185,7 @@ export const TradeHistoryTable: React.FC<{
             >
               {row.getVisibleCells().map((cell, i) => (
                 <td
-                  className={`text-xs ${
+                  className={`align-bottom text-xs ${
                     i === 0
                       ? `pl-4 text-left ${
                           cell.row.original.maker_side
