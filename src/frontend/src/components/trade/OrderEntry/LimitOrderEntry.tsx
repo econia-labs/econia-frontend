@@ -141,23 +141,6 @@ export const LimitOrderEntry: React.FC<{
     )}`;
   }, [takerFeeDivisor, watchPrice, watchSize]);
 
-  // useEffect(() => {
-  //   if (price != null) {
-  //     setValue("price", price);
-  //   }
-  // }, [price, setValue]);
-
-  // const baseBalance = useMarketAccountBalance(
-  //   account?.address,
-  //   marketData.market_id,
-  //   marketData.base,
-  // );
-  // const quoteBalance = useMarketAccountBalance(
-  //   account?.address,
-  //   marketData.market_id,
-  //   marketData.quote,
-  // );
-
   const onSubmit = async ({ price, size }: LimitFormValues) => {
     if (marketData.base == null) {
       throw new Error("Markets without base coin not supported");
@@ -449,15 +432,15 @@ export const LimitOrderEntry: React.FC<{
             <Button
               type="submit"
               variant={side === "buy" ? "green" : "red"}
-              className="py-[10px] !text-base !font-bold !leading-5 tracking-[0.32px]"
+              className="py-[10px] !leading-5 tracking-[0.32px]"
             >
               {side === "buy" ? "BUY" : "SELL"} {marketData.base?.symbol}
             </Button>
           ) : (
             <Button
               type="submit"
-              variant={"primary"}
-              className="whitespace-nowrap !bg-blue py-[10px] !text-base !font-bold uppercase !leading-5 tracking-[0.32px]"
+              variant="blue"
+              className="whitespace-nowrap py-[10px] uppercase !leading-5 tracking-[0.32px]"
               onClick={(e) => {
                 e.preventDefault();
                 onDepositWithdrawClick && onDepositWithdrawClick();

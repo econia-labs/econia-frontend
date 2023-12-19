@@ -1,27 +1,26 @@
 import {
   useWallet,
   type Wallet,
+  type WalletName,
   WalletReadyState,
-  WalletName,
 } from "@aptos-labs/wallet-adapter-react";
-import Image from "next/image";
 import {
   createContext,
   type MouseEventHandler,
   type PropsWithChildren,
+  type ReactElement,
   useContext,
-  useState,
   useEffect,
-  ReactElement,
+  useState,
 } from "react";
 import { toast } from "react-toastify";
 
-import { BaseModal } from "@/components/modals/BaseModal";
 import { ArrowIcon } from "@/components/icons/ArrowIcon";
+import MartianIcon from "@/components/icons/MartianIcon";
 import PetraIcon from "@/components/icons/PetraIcon";
 import PontemIcon from "@/components/icons/PontemIcon";
-import MartianIcon from "@/components/icons/MartianIcon";
 import RiseIcon from "@/components/icons/RiseIcon";
+import { BaseModal } from "@/components/modals/BaseModal";
 
 export type ConnectWalletContextState = {
   connectWallet: () => void;

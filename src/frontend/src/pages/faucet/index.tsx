@@ -120,7 +120,7 @@ export default function Faucet({
                 <ConnectedButton>
                   <Button
                     variant="primary"
-                    className="px-6 py-[10px] !text-base !leading-5"
+                    className="px-6 py-[10px] !leading-5"
                     onClick={async () => await mintCoin(typeTag, i)}
                     disabled={isLoadingArray[i]}
                   >
