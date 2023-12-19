@@ -59,6 +59,7 @@ export const SelectMarketContent: React.FC<{
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const { width } = useWindowSize();
+  const [isSmallWindow, setIsSmallWindow] = useState(false);
 
   const marketDataWithNames: MarketSelectData[] = useMemo(() => {
     if (!marketsData) return [];
@@ -253,8 +254,11 @@ export const SelectMarketContent: React.FC<{
 
     if (width < 640) {
       // do something
+      setIsSmallWindow(true);
       return;
     }
+
+    setIsSmallWindow(false);
 
     if (width >= 640) {
       [nameCol, priceCol, baseVolumeCol].map((col) =>
@@ -272,137 +276,145 @@ export const SelectMarketContent: React.FC<{
   }, [table, width]);
 
   return (
-    <div className="flex max-h-[560px] min-h-[560px] w-full flex-col items-center overflow-y-hidden">
-      <Tab.Group
-        onChange={(index) => {
-          setSelectedTab(index);
-          setSorting([]);
-        }}
-      >
-        <div className="w-full px-8 pt-8">
-          <div className="relative w-full">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <MagnifyingGlassIcon className="h-5 w-5 text-neutral-500" />
+    <>
+      <div className="flex max-h-[560px] min-h-[560px] w-full flex-col items-center overflow-y-hidden">
+        <Tab.Group
+          onChange={(index) => {
+            setSelectedTab(index);
+            setSorting([]);
+          }}
+        >
+          <div className="w-full px-8 pt-8">
+            <div className="relative w-full">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <MagnifyingGlassIcon className="h-5 w-5 text-neutral-500" />
+              </div>
+              <input
+                type="text"
+                id="voice-search"
+                className="block w-full border border-neutral-600 bg-transparent p-2.5 pl-10 font-roboto-mono text-sm text-neutral-500 outline-none"
+                placeholder="Search markets"
+                required
+                onChange={(e) => {
+                  setFilter(e.target.value);
+                }}
+                value={filter}
+              />
             </div>
-            <input
-              type="text"
-              id="voice-search"
-              className="block w-full border border-neutral-600 bg-transparent p-2.5 pl-10 font-roboto-mono text-sm text-neutral-500 outline-none"
-              placeholder="Search markets"
-              required
-              onChange={(e) => {
-                setFilter(e.target.value);
-              }}
-              value={filter}
-            />
+            <Tab.List className="mt-4 w-full">
+              <Tab className="w-1/2 border-b border-b-neutral-600 py-4 text-center font-jost font-bold text-neutral-600 outline-none ui-selected:border-b-white ui-selected:text-white">
+                Recognized
+              </Tab>
+              <Tab className="w-1/2 border-b border-b-neutral-600 py-4 text-center font-jost font-bold text-neutral-600 outline-none ui-selected:border-b-white ui-selected:text-white">
+                All Markets
+              </Tab>
+            </Tab.List>
           </div>
-          <Tab.List className="mt-4 w-full">
-            <Tab className="w-1/2 border-b border-b-neutral-600 py-4 text-center font-jost font-bold text-neutral-600 outline-none ui-selected:border-b-white ui-selected:text-white">
-              Recognized
-            </Tab>
-            <Tab className="w-1/2 border-b border-b-neutral-600 py-4 text-center font-jost font-bold text-neutral-600 outline-none ui-selected:border-b-white ui-selected:text-white">
-              All Markets
-            </Tab>
-          </Tab.List>
-        </div>
 
-        <Tab.Panels className="scrollbar-none w-full overflow-y-scroll">
-          <table className="w-full table-fixed">
-            <thead className="sticky top-0 z-10 h-16 bg-neutral-800 bg-noise pt-4">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr className="m-auto h-8 pt-4" key={headerGroup.id}>
-                  {headerGroup.headers.map((header, i) => {
-                    if (header.id === "name") {
-                      if (
-                        filter === "" &&
-                        header.column.getFilterValue() != undefined
-                      ) {
-                        header.column.setFilterValue(undefined);
+          <Tab.Panels className="scrollbar-none w-full overflow-y-scroll">
+            <table className="w-full table-fixed">
+              <thead className="sticky top-0 z-10 h-16 bg-neutral-800 bg-noise pt-4">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr className="m-auto h-8 pt-4" key={headerGroup.id}>
+                    {headerGroup.headers.map((header, i) => {
+                      if (header.id === "name") {
+                        if (
+                          filter === "" &&
+                          header.column.getFilterValue() != undefined
+                        ) {
+                          header.column.setFilterValue(undefined);
+                        }
+                        if (
+                          filter !== "" &&
+                          header.column.getFilterValue() !== filter
+                        ) {
+                          header.column.setFilterValue(filter);
+                        }
                       }
-                      if (
-                        filter !== "" &&
-                        header.column.getFilterValue() !== filter
-                      ) {
-                        header.column.setFilterValue(filter);
-                      }
-                    }
 
-                    // recognized
-                    if (header.id === "is_recognized") {
-                      if (
-                        selectedTab === 0 &&
-                        header.column.getFilterValue() == undefined
-                      ) {
-                        header.column.setFilterValue(true);
+                      // recognized
+                      if (header.id === "is_recognized") {
+                        if (
+                          selectedTab === 0 &&
+                          header.column.getFilterValue() == undefined
+                        ) {
+                          header.column.setFilterValue(true);
+                        }
+                        if (
+                          selectedTab === 1 &&
+                          header.column.getFilterValue() === true
+                        ) {
+                          header.column.setFilterValue(undefined);
+                        }
                       }
-                      if (
-                        selectedTab === 1 &&
-                        header.column.getFilterValue() === true
-                      ) {
-                        header.column.setFilterValue(undefined);
-                      }
-                    }
 
-                    return (
-                      <th
-                        className={`cursor-pointer select-none pt-4 text-left font-roboto-mono text-sm font-light uppercase text-neutral-500`}
-                        key={header.id}
-                        onClick={header.column.getToggleSortingHandler()}
-                        style={{ width: colWidths[i] }}
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                        {sortLabel.get(header.column.getIsSorted())}
-                      </th>
-                    );
-                  })}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {allMarketData.length === 0 ? (
-                <tr>
-                  <td colSpan={7}>
-                    <div className="flex h-[150px] flex-col items-center justify-center text-sm font-light uppercase text-neutral-500">
-                      No markets to show
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                table.getRowModel().rows.map((row) => (
-                  <tr
-                    className="h-9 cursor-pointer hover:bg-neutral-600/30"
-                    key={row.id}
-                    onClick={() => {
-                      const marketId = row.original.market_id;
-                      if (onSelectMarket != null) {
-                        onSelectMarket(marketId, marketId.toString());
-                      }
-                      router.push(`/market/${marketId}`);
-                    }}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <td
-                        className="py-[10px] text-left font-roboto-mono text-sm font-light text-white"
-                        key={cell.id}
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </td>
-                    ))}
+                      return (
+                        <th
+                          className={`cursor-pointer select-none pt-4 text-left font-roboto-mono text-sm font-light uppercase text-neutral-500`}
+                          key={header.id}
+                          onClick={header.column.getToggleSortingHandler()}
+                          style={{ width: colWidths[i] }}
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
+                          {sortLabel.get(header.column.getIsSorted())}
+                        </th>
+                      );
+                    })}
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </Tab.Panels>
-      </Tab.Group>
-    </div>
+                ))}
+              </thead>
+              <tbody>
+                {allMarketData.length === 0 ? (
+                  <tr>
+                    <td colSpan={7}>
+                      <div className="flex h-[150px] flex-col items-center justify-center text-sm font-light uppercase text-neutral-500">
+                        No markets to show
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  table.getRowModel().rows.map((row) => (
+                    <tr
+                      className="h-9 cursor-pointer hover:bg-neutral-600/30"
+                      key={row.id}
+                      onClick={() => {
+                        const marketId = row.original.market_id;
+                        if (onSelectMarket != null) {
+                          onSelectMarket(marketId, marketId.toString());
+                        }
+                        router.push(`/market/${marketId}`);
+                      }}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <td
+                          className="py-[10px] text-left font-roboto-mono text-sm font-light text-white"
+                          key={cell.id}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </Tab.Panels>
+        </Tab.Group>
+      </div>
+      {isSmallWindow && (
+        <div className="z-100 scrollbar-none fixed -left-4 -top-[64px] m-0 flex h-screen w-screen items-center justify-center overflow-hidden bg-black font-jost text-3xl font-bold text-white">
+          💩 <br />
+          View on Larger Screen
+        </div>
+      )}
+    </>
   );
 };
