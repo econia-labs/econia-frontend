@@ -408,13 +408,15 @@ export const TVChartContainer: React.FC<
 
     // const chart =
     const a = new widget(widgetOptions);
-    alert((a as any)._id);
+    // alert((a as any)._id);
+    const iframe = document.querySelector("iframe");
+    // console.log("🚀 ~ file: TVChartContainer.tsx:417 ~ return ~ iframe:", iframe)
+    alert(iframe ? "iframe" : "no-iframe");
 
     return () => {
-      console.warn("reject" + (a as any)._ready ? "ready" : "unready");
-      alert("reject" + (a as any)._ready ? "ready" : "unready");
-      const iframe = document.querySelector("iframe");
-      alert(iframe ? "iframe" : "no-iframe");
+      // console.warn("reject" + (a as any)._ready ? "ready" : "unready");
+      // alert("reject" + (a as any)._ready ? "ready" : "unready");
+
       if (tvWidget.current != null) {
         // alert('remove')
         // tvWidget.current.remove();
