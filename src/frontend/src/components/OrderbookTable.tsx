@@ -1,3 +1,4 @@
+import { useWindowSize } from "@uidotdev/usehooks";
 import Tooltip from "rc-tooltip";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Skeleton from "react-loading-skeleton";
@@ -171,15 +172,22 @@ export function OrderbookTable({
   isLoading: boolean;
 }) {
   // const [precision, setPrecision] = useState<Precision>(precisionOptions[0]);
+  const [isSmallWindow, setIsSmallWindow] = useState(false);
+
+  const { width } = useWindowSize();
 
   const centerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setIsSmallWindow(width! < 1024);
+  }, [width]);
+
+  useEffect(() => {
     centerRef.current?.scrollTo({
       behavior: "smooth",
-      top: 10000,
+      top: width! < 1024 ? 0 : 10000,
     });
-  }, [isFetching]);
+  }, [isFetching, width]);
 
   const spread: PriceLevel | undefined = useMemo(() => {
     if (data == null) {
@@ -300,22 +308,35 @@ export function OrderbookTable({
           <div className="absolute flex h-full w-full flex-row-reverse lg:block ">
             {/* ASK */}
             <div
-              className="scrollbar-none flex h-full max-h-full w-[calc(50%-0.5px)] grow flex-col-reverse overflow-auto lg:h-[calc((100%-26px)/2)] lg:w-auto lg:flex-col"
+              className="scrollbar-none flex h-full max-h-full w-[calc(50%-0.5px)] grow flex-col overflow-auto lg:h-[calc((100%-26px)/2)] lg:w-auto"
               ref={centerRef}
             >
-              {data?.asks
-                ?.slice()
-                .reverse()
-                .map((level) => (
-                  <Row
-                    level={level}
-                    type={"ask"}
-                    key={`ask-${level.price}-${level.size}`}
-                    highestSize={highestSize}
-                    marketData={marketData}
-                    updatedLevel={data.updatedLevel}
-                  />
-                ))}
+              {isSmallWindow
+                ? data?.asks
+                    ?.slice()
+                    .map((level) => (
+                      <Row
+                        level={level}
+                        type={"ask"}
+                        key={`ask-${level.price}-${level.size}`}
+                        highestSize={highestSize}
+                        marketData={marketData}
+                        updatedLevel={data.updatedLevel}
+                      />
+                    ))
+                : data?.asks
+                    ?.slice()
+                    .reverse()
+                    .map((level) => (
+                      <Row
+                        level={level}
+                        type={"ask"}
+                        key={`ask-${level.price}-${level.size}`}
+                        highestSize={highestSize}
+                        marketData={marketData}
+                        updatedLevel={data.updatedLevel}
+                      />
+                    ))}
             </div>
             {/* SPREAD */}
             <div className="hidden items-center justify-between border-y border-neutral-600 lg:flex">
