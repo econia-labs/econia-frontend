@@ -310,7 +310,6 @@ export const TVChartContainer: React.FC<
       "//" +
       window.location.host +
       "/static/charting_library/";
-    alert(libraryPath);
     const customCssPath =
       window.location.protocol +
       "//" +
@@ -432,12 +431,7 @@ export const TVChartContainer: React.FC<
     props.studiesOverrides,
     props.theme,
     props.libraryPath,
-    ref.current,
   ]);
 
-  return (
-    <div ref={ref} id="trading-view-chart" className="w-full text-white">
-      kjoiuy98y8y09
-    </div>
-  );
+  return <div ref={ref} className="h-full w-full bg-green text-white" />;
 };
