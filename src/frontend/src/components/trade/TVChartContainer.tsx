@@ -302,6 +302,7 @@ export const TVChartContainer: React.FC<
 
   useEffect(() => {
     if (!ref.current) {
+      alert("container is null");
       return;
     }
     const libraryPath =
@@ -309,16 +310,22 @@ export const TVChartContainer: React.FC<
       "//" +
       window.location.host +
       "/static/charting_library/";
+    alert(libraryPath);
+    const customCssPath =
+      window.location.protocol +
+      "//" +
+      window.location.host +
+      "/styles/tradingview.css";
 
     const widgetOptions: ChartingLibraryWidgetOptions = {
       symbol: props.symbol as string,
       datafeed,
       interval: "30" as ResolutionString,
       container: ref.current,
+      locale: "en",
       library_path: libraryPath, //props.libraryPath as string,
       theme: props.theme,
-      locale: "en",
-      custom_css_url: "/styles/tradingview.css",
+      custom_css_url: customCssPath, //"/styles/tradingview.css",
       timezone:
         (Intl.DateTimeFormat().resolvedOptions().timeZone as Timezone) ??
         "Etc/UTC",
@@ -330,10 +337,10 @@ export const TVChartContainer: React.FC<
         "snapshot_trading_drawings",
         // "header_resolutions",
       ],
-      client_id: props.clientId,
-      user_id: props.userId,
+      // client_id: props.clientId,
+      // user_id: props.userId,
       fullscreen: props.fullscreen,
-      autosize: props.autosize,
+      autosize: true,
       loading_screen: { backgroundColor: "#000000" },
       overrides: {
         "paneProperties.backgroundType": "solid",
@@ -399,7 +406,14 @@ export const TVChartContainer: React.FC<
       ],
     };
 
-    tvWidget.current = new widget(widgetOptions);
+    const chart = new widget(widgetOptions);
+    tvWidget.current = chart;
+    chart.onChartReady(() => {
+      chart
+        ?.chart()
+        .onIntervalChanged()
+        .subscribe(null, function (interval: any) {});
+    });
 
     return () => {
       console.warn("reject");
@@ -418,7 +432,12 @@ export const TVChartContainer: React.FC<
     props.studiesOverrides,
     props.theme,
     props.libraryPath,
+    ref.current,
   ]);
 
-  return <div ref={ref} className="w-full" />;
+  return (
+    <div ref={ref} id="trading-view-chart" className="w-full text-white">
+      kjoiuy98y8y09
+    </div>
+  );
 };

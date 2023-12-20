@@ -303,10 +303,10 @@ export default function Market({ allMarketData, marketData }: Props) {
     return {
       symbol: `${marketData?.name ?? ""}`,
       interval: "1" as ResolutionString,
-      datafeedUrl: "https://api.coingecko.com",
-      libraryPath: "/static/charting_library/",
-      clientId: "pontem.exchange",
-      userId: "public_user_id",
+      // datafeedUrl: "https://api.coingecko.com",
+      // libraryPath: "/static/charting_library/",
+      // clientId: "econia.exchange",
+      // userId: "public_user_id",
       fullscreen: false,
       autosize: true,
       studiesOverrides: {},
@@ -347,7 +347,7 @@ export default function Market({ allMarketData, marketData }: Props) {
         <main className="flex h-full min-h-[680px] w-full grow flex-col md:flex-row">
           <div className="flex flex-col gap-3 p-3 pb-0 pr-3 md:w-[calc(100%-296px)] md:pr-0  lg:w-[calc(100%-564px)] lg:pr-3">
             <div className=" flex grow flex-col border border-neutral-600">
-              <div className="flex h-full min-h-[400px] md:min-h-[unset]">
+              <div className="flex h-full min-h-[400px] flex-col text-white md:min-h-[unset]">
                 {isScriptReady && <TVChartContainer {...defaultTVChartProps} />}
               </div>
 
