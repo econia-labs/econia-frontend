@@ -413,7 +413,7 @@ export const TVChartContainer: React.FC<
     return () => {
       console.warn("reject" + (a as any)._ready ? "ready" : "unready");
       alert("reject" + (a as any)._ready ? "ready" : "unready");
-      const iframe = document.getElementById((a as any)._id);
+      const iframe = document.querySelector("iframe");
       alert(iframe ? "iframe" : "no-iframe");
       if (tvWidget.current != null) {
         // alert('remove')
