@@ -1,13 +1,14 @@
+import Tooltip from "rc-tooltip";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 
 import { useOrderEntry } from "@/contexts/OrderEntryContext";
+import { useOrderBookData } from "@/features/hooks";
 import { type ApiMarket } from "@/types/api";
 import { type Orderbook, type PriceLevel } from "@/types/global";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 import { calculateSpread } from "@/utils/formatter";
-import { useOrderBookData } from "@/features/hooks";
-import Tooltip from "rc-tooltip";
+
 import { TokenSymbol } from "./TokenSymbol";
 // import { Listbox } from "@headlessui/react";
 // import ChevronDownIcon from "@heroicons/react/24/outline/ChevronDownIcon";
@@ -101,7 +102,7 @@ const Row: React.FC<{
       <div
         onMouseEnter={() => setFocus({ side: type, price })}
         onMouseLeave={() => setFocus({ side: "", price })}
-        className={`flash-bg-once relative px-3 ${flash} relative flex h-6 cursor-pointer items-center justify-between py-[1px] hover:ring-1 hover:ring-neutral-600`}
+        className={`flash-bg-once relative pl-[17.03px] pr-[17.57px] ${flash} relative flex h-6 cursor-pointer items-center justify-between py-[1px] hover:ring-1 hover:ring-neutral-600`}
         onClick={() => {
           setPrice(price.toString());
         }}
@@ -206,7 +207,7 @@ export function OrderbookTable({
   return (
     <div className="flex grow flex-col">
       {/* title row */}
-      <div className="hidden border-b border-neutral-600 px-3 py-3 lg:block">
+      <div className="hidden border-b border-neutral-600 py-3 pl-[17.03px] pr-[11.27px] lg:block">
         <div className="flex justify-between">
           <p className="font-jost text-base font-bold text-white">Order Book</p>
           {/* select */}
@@ -234,7 +235,7 @@ export function OrderbookTable({
             </div>
           </Listbox> */}
         </div>
-        <div className="mt-3 flex justify-between">
+        <div className="mt-1 flex justify-between">
           <p className="font-roboto-mono text-xs font-light text-neutral-500">
             PRICE <TokenSymbol symbol={marketData.quote.symbol} smallSymbol />
           </p>
@@ -246,7 +247,7 @@ export function OrderbookTable({
       </div>
       {/* bids ask spread scrollable container */}
       <div className="flex justify-between border-b border-neutral-600 pb-[10px] lg:mb-2 lg:hidden">
-        <div className="flex w-[50%] justify-between px-3">
+        <div className="flex w-[50%] justify-between px-3 pl-4 pt-[12px] md:px-3">
           <p className="font-roboto-mono text-xs text-neutral-500">
             BID <TokenSymbol symbol={marketData.quote?.symbol} />
           </p>
@@ -254,7 +255,7 @@ export function OrderbookTable({
             AMOUNT <TokenSymbol symbol={marketData.base.symbol} />
           </p>
         </div>
-        <div className="flex w-[50%] justify-between px-3">
+        <div className="flex w-[50%] justify-between px-3 pt-[12px]">
           <p className="font-roboto-mono text-xs text-neutral-500">
             ASK <TokenSymbol symbol={marketData.quote?.symbol} />
           </p>
