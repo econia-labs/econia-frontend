@@ -23,6 +23,7 @@ import { MarketIconPair } from "./MarketIconPair";
 import { BaseModal } from "./modals/BaseModal";
 import { SelectMarketContent } from "./trade/DepositWithdrawModal/SelectMarketContent";
 import { TokenSymbol } from "./TokenSymbol";
+import { useWindowSize } from "@uidotdev/usehooks";
 
 const DEFAULT_TOKEN_ICON = "/tokenImages/default.svg";
 
@@ -146,6 +147,14 @@ export const StatsBar: React.FC<{
     if (!isFetchingPriceInfo) setIsFirstFetch(false);
   }, [isFetchingPriceInfo]);
 
+  const [isSmallWindow, setIsSmallWindow] = useState(false);
+
+  const { width } = useWindowSize();
+
+  useEffect(() => {
+    setIsSmallWindow(width! < 640);
+  }, [width]);
+
   return (
     <>
       <BaseModal
@@ -154,7 +163,7 @@ export const StatsBar: React.FC<{
           setIsModalOpen(false);
         }}
         showCloseButton={false}
-        className={"!p-0"}
+        className={"mx-10 !p-0"}
       >
         <SelectMarketContent
           allMarketData={allMarketData}
@@ -169,6 +178,14 @@ export const StatsBar: React.FC<{
           }}
         />
       </BaseModal>
+      {isModalOpen && isSmallWindow && (
+        <div
+          className={`fixed inset-0 z-[60] flex h-screen w-screen items-center justify-center overflow-hidden bg-black text-center font-jost text-3xl font-bold text-white`}
+        >
+          💩 <br />
+          View on Larger Screen
+        </div>
+      )}
       {/* Desktop */}
       <div className="hidden justify-between border-b border-neutral-600 px-[29.19px] py-3 md:flex lg:pr-[46.24px]">
         <div className="flex  overflow-x-clip whitespace-nowrap">
