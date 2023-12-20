@@ -50,7 +50,7 @@ export default function Market({ allMarketData, marketData }: Props) {
   const [walletButtonModalOpen, setWalletButtonModalOpen] =
     useState<boolean>(false);
 
-  const [isScriptReady, setIsScriptReady] = useState(true);
+  const [isScriptReady, setIsScriptReady] = useState(false);
 
   // Set up WebSocket API connection
   // useEffect(() => {
