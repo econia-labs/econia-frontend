@@ -75,56 +75,57 @@ export function Header({
 
   return (
     <>
-      <header className="hidden border-b border-neutral-600 md:block">
-        <nav className="flex items-center justify-between px-3 py-4 md:px-6 lg:px-8">
-          <div className="my-auto flex flex-1 items-center">
+      <header className="hidden border-b border-neutral-600 lg:block">
+        <nav className="flex items-center justify-between py-5 pl-[29.19px] pr-[20.02px]">
+          <div className="my-auto flex  items-center gap-[29.95px]">
             <Link href={logoHref}>
               <Image
                 className=""
                 alt="Econia Logo"
                 src="/econia.svg"
-                width={120}
-                height={20}
+                width={117}
+                height={19}
                 priority
               />
             </Link>
-          </div>
-          <div className="flex flex-1 items-center justify-center gap-5">
-            {/* TODO: Enable swap */}
-            {/* <NavItem href="/swap" active={router.pathname.startsWith("/swap")}>
+            <div className="flex flex-1 items-center justify-center gap-6">
+              {/* TODO: Enable swap */}
+              {/* <NavItem href="/swap" active={router.pathname.startsWith("/swap")}>
             Swap
           </NavItem>
           <NavItemDivider /> */}
-            <NavItem
-              href="/market"
-              active={router.pathname.startsWith("/market")}
-            >
-              Trade
-            </NavItem>
-            <NavItemDivider />
-            <NavItem
-              href="/faucet"
-              active={router.pathname.startsWith("/faucet")}
-            >
-              Faucet
-            </NavItem>
-            <NavItemDivider />
-            <NavItem
-              className="flex items-center gap-1"
-              href="https://econia.dev"
-              external
-            >
-              <p>Docs</p>
-              <ArrowRightIcon className="inline-block h-3 w-3 -rotate-45" />
-            </NavItem>
+              <NavItem
+                href="/market"
+                active={router.pathname.startsWith("/market")}
+              >
+                Trade
+              </NavItem>
+              <NavItemDivider />
+              <NavItem
+                href="/faucet"
+                active={router.pathname.startsWith("/faucet")}
+              >
+                Faucet
+              </NavItem>
+              <NavItemDivider />
+              <NavItem
+                className="flex items-center gap-1"
+                href="https://econia.dev"
+                external
+              >
+                <p>Docs</p>
+                <ArrowRightIcon className="inline-block h-3 w-3 -rotate-45" />
+              </NavItem>
+            </div>
           </div>
+
           <div className="flex flex-1 justify-end">
             <ConnectedButton className="py-[7px]">
               <div className="flex items-center gap-4">
                 {onDepositWithdrawClick && (
                   <Button
                     variant="secondary"
-                    className="whitespace-nowrap px-[15px] pb-2 pt-[10px] !font-roboto-mono !text-base !font-medium uppercase !leading-[18px] tracking-[0.32px]"
+                    className="whitespace-nowrap px-[15px] pb-2 pt-[10px] uppercase !leading-[18px] tracking-[0.32px]"
                     onClick={onDepositWithdrawClick}
                   >
                     Deposit/Withdraw
@@ -133,7 +134,7 @@ export function Header({
                 <Button
                   variant="primary"
                   onClick={onWalletButtonClick}
-                  className="whitespace-nowrap px-[17.5px] pb-2 pt-[10px] !font-roboto-mono !text-base !font-bold uppercase !leading-[18px] tracking-[0.32px]"
+                  className="whitespace-nowrap px-[17.5px] pb-2 pt-[10px] uppercase !leading-[18px] tracking-[0.32px]"
                 >
                   {shorten(account?.address)}
                 </Button>
@@ -154,10 +155,12 @@ const SlidingMenu = ({
   isOpen,
   toggleMenu,
   onWalletButtonClick,
+  onDepositWithdrawClick,
 }: {
   isOpen: boolean;
   toggleMenu: () => void;
   onWalletButtonClick?: MouseEventHandler<HTMLButtonElement>;
+  onDepositWithdrawClick?: MouseEventHandler<HTMLButtonElement>;
 }) => {
   const { account } = useWallet();
   const router = useRouter();
@@ -168,7 +171,7 @@ const SlidingMenu = ({
         isOpen ? "w-full" : "w-0"
       }`}
     >
-      <div className="mb-8  flex flex-col  items-start justify-between gap-6 px-[46px]">
+      <div className="mb-8  flex flex-col  items-start justify-between gap-[23.68px] px-[29.28px]">
         {/* {menuList.map((item: MenuItem, index: number) => {
           return (
             <MenuItem
@@ -197,25 +200,25 @@ const SlidingMenu = ({
           <ArrowRightIcon className="inline-block h-3 w-3 -rotate-45" />
         </NavItem>
       </div>
-      <div className="px-[46px]">
-        <ConnectedButton className="w-[182px] py-[7px] !font-roboto-mono !text-base !font-bold uppercase leading-[22px]">
-          <div className="flex items-center gap-4">
-            {/* {onDepositWithdrawClick && (
-              <Button
-                variant="secondary"
-                className="whitespace-nowrap text-[16px]/6"
-                onClick={onDepositWithdrawClick}
-              >
-                Deposit / Withdraw
-              </Button>
-            )} */}
+      <div className="px-[29.28px]">
+        <ConnectedButton className="w-[182px] py-[7px] uppercase leading-[22px]">
+          <div className="flex flex-col gap-[29.37px]">
             <Button
               variant="primary"
               onClick={onWalletButtonClick}
-              className="whitespace-nowrap py-[6px] font-roboto-mono !text-base !font-bold uppercase leading-[22px]"
+              className="w-fit whitespace-nowrap py-[7px] !font-bold uppercase leading-[22px] tracking-[0.32px]"
             >
-              {shorten(account?.address)}
+              {shorten(account?.address, 12)}
             </Button>
+            {onDepositWithdrawClick && (
+              <Button
+                variant="secondary"
+                className="h-9 w-[189px] whitespace-nowrap font-roboto-mono !text-base font-medium uppercase leading-[18px] tracking-[0.32px]"
+                onClick={onDepositWithdrawClick}
+              >
+                Deposit/Withdraw
+              </Button>
+            )}
           </div>
         </ConnectedButton>
       </div>
@@ -240,7 +243,11 @@ const HeaderMobile = ({
   };
 
   return (
-    <header className="flex h-[76px] items-center justify-between border-b border-neutral-600 py-4 pl-[46px] pr-[21.49px] md:hidden ">
+    <header
+      className={`flex h-[76px] items-center justify-between border-b border-neutral-600 py-4 pl-[29.28px] pr-[30.85px] lg:hidden  ${
+        isOpen && ""
+      }`}
+    >
       <div className="flex items-center">
         <Link
           href={logoHref}
@@ -274,6 +281,7 @@ const HeaderMobile = ({
         isOpen={isOpen}
         toggleMenu={toggleMenu}
         onWalletButtonClick={onWalletButtonClick}
+        onDepositWithdrawClick={onDepositWithdrawClick}
       />
     </header>
   );

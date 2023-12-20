@@ -148,7 +148,7 @@ export const MarketAccountCard: React.FC<{
             onDepositWithdrawClick(market);
           }}
           className={
-            "flex items-center !px-[18px] pt-[10px] !text-xs !font-medium uppercase !leading-[11.5px]"
+            "flex items-center !px-[18px] pt-[10px] !text-xs uppercase !leading-[11.5px]"
           }
         >
           Deposit/withdraw

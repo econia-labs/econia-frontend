@@ -187,7 +187,7 @@ export const StatsBar: React.FC<{
         </div>
       )}
       {/* Desktop */}
-      <div className="hidden justify-between border-b border-neutral-600 px-3 py-3 md:flex lg:px-9">
+      <div className="hidden justify-between border-b border-neutral-600 px-[29.19px] py-3 md:flex lg:pr-[46.24px]">
         <div className="flex  overflow-x-clip whitespace-nowrap">
           <button
             className="flex items-center outline-none "
@@ -365,7 +365,7 @@ export const StatsBar: React.FC<{
         <SocialMediaIcons className={"my-auto hidden md:block"} />
       </div>
       {/* Mobile */}
-      <div className="flex h-[120px] flex-shrink-0 flex-col justify-center border-b border-neutral-600 px-[39.99px] md:hidden">
+      <div className="flex h-[120px] flex-shrink-0 flex-col justify-center border-b border-neutral-600 px-[29.28px] pr-[30.85px] md:hidden">
         <div className="flex w-full justify-between">
           <div className="flex h-fit items-center">
             <MarketIconPair
@@ -386,7 +386,7 @@ export const StatsBar: React.FC<{
           </div>
           <div className="">
             <p className="font-roboto-mono font-light">
-              <span className="inline-block min-w-[4em] text-base font-medium text-white">
+              <span className="inline-block min-w-[3.5em]  text-base font-medium text-white">
                 {isFetchingPriceInfo && isFirstFetch ? (
                   <Skeleton />
                 ) : priceInfo?.last_price != undefined ? (
@@ -414,7 +414,7 @@ export const StatsBar: React.FC<{
             </p>
           </div>
         </div>
-        <div className="mt-[5.73px] flex gap-4 pl-[6.52px]">
+        <div className="mt-[5.73px] flex gap-4 pl-[0.07px]">
           {/* 24 hr high */}
           <div className="flex gap-3">
             <span className="font-roboto-mono text-xs font-light uppercase text-neutral-500">
@@ -468,7 +468,7 @@ export const StatsBar: React.FC<{
             </span>
           </div>
         </div>
-        <div className="mt-1 flex gap-4 pl-[6.52px]">
+        <div className="mt-1 flex gap-4 pl-[0.07px]">
           {/* 24 hr high */}
           <div className="flex gap-3">
             <span className="min-w-[28.81px] font-roboto-mono text-xs font-light uppercase text-neutral-500">

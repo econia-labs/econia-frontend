@@ -21,6 +21,18 @@ const SelectCoinInput: React.FC<{
   selectedCoin?: ApiCoin;
   onSelectCoin: (coin: ApiCoin) => void;
 }> = ({ coins, startAdornment, selectedCoin, onSelectCoin }) => {
+  const { coinListClient } = useAptos();
+
+  const DEFAULT_TOKEN_ICON = "/tokenImages/default.svg";
+
+  const assetIcon = selectedCoin
+    ? coinListClient.getCoinInfoByFullName(
+        TypeTag.fromString(
+          `${selectedCoin.account_address}::${selectedCoin.module_name}::${selectedCoin.struct_name}`,
+        ).toString(),
+      )?.logo_url || DEFAULT_TOKEN_ICON
+    : DEFAULT_TOKEN_ICON;
+
   return (
     <div className="flex h-10 w-full items-center border border-neutral-600 p-4 pr-0">
       <Menu as="div" className="relative inline-block w-full text-left">
@@ -28,8 +40,9 @@ const SelectCoinInput: React.FC<{
           <p className="font-roboto-mono text-sm font-medium uppercase text-white">
             {startAdornment}
           </p>
-          <div className="flex cursor-pointer items-center gap-2">
-            <p className="whitespace-nowrap font-roboto-mono text-sm font-medium text-white">
+          <div className="flex cursor-pointer items-center gap-0">
+            <img src={assetIcon} alt="token" className="mr-[6.75px] h-4 w-4" />
+            <p className="mr-2 whitespace-nowrap font-roboto-mono text-sm font-medium text-white">
               {selectedCoin?.symbol}
             </p>
             <ChevronDownIcon className="h-[18.06px] w-[17px] fill-white" />
@@ -41,7 +54,7 @@ const SelectCoinInput: React.FC<{
               as="div"
               key={coin.account_address}
               onClick={() => onSelectCoin(coin)}
-              className="cursor-pointer items-center px-5 py-2 text-left font-roboto-mono hover:bg-neutral-600/30"
+              className="w-[97px] cursor-pointer items-center px-8 py-2 text-left font-roboto-mono hover:bg-neutral-600/30"
             >
               <p className="whitespace-nowrap text-sm leading-[18px] text-white">
                 {coin.symbol}
@@ -185,7 +198,7 @@ const DepositWithdrawForm: React.FC<{
             variant="primary"
             onClick={handleSubmit}
             disabledReason={disabledReason}
-            className="mt-[15px] w-full pb-[13px] pt-[15px] text-sm !font-medium uppercase !leading-3"
+            className="mt-[15px] w-full pb-[13px] pt-[15px] text-sm uppercase !leading-3"
             disabled={Number(amount) === 0}
           >
             {Number(amount) === 0
