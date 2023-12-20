@@ -357,7 +357,7 @@ export default function Market({ allMarketData, marketData }: Props) {
             </div>
             <div className="flex h-[260px] max-w-full flex-col border border-neutral-600">
               <div className="flex h-8 gap-4 bg-transparent pl-4 pt-2 lg:pl-0 lg:pt-0">
-                <div className="flex gap-4 bg-transparent py-1 text-base lg:py-3 lg:pl-4">
+                <div className="flex gap-4 bg-transparent py-1 text-base lg:py-3 lg:pl-[17.19px]">
                   <p
                     onClick={() => setTab("orders")}
                     className={`cursor-pointer font-jost font-bold ${
@@ -429,7 +429,7 @@ export default function Market({ allMarketData, marketData }: Props) {
               />
             </div>
             <div className="scrollbar-none mt-3 h-full max-h-full grid-rows-none  overflow-auto border border-neutral-600">
-              <p className="sticky top-0 bg-neutral-800 bg-noise py-3 pl-4 font-jost font-bold text-white">
+              <p className="sticky top-0 bg-neutral-800 bg-noise pb-1 pl-[17.03px] pt-3 font-jost font-bold text-white">
                 Trade History
               </p>
               <TradeHistoryTable
