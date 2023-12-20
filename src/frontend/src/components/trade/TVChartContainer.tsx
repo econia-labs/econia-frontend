@@ -310,10 +310,6 @@ export const TVChartContainer: React.FC<
       "//" +
       window.location.host +
       "/static/charting_library/";
-    console.log(
-      "🚀 ~ file: TVChartContainer.tsx:309 ~ useEffect ~ libraryPath:",
-      libraryPath,
-    );
     // alert('alo')
     const customCssPath =
       // window.location.protocol +
@@ -412,10 +408,6 @@ export const TVChartContainer: React.FC<
 
     // const chart =
     const a = new widget(widgetOptions);
-    console.log(
-      "🚀 ~ file: TVChartContainer.tsx:410 ~ useEffect ~ tvWidget.current :",
-      a,
-    );
     alert((a as any)._id);
 
     return () => {
