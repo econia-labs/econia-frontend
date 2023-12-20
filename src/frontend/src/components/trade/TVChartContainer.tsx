@@ -304,13 +304,18 @@ export const TVChartContainer: React.FC<
     if (!ref.current) {
       return;
     }
+    const libraryPath =
+      window.location.protocol +
+      "//" +
+      window.location.host +
+      "/static/charting_library/";
 
     const widgetOptions: ChartingLibraryWidgetOptions = {
       symbol: props.symbol as string,
       datafeed,
       interval: "30" as ResolutionString,
       container: ref.current,
-      library_path: props.libraryPath as string,
+      library_path: libraryPath, //props.libraryPath as string,
       theme: props.theme,
       locale: "en",
       custom_css_url: "/styles/tradingview.css",

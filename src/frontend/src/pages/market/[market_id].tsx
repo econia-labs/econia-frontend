@@ -461,13 +461,14 @@ export default function Market({ allMarketData, marketData }: Props) {
         }}
         allMarketData={allMarketData}
       />
-      <Script
+      {/* <Script
         src="/static/datafeeds/udf/dist/bundle.js"
         strategy="lazyOnload"
         onReady={() => {
+          alert('ready')
           setIsScriptReady(true);
         }}
-      />
+      /> */}
     </OrderEntryContextProvider>
   );
 }
