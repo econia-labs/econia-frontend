@@ -405,20 +405,14 @@ export const TVChartContainer: React.FC<
       ],
     };
 
-    const chart = new widget(widgetOptions);
-    tvWidget.current = chart;
-    chart.onChartReady(() => {
-      chart
-        ?.chart()
-        .onIntervalChanged()
-        .subscribe(null, function (interval: any) {});
-    });
+    // const chart =
+    tvWidget.current = new widget(widgetOptions);
 
     return () => {
       console.warn("reject");
       if (tvWidget.current != null) {
-        tvWidget.current.remove();
-        tvWidget.current = undefined;
+        // tvWidget.current.remove();
+        // tvWidget.current = undefined;
       }
     };
   }, [
@@ -433,5 +427,10 @@ export const TVChartContainer: React.FC<
     props.libraryPath,
   ]);
 
-  return <div ref={ref} className="h-full w-full bg-green text-white" />;
+  return (
+    <div
+      ref={ref}
+      className="flex w-full grow flex-col bg-green text-white [&>iframe]:grow"
+    ></div>
+  );
 };

@@ -347,7 +347,7 @@ export default function Market({ allMarketData, marketData }: Props) {
         <main className="flex h-full min-h-[680px] w-full grow flex-col md:flex-row">
           <div className="flex flex-col gap-3 p-3 pb-0 pr-3 md:w-[calc(100%-296px)] md:pr-0  lg:w-[calc(100%-564px)] lg:pr-3">
             <div className=" flex grow flex-col border border-neutral-600">
-              <div className="flex h-full min-h-[400px] flex-col text-white md:min-h-[unset]">
+              <div className="flex min-h-[400px] grow flex-col bg-red text-white">
                 {isScriptReady && <TVChartContainer {...defaultTVChartProps} />}
               </div>
 
@@ -461,14 +461,13 @@ export default function Market({ allMarketData, marketData }: Props) {
         }}
         allMarketData={allMarketData}
       />
-      {/* <Script
+      <Script
         src="/static/datafeeds/udf/dist/bundle.js"
         strategy="lazyOnload"
         onReady={() => {
-          alert('ready')
           setIsScriptReady(true);
         }}
-      /> */}
+      />
     </OrderEntryContextProvider>
   );
 }
