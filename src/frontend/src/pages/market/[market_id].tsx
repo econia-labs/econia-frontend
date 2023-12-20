@@ -337,7 +337,7 @@ export default function Market({ allMarketData, marketData }: Props) {
       <Head>
         <title>{`${marketData.name} | Econia`}</title>
       </Head>
-      <div className="flex max-h-screen min-h-screen flex-col">
+      <div className="flex max-h-screen min-h-screen flex-col pb-3">
         <Header
           logoHref={`${allMarketData[0].market_id}`}
           onDepositWithdrawClick={() => setDepositWithdrawModalOpen(true)}
