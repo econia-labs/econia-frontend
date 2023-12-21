@@ -23,9 +23,9 @@ import {
   type ResolutionString,
   type ThemeName,
 } from "../../../public/static/charting_library";
-import { RENDER_CHART } from "@/env";
 let TVChartContainer: undefined | any = undefined;
-if (RENDER_CHART) {
+
+if (true) {
   TVChartContainer = dynamic(
     () =>
       import("@/components/trade/TVChartContainer").then(
