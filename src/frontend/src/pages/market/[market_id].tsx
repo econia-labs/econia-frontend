@@ -25,7 +25,8 @@ import {
 } from "../../../public/static/charting_library";
 let TVChartContainer: undefined | any = undefined;
 
-if (true) {
+const RENDER_CHART = true;
+if (RENDER_CHART) {
   TVChartContainer = dynamic(
     () =>
       import("@/components/trade/TVChartContainer").then(
