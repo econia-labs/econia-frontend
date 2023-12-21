@@ -262,7 +262,7 @@ export function OrderbookTable({
             AMOUNT <TokenSymbol symbol={marketData.base.symbol} />
           </p>
         </div>
-        <div className="flex w-[50%] justify-between px-3 pt-[3px] lg:pt-[12px]">
+        <div className="flex w-[50%] justify-between px-3 pl-4 pt-[7px] lg:px-3 lg:pt-[12px]">
           <p className="font-roboto-mono text-xs text-neutral-500">
             ASK <TokenSymbol symbol={marketData.quote?.symbol} />
           </p>
