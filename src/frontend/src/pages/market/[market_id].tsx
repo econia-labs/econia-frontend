@@ -337,7 +337,7 @@ export default function Market({ allMarketData, marketData }: Props) {
       <Head>
         <title>{`${marketData.name} | Econia`}</title>
       </Head>
-      <div className="flex max-h-screen min-h-screen flex-col pb-3">
+      <div className="flex max-h-screen min-h-screen flex-col">
         <Header
           logoHref={`${allMarketData[0].market_id}`}
           onDepositWithdrawClick={() => setDepositWithdrawModalOpen(true)}
@@ -345,7 +345,7 @@ export default function Market({ allMarketData, marketData }: Props) {
         />
         <StatsBar allMarketData={allMarketData} selectedMarket={marketData} />
         <main className="flex h-full min-h-[680px] w-full grow flex-col md:flex-row">
-          <div className="flex flex-col gap-3 p-3 pb-0 pr-3 md:w-[calc(100%-296px)] md:pr-0  lg:w-[calc(100%-564px)] lg:pr-3">
+          <div className="flex flex-col gap-3 p-3 md:w-[calc(100%-296px)] md:pr-0  lg:w-[calc(100%-564px)] lg:pr-3">
             <div className=" flex grow flex-col border border-neutral-600">
               <div className="flex h-full min-h-[400px] md:min-h-[unset]">
                 {isScriptReady && <TVChartContainer {...defaultTVChartProps} />}
@@ -411,7 +411,7 @@ export default function Market({ allMarketData, marketData }: Props) {
               )}
             </div>
           </div>
-          <div className="hidden w-0  pt-3 lg:flex lg:min-w-[268px] ">
+          <div className="hidden w-0 py-3 lg:flex lg:min-w-[268px] ">
             <div className="flex w-full flex-col border border-neutral-600">
               <OrderbookTable
                 marketData={marketData}
@@ -421,7 +421,7 @@ export default function Market({ allMarketData, marketData }: Props) {
               />
             </div>
           </div>
-          <div className="hidden min-w-full flex-col px-3 pr-3 pt-3 md:flex md:min-w-[296px] md:max-w-[296px]">
+          <div className="hidden min-w-full flex-col p-3 md:flex md:min-w-[296px] md:max-w-[296px]">
             <div className="border border-neutral-600">
               <OrderEntry
                 marketData={marketData}

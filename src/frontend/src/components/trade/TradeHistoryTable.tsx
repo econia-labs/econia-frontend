@@ -146,7 +146,7 @@ export const TradeHistoryTable: React.FC<{
         ))}
       </thead>
       <tbody>
-        <tr className="sticky top-[31px] bg-neutral-800 bg-noise md:top-[62px]">
+        <tr className="sticky top-[31px]  bg-neutral-800 bg-noise md:top-[60px]">
           <td colSpan={7} className="pb-[6.53px] pt-[7px] md:pt-[12.56px]">
             <div className="h-[1px] bg-neutral-600"></div>
           </td>
