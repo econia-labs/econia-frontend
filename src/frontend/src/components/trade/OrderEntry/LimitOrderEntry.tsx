@@ -356,7 +356,7 @@ export const LimitOrderEntry: React.FC<{
               //   }
               // },
             })}
-            className="z-30 w-full bg-transparent pb-3 pl-14 pr-14 pt-3 text-right font-roboto-mono text-xs font-light text-neutral-400 outline-none"
+            className="w-full bg-transparent pb-3 pl-14 pr-14 pt-3 text-right font-roboto-mono text-xs font-light text-neutral-400 outline-none"
           />
         </OrderEntryInputWrapper>
         <div className="relative">
@@ -420,7 +420,7 @@ export const LimitOrderEntry: React.FC<{
             step="any"
             placeholder="0.00"
             {...register("totalSize", { disabled: true })}
-            className="z-30 w-full bg-transparent pb-3 pl-14 pr-14 pt-3 text-right font-roboto-mono text-xs font-light text-neutral-400 outline-none"
+            className="w-full bg-transparent pb-3 pl-14 pr-14 pt-3 text-right font-roboto-mono text-xs font-light text-neutral-400 outline-none"
           />
         </OrderEntryInputWrapper>
       </div>
