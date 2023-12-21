@@ -215,7 +215,7 @@ export function OrderbookTable({
   return (
     <div className="flex grow flex-col">
       {/* title row */}
-      <div className="hidden border-b border-neutral-600 py-3 pl-[17.03px] pr-[11.27px] lg:block">
+      <div className="hidden h-[60px] w-[254px] flex-col justify-center border-b border-neutral-600 pl-[17.03px] pr-[11.27px] lg:flex">
         <div className="flex justify-between">
           <p className="font-jost text-base font-bold text-white">Order Book</p>
           {/* select */}
@@ -248,14 +248,13 @@ export function OrderbookTable({
             PRICE <TokenSymbol symbol={marketData.quote.symbol} smallSymbol />
           </p>
           <p className="font-roboto-mono text-xs font-light text-neutral-500">
-            TOTAL SIZE{" "}
-            <TokenSymbol symbol={marketData.base?.symbol} smallSymbol />
+            SIZE <TokenSymbol symbol={marketData.base?.symbol} smallSymbol />
           </p>
         </div>
       </div>
       {/* bids ask spread scrollable container */}
-      <div className="flex justify-between border-b border-neutral-600 pb-[10px] lg:mb-2 lg:hidden">
-        <div className="flex w-[50%] justify-between px-3 pl-4 pt-[12px] md:px-3">
+      <div className="flex justify-between border-b border-neutral-600 pb-[6px] lg:mb-2 lg:hidden">
+        <div className="flex w-[50%] justify-between px-3 pl-4 pt-[7px] lg:px-3 lg:pt-[12px]">
           <p className="font-roboto-mono text-xs text-neutral-500">
             BID <TokenSymbol symbol={marketData.quote?.symbol} />
           </p>
@@ -263,7 +262,7 @@ export function OrderbookTable({
             AMOUNT <TokenSymbol symbol={marketData.base.symbol} />
           </p>
         </div>
-        <div className="flex w-[50%] justify-between px-3 pt-[12px]">
+        <div className="flex w-[50%] justify-between px-3 pt-[3px] lg:pt-[12px]">
           <p className="font-roboto-mono text-xs text-neutral-500">
             ASK <TokenSymbol symbol={marketData.quote?.symbol} />
           </p>
@@ -273,7 +272,7 @@ export function OrderbookTable({
         </div>
       </div>
       <div
-        className={`scrollbar-none relative flex h-[173px] grow lg:flex-col ${
+        className={`scrollbar-none relative flex h-[173px] grow pt-[6.53px] lg:flex-col ${
           (data?.asks?.length ?? 0) < 12 || (data?.bids?.length ?? 0) < 14
             ? "flex items-center"
             : ""
@@ -305,10 +304,10 @@ export function OrderbookTable({
             ))}
           </div>
         ) : (
-          <div className="absolute flex h-full w-full flex-row-reverse lg:block ">
+          <div className="absolute flex h-full w-full flex-row-reverse pb-2 lg:block">
             {/* ASK */}
             <div
-              className="scrollbar-none flex h-full max-h-full w-[calc(50%-0.5px)] grow flex-col overflow-auto lg:h-[calc((100%-26px)/2)] lg:w-auto"
+              className="scrollbar-none flex h-full max-h-full w-[calc(50%-0.5px)] grow flex-col overflow-auto overflow-auto lg:h-[calc((100%-26px)/2)] lg:w-auto"
               ref={centerRef}
             >
               {isSmallWindow
