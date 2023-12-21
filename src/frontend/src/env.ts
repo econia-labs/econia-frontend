@@ -29,3 +29,4 @@ export const READ_ONLY_MODE = Number(process.env.NEXT_PUBLIC_READ_ONLY);
 export const READ_ONLY_MESSAGE = String(
   process.env.NEXT_PUBLIC_READ_ONLY_MESSAGE,
 );
+export const RENDER_CHART = Number(process.env.NEXT_PUBLIC_RENDER_CHART) === 1;

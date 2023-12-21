@@ -23,14 +23,17 @@ import {
   type ResolutionString,
   type ThemeName,
 } from "../../../public/static/charting_library";
-
-const TVChartContainer = dynamic(
-  () =>
-    import("@/components/trade/TVChartContainer").then(
-      (mod) => mod.TVChartContainer,
-    ),
-  { ssr: false },
-);
+import { RENDER_CHART } from "@/env";
+let TVChartContainer: undefined | any = undefined;
+if (RENDER_CHART) {
+  TVChartContainer = dynamic(
+    () =>
+      import("@/components/trade/TVChartContainer").then(
+        (mod) => mod.TVChartContainer,
+      ),
+    { ssr: false },
+  );
+}
 
 type Props = {
   marketData: ApiMarket;
@@ -348,7 +351,9 @@ export default function Market({ allMarketData, marketData }: Props) {
           <div className="flex flex-col gap-3 pb-0 md:w-[calc(100%-296px)] lg:w-[calc(100%-564px)]">
             <div className=" flex grow flex-col border border-neutral-600">
               <div className="flex h-full min-h-[400px] md:min-h-[unset]">
-                {isScriptReady && <TVChartContainer {...defaultTVChartProps} />}
+                {isScriptReady && TVChartContainer && (
+                  <TVChartContainer {...defaultTVChartProps} />
+                )}
               </div>
 
               <div className="hidden h-[140px] tall:block">

@@ -66,16 +66,22 @@ export function AptosContextProvider({ children }: PropsWithChildren) {
         };
       }
 
-      const res = await aptosSignAndSubmitTransaction(transaction, options);
-      // taken from https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-react#signandsubmittransactionpayload
       try {
-        await aptosClient.waitForTransaction(res?.hash || "");
-        toast.success("Transaction confirmed");
-        return true;
-      } catch (error) {
-        toast.error("Transaction failed");
-        console.error(error);
-        return false;
+        const res = await aptosSignAndSubmitTransaction(transaction, options);
+        // taken from https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-react#signandsubmittransactionpayload
+        try {
+          await aptosClient.waitForTransaction(res?.hash || "");
+          toast.success("Transaction confirmed");
+          return true;
+        } catch (error) {
+          toast.error("Transaction failed");
+          console.error(error);
+          return false;
+        }
+      } catch (error: any) {
+        if (error && error?.includes("Account not found")) {
+          toast.error("You need APT balance!");
+        }
       }
     },
     [aptosSignAndSubmitTransaction, aptosClient],
