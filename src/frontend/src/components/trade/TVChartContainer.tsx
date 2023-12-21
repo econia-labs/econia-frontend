@@ -33,6 +33,7 @@ import {
   VisiblePlotsSet,
   widget,
 } from "../../../public/static/charting_library";
+import { Jockey_One } from "next/font/google";
 
 const DAY_BY_RESOLUTION: { [key: string]: string } = {
   "1D": "86400",
@@ -415,10 +416,14 @@ export const TVChartContainer: React.FC<
       const iframe = document.querySelector("iframe");
       alert(
         iframe
-          ? `iframe ${iframe.width}: ${iframe.height} ${iframe.clientHeight} ${iframe.clientWidth}`
+          ? `iframe w=${iframe.width}: h=${iframe.height} cw=${
+              iframe.clientHeight
+            } ch${iframe.clientWidth} Style: ${
+              iframe.style.display + iframe.style.width + iframe.style.height
+            }, src ${iframe.src}`
           : "no-iframe",
       );
-    }, 3000);
+    }, 5000);
 
     return () => {
       // console.warn("reject" + (a as any)._ready ? "ready" : "unready");
