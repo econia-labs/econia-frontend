@@ -223,7 +223,7 @@ export const MarketOrderEntry: React.FC<{
               required: "PLEASE INPUT AMOUNT",
               min: 0,
             })}
-            className="z-30 w-full bg-transparent pb-3 pl-14 pr-14 pt-3 text-right font-roboto-mono text-xs font-light text-neutral-400 outline-none"
+            className="w-full bg-transparent pb-3 pl-14 pr-14 pt-3 text-right font-roboto-mono text-xs font-light text-neutral-400 outline-none"
           />
         </OrderEntryInputWrapper>
         <div className="relative mb-0">
