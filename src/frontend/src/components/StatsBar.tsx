@@ -163,7 +163,7 @@ export const StatsBar: React.FC<{
           setIsModalOpen(false);
         }}
         showCloseButton={false}
-        className={"mx-10 !p-0"}
+        className={"!p-0 sm:w-[547px] md:w-[686px] lg:w-[786px]"}
       >
         <SelectMarketContent
           allMarketData={allMarketData}
@@ -180,7 +180,7 @@ export const StatsBar: React.FC<{
       </BaseModal>
       {isModalOpen && isSmallWindow && (
         <div
-          className={`fixed inset-0 z-[60] flex h-screen w-screen items-center justify-center overflow-hidden bg-black text-center font-jost text-3xl font-bold text-white`}
+          className={`fixed inset-0 z-[60] flex h-full w-full items-center justify-center overflow-hidden bg-black text-center font-jost text-3xl font-bold text-white`}
         >
           💩 <br />
           View on Larger Screen
