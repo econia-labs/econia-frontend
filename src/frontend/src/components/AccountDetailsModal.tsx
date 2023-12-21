@@ -146,15 +146,22 @@ export const AccountDetailsModal: React.FC<{
           Open Market Accounts
         </p>
         {/* market accounts */}
-        {marketAccounts?.map((marketAccount) => (
-          <MarketAccountCard
-            key={marketAccount.market_id.toString() + "deposit card"}
-            onDepositWithdrawClick={onDepositWithdrawClick}
-            marketAccountData={marketAccount}
-          />
-        ))}
+        {marketAccounts?.map((marketAccount, index: number) => {
+          return (
+            <>
+              <MarketAccountCard
+                key={marketAccount.market_id.toString() + "deposit card"}
+                onDepositWithdrawClick={onDepositWithdrawClick}
+                marketAccountData={marketAccount}
+              />
+              {index === marketAccounts.length - 1 && (
+                <div className="h-[30px]"></div>
+              )}
+            </>
+          );
+        })}
       </div>
-      <div className="add-new-account-bg absolute bottom-[19px] left-[50%] mb-[-19px] flex h-[120px] !w-[455px] translate-x-[-50%] items-end justify-center">
+      <div className="add-new-account-bg pointer-events-none absolute bottom-[19px] left-[50%] mb-[-19px] flex h-[120px] !w-[455px] translate-x-[-50%] items-end justify-center">
         <Button
           variant="primary"
           onClick={() => {
