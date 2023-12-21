@@ -337,15 +337,15 @@ export default function Market({ allMarketData, marketData }: Props) {
       <Head>
         <title>{`${marketData.name} | Econia`}</title>
       </Head>
-      <div className="flex max-h-screen min-h-screen flex-col pb-3">
+      <div className="scrollbar-none flex h-screen flex-col">
         <Header
           logoHref={`${allMarketData[0].market_id}`}
           onDepositWithdrawClick={() => setDepositWithdrawModalOpen(true)}
           onWalletButtonClick={() => setWalletButtonModalOpen(true)}
         />
         <StatsBar allMarketData={allMarketData} selectedMarket={marketData} />
-        <main className="flex h-full min-h-[680px] w-full grow flex-col md:flex-row">
-          <div className="flex flex-col gap-3 p-3 pb-0 pr-3 md:w-[calc(100%-296px)] md:pr-0  lg:w-[calc(100%-564px)] lg:pr-3">
+        <main className="flex h-full min-h-[680px] w-full grow flex-col gap-3 p-3 md:flex-row">
+          <div className="flex flex-col gap-3 pb-0 md:w-[calc(100%-296px)] lg:w-[calc(100%-564px)]">
             <div className=" flex grow flex-col border border-neutral-600">
               <div className="flex h-full min-h-[400px] md:min-h-[unset]">
                 {isScriptReady && <TVChartContainer {...defaultTVChartProps} />}
@@ -356,8 +356,8 @@ export default function Market({ allMarketData, marketData }: Props) {
               </div>
             </div>
             <div className="flex h-[260px] max-w-full flex-col border border-neutral-600">
-              <div className="flex h-8 gap-4 bg-transparent pl-4 pt-2 lg:pl-0 lg:pt-0">
-                <div className="flex gap-4 bg-transparent py-1 text-base lg:py-3 lg:pl-[17.19px]">
+              <div className="flex h-[30px] items-center gap-4 pl-4 pt-2 lg:pl-0 lg:pt-[6px]">
+                <div className="flex gap-4 py-1 text-base lg:py-3 lg:pl-[17.19px]">
                   <p
                     onClick={() => setTab("orders")}
                     className={`cursor-pointer font-jost font-bold ${
@@ -411,7 +411,7 @@ export default function Market({ allMarketData, marketData }: Props) {
               )}
             </div>
           </div>
-          <div className="hidden w-0  pt-3 lg:flex lg:min-w-[268px] ">
+          <div className="hidden w-[254px] lg:flex">
             <div className="flex w-full flex-col border border-neutral-600">
               <OrderbookTable
                 marketData={marketData}
@@ -421,7 +421,7 @@ export default function Market({ allMarketData, marketData }: Props) {
               />
             </div>
           </div>
-          <div className="hidden min-w-full flex-col px-3 pr-3 pt-3 md:flex md:min-w-[296px] md:max-w-[296px]">
+          <div className="hidden w-[284px] flex-col md:flex">
             <div className="border border-neutral-600">
               <OrderEntry
                 marketData={marketData}
@@ -429,7 +429,7 @@ export default function Market({ allMarketData, marketData }: Props) {
               />
             </div>
             <div className="scrollbar-none mt-3 h-full max-h-full grid-rows-none  overflow-auto border border-neutral-600">
-              <p className="sticky top-0 bg-neutral-800 bg-noise pb-1 pl-[17.03px] pt-3 font-jost font-bold text-white">
+              <p className="sticky top-0 bg-neutral-800 bg-noise pl-[17.03px] pt-[6px] font-jost font-bold text-white">
                 Trade History
               </p>
               <TradeHistoryTable

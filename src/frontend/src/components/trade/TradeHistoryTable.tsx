@@ -46,7 +46,7 @@ export const TradeHistoryTable: React.FC<{
           }).toNumber();
         },
         header: () => (
-          <span className="flex items-baseline gap-2 whitespace-nowrap pt-[11px] md:pt-[2px]">
+          <span className="flex items-baseline gap-2 whitespace-nowrap pt-0 md:pt-[2px]">
             PRICE <TokenSymbol symbol={quoteSymbol} smallSymbol />
           </span>
         ),
@@ -60,7 +60,7 @@ export const TradeHistoryTable: React.FC<{
           }).toNumber();
         },
         header: () => (
-          <span className="flex items-baseline gap-2 whitespace-nowrap pt-[11px] md:pt-[2px]">
+          <span className="flex items-baseline gap-2 whitespace-nowrap pt-0 md:pt-[2px]">
             AMOUNT <TokenSymbol symbol={baseSymbol} smallSymbol />
           </span>
         ),
@@ -105,7 +105,7 @@ export const TradeHistoryTable: React.FC<{
           );
         },
         header: () => (
-          <span className="flex items-baseline justify-end gap-2 whitespace-nowrap pt-[11px] md:pt-[2px]">
+          <span className="flex items-baseline justify-end gap-2 whitespace-nowrap pt-0 md:pt-[2px]">
             TIME
           </span>
         ),
@@ -117,7 +117,7 @@ export const TradeHistoryTable: React.FC<{
 
   return (
     <table className={`w-full table-fixed ${className || ""}`}>
-      <thead className="sticky top-0 bg-neutral-800 bg-noise md:top-[40px]">
+      <thead className="sticky top-0 h-[29px] bg-neutral-800 bg-noise md:top-[30px] md:h-auto">
         {table.getHeaderGroups().map((headerGroup) => (
           <tr
             className="text-left font-roboto-mono text-sm text-neutral-500 [&>th]:font-light"
@@ -127,7 +127,7 @@ export const TradeHistoryTable: React.FC<{
               <th
                 className={`text-xs ${
                   i === 0
-                    ? "pl-[17.03px] text-left"
+                    ? "pl-[16px] text-left md:pl-[17.03px]"
                     : i === 1
                     ? "pl-[13.03px] text-left"
                     : "pr-[12.61px] text-right"
@@ -146,8 +146,8 @@ export const TradeHistoryTable: React.FC<{
         ))}
       </thead>
       <tbody>
-        <tr className="sticky top-[31px] bg-neutral-800 bg-noise md:top-[62px]">
-          <td colSpan={7} className="pb-[6.53px] pt-[7px] md:pt-[12.56px]">
+        <tr className="sticky top-[29px] bg-neutral-800 bg-noise md:top-[50px]">
+          <td colSpan={7} className="pb-[6.53px] pt-0 md:pt-2">
             <div className="h-[1px] bg-neutral-600"></div>
           </td>
         </tr>
@@ -159,7 +159,7 @@ export const TradeHistoryTable: React.FC<{
                 <td
                   className={`text-xs ${
                     i === 0
-                      ? "pl-[17.03px] text-left"
+                      ? "pl-[16px] text-left md:pl-[17.03px]"
                       : i === 1
                       ? "pl-[13.03px] text-left"
                       : "pr-4 text-right"
@@ -191,7 +191,7 @@ export const TradeHistoryTable: React.FC<{
                 <td
                   className={`align-bottom text-xs ${
                     i === 0
-                      ? `pl-[17.03px] text-left ${
+                      ? `pl-[16px] text-left md:pl-[17.03px] ${
                           cell.row.original.maker_side
                             ? "text-green"
                             : "text-red"
