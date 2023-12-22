@@ -30,14 +30,12 @@ const RowDetails: React.FC<RowDetailsProps> = ({
   symbol,
   children,
 }) => (
-  <div className="flex justify-between px-4 py-1 hover:bg-neutral-600 hover:bg-opacity-30">
-    <span className=" text-sm font-light uppercase text-neutral-500">
-      {label}
-    </span>
-    <span className="text-neutral-500">
+  <div className="flex justify-between px-4 py-1 text-sm hover:bg-neutral-600 hover:bg-opacity-30">
+    <span className="font-light uppercase text-neutral-500">{label}</span>
+    <span className="text-neutral-400">
       {value !== 0 && symbol ? (
         <>
-          {value} <TokenSymbol className="text-sm" symbol={symbol} />
+          {value} <TokenSymbol symbol={symbol} />
         </>
       ) : (
         <>{children}</>
