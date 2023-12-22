@@ -255,18 +255,18 @@ export function OrderbookTable({
       {/* Mobile screen header */}
       <div className="flex h-[30px] lg:mb-2 lg:hidden">
         <div className="flex w-[50%] justify-between px-3 pl-4 pt-[7px] lg:px-3 lg:pt-[12px]">
-          <p className="font-roboto-mono text-xs text-neutral-500">
+          <p className="whitespace-nowrap font-roboto-mono text-xs text-neutral-500">
             BID <TokenSymbol symbol={marketData.quote?.symbol} />
           </p>
-          <p className="font-roboto-mono text-xs text-neutral-500">
+          <p className="whitespace-nowrap font-roboto-mono text-xs text-neutral-500">
             AMOUNT <TokenSymbol symbol={marketData.base.symbol} />
           </p>
         </div>
         <div className="flex w-[50%] justify-between px-3 pl-4 pt-[7px] lg:px-3 lg:pt-[12px]">
-          <p className="font-roboto-mono text-xs text-neutral-500">
+          <p className="whitespace-nowrap font-roboto-mono text-xs text-neutral-500">
             ASK <TokenSymbol symbol={marketData.quote?.symbol} />
           </p>
-          <p className="font-roboto-mono text-xs text-neutral-500">
+          <p className="whitespace-nowrap font-roboto-mono text-xs text-neutral-500">
             AMOUNT <TokenSymbol symbol={marketData.base.symbol} />
           </p>
         </div>
