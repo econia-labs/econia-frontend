@@ -37,7 +37,7 @@ const RowDetails: React.FC<RowDetailsProps> = ({
     <span className="text-neutral-500">
       {value !== 0 && symbol ? (
         <>
-          {value} <TokenSymbol normalSymbol symbol={symbol} />
+          {value} <TokenSymbol className="text-sm" symbol={symbol} />
         </>
       ) : (
         <>{children}</>
