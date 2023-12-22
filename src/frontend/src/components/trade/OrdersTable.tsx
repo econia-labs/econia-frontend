@@ -324,7 +324,7 @@ export const OrdersTable: React.FC<{
         onClose={closeModal}
         showCloseButton={true}
         showBackButton={false}
-        className="!w-[700px] font-roboto-mono text-white"
+        className="!w-[480px] !p-0 font-jost text-white"
       >
         <OrderDetailsModalContent
           orderDetails={selectedOrder}

@@ -1,12 +1,18 @@
-import React from "react";
+import React, { ReactNode } from "react";
 
 import { Button } from "@/components/Button";
-import { type ApiMarket, type ApiOrder } from "@/types/api";
+import { TradeHistory, type ApiMarket, type ApiOrder } from "@/types/api";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
+import bg from "../../../../public/bg.png";
+import { TokenSymbol } from "../../TokenSymbol";
+import { useQuery } from "@tanstack/react-query";
+import { API_URL, NETWORK_NAME } from "../../../env";
 
 interface RowDetailsProps {
   label: string;
-  value: string | number | undefined;
+  value?: string | number;
+  symbol?: string;
+  children?: ReactNode;
 }
 
 interface OrderDetailsModalContentProps {
@@ -18,11 +24,24 @@ interface OrderDetailsModalContentProps {
   loading: boolean;
 }
 
-const RowDetails: React.FC<RowDetailsProps> = ({ label, value }) => (
-  <div className="flex justify-between">
-    <span>{label}</span>
+const RowDetails: React.FC<RowDetailsProps> = ({
+  label,
+  value,
+  symbol,
+  children,
+}) => (
+  <div className="flex justify-between px-4 py-1 hover:bg-neutral-600 hover:bg-opacity-30">
+    <span className=" text-sm font-light uppercase text-neutral-500">
+      {label}
+    </span>
     <span className="text-neutral-500">
-      {label === "Pair" ? value : capitalizeFirstLetter(value)}
+      {value !== 0 && symbol ? (
+        <>
+          {value} <TokenSymbol normalSymbol symbol={symbol} />
+        </>
+      ) : (
+        <>{children}</>
+      )}
     </span>
   </div>
 );
@@ -52,6 +71,30 @@ export const OrderDetailsModalContent: React.FC<
   cancelOrder,
   loading,
 }) => {
+  const { data, isLoading } = useQuery<TradeHistory>(
+    ["useOrderDetailsModalContent", orderDetails?.order_id],
+    async () => {
+      if (!orderDetails) return [];
+
+      const { order_id, order_status } = orderDetails;
+
+      let endpoint = "";
+      if (order_status === "cancelled") {
+        endpoint = `${API_URL}/cancel_order_events?order_id=eq.${order_id}`;
+      } else if (order_status === "closed") {
+        endpoint = `${API_URL}/fill_events_deduped?taker_order_id=eq.${order_id}`;
+      }
+
+      if (endpoint) {
+        const response = await fetch(new URL(endpoint));
+        const data = await response.json();
+        return data[0];
+      }
+
+      return [];
+    },
+  );
+
   if (!orderDetails) {
     return null;
   }
@@ -65,83 +108,151 @@ export const OrderDetailsModalContent: React.FC<
     price,
     total_filled,
     average_execution_price,
+    remaining_size,
   } = orderDetails;
 
-  const amount = toDecimalSize({
-    size: total_filled,
+  const timePlaced = new Date(created_at).toLocaleString("en-US", {
+    month: "numeric",
+    day: "2-digit",
+    year: "2-digit",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    hour12: true,
+  });
+
+  const EXPLORER_URL = (txn_version: number | undefined) =>
+    `https://explorer.aptoslabs.com/txn/${txn_version}?network=${NETWORK_NAME}`;
+
+  const orderId = (() => {
+    if (order_status === "open" || !data?.txn_version) return order_id;
+
+    return (
+      <a
+        className="cursor-pointer hover:text-blue"
+        href={EXPLORER_URL(data.txn_version)}
+        target="_blank"
+      >
+        {order_id}
+      </a>
+    );
+  })();
+
+  const name = `${baseSymbol}-${quoteSymbol}`;
+
+  const type = order_type.toUpperCase();
+
+  const side = (() => {
+    if (direction === "bid" || direction === "buy")
+      return <span className="text-green">BID</span>;
+
+    return <span className="text-red">ASK</span>;
+  })();
+
+  const limitPrice = (() => {
+    if (price != null && typeof price === "number")
+      return toDecimalPrice({ price, marketData }).toNumber();
+
+    return 0;
+  })();
+
+  const avgExecPrice = (() => {
+    if (average_execution_price !== null)
+      return toDecimalPrice({
+        price: average_execution_price,
+        marketData,
+      }).toNumber();
+
+    return 0;
+  })();
+
+  const remainingSize = toDecimalSize({
+    size: remaining_size,
     marketData,
   }).toNumber();
 
-  const limitPrice =
-    price != null
-      ? toDecimalPrice({
-          price,
-          marketData,
-        }).toNumber()
-      : "-";
+  const totalFilled = (() => {
+    if (total_filled !== null)
+      return toDecimalSize({ size: total_filled, marketData }).toNumber();
 
-  const convertedAvgPrice =
-    average_execution_price != null
-      ? toDecimalPrice({
-          price: average_execution_price,
-          marketData,
-        }).toNumber()
-      : "-";
+    return 0;
+  })();
 
-  return (
-    <>
-      {/* Modal Title */}
-      <div className="text-left text-lg font-bold">Order Details</div>
-      {/* Modal Content */}
-      <div className="my-8 flex flex-col gap-8">
-        <RowDetails label="Order ID" value={order_id} />
-        <RowDetails
-          label="Time Placed"
-          value={new Date(created_at).toLocaleString("en-US", {
-            month: "numeric",
-            day: "2-digit",
-            year: "2-digit",
-            hour: "numeric",
-            minute: "numeric",
-            second: "numeric",
-            hour12: true,
-          })}
-        />
-        <RowDetails label="Pair" value={`${baseSymbol}-${quoteSymbol}`} />
-        <RowDetails label="Type" value={order_type} />
-        <RowDetails label="Side" value={direction} />
-        <RowDetails label="Amount" value={`${amount} ${baseSymbol}`} />
-        <RowDetails
-          label="Limit Price"
-          value={`${limitPrice} ${quoteSymbol}`}
-        />
-        <RowDetails label="Fee" value="-" />
-        <RowDetails
-          label="Total"
-          value={
-            convertedAvgPrice === "-"
-              ? convertedAvgPrice
-              : amount * convertedAvgPrice + " " + quoteSymbol
-          }
-        />
-        <RowDetails label="Status" value={order_status} />
-      </div>
-      <Button
-        className="w-full"
-        variant="red"
-        onClick={() => {
+  const totalVol = (() => {
+    if (!total_filled || !average_execution_price) return 0;
+
+    const totalVolume = totalFilled + avgExecPrice;
+
+    return totalVolume.toLocaleString(undefined, { maximumFractionDigits: 5 });
+  })();
+
+  const orderStatus = (() => {
+    let className = "";
+    switch (order_status) {
+      case "open":
+        className = "text-blue";
+        break;
+      case "cancelled":
+        className = "text-red";
+        break;
+      case "closed":
+        className = "text-green";
+        break;
+    }
+
+    return <span className={className}>{order_status.toUpperCase()}</span>;
+  })();
+
+  const cancel = (() => {
+    if (order_status !== "open") return "";
+
+    return (
+      <button
+        className="uppercase text-red hover:text-[#DC2B2B]"
+        onClick={(e) => {
+          e.stopPropagation();
           cancelOrder(orderDetails);
         }}
-        disabledReason={
-          loading
-            ? "Cancelling order..."
-            : order_status !== "open"
-            ? "Order already cancelled"
-            : undefined
-        }
       >
-        Cancel Order
-      </Button>
-    </>
+        Cancel
+      </button>
+    );
+  })();
+
+  return (
+    <div
+      style={{ backgroundImage: `url(${bg.src})` }}
+      className="w-full bg-neutral-800 p-6"
+    >
+      {/* Modal Title */}
+      <div className="text-center text-lg font-bold">Order Details</div>
+      {/* Modal Content */}
+      <div className="flex flex-col pt-2  font-roboto-mono text-sm">
+        <RowDetails label="Order ID">{orderId}</RowDetails>
+        <RowDetails label="Time Placed">{timePlaced}</RowDetails>
+        <RowDetails label="Name">{name}</RowDetails>
+        <RowDetails label="Type">{type}</RowDetails>
+        <RowDetails label="Side">{side}</RowDetails>
+        <RowDetails
+          label="Limit Price"
+          value={limitPrice}
+          symbol={quoteSymbol}
+        />
+        <RowDetails
+          label="Avg exec. price"
+          value={avgExecPrice}
+          symbol={quoteSymbol}
+        />
+        <RowDetails
+          label="RMNG SIZE"
+          value={remainingSize}
+          symbol={baseSymbol}
+        />
+        <RowDetails label="Total" value={totalFilled} symbol={quoteSymbol} />
+        <RowDetails label="Total Vol." value={totalVol} symbol={quoteSymbol} />
+        <RowDetails label="Status">{orderStatus}</RowDetails>
+        <RowDetails label="Cancel">{cancel}</RowDetails>
+      </div>
+    </div>
   );
 };
