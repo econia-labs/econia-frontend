@@ -1,10 +1,8 @@
 export const TokenSymbol: React.FC<{
   symbol: string;
-  smallSymbol?: boolean;
-}> = ({ symbol, smallSymbol = false }) => {
+  className?: string;
+}> = ({ symbol, className }) => {
   return (
-    <span className={"text-neutral-600 " + (smallSymbol ? "text-xs" : "")}>
-      {symbol || "-"}
-    </span>
+    <span className={"text-neutral-600 " + className}>{symbol || "-"}</span>
   );
 };

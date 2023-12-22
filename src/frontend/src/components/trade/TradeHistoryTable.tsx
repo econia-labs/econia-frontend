@@ -47,7 +47,7 @@ export const TradeHistoryTable: React.FC<{
         },
         header: () => (
           <span className="flex items-baseline gap-2 whitespace-nowrap pt-0 md:pt-[2px]">
-            PRICE <TokenSymbol symbol={quoteSymbol} smallSymbol />
+            PRICE <TokenSymbol symbol={quoteSymbol} />
           </span>
         ),
       }),
@@ -61,7 +61,7 @@ export const TradeHistoryTable: React.FC<{
         },
         header: () => (
           <span className="flex items-baseline gap-2 whitespace-nowrap pt-0 md:pt-[2px]">
-            AMOUNT <TokenSymbol symbol={baseSymbol} smallSymbol />
+            AMOUNT <TokenSymbol symbol={baseSymbol} />
           </span>
         ),
       }),
