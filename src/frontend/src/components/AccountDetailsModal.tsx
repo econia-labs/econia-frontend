@@ -114,7 +114,10 @@ export const AccountDetailsModal: React.FC<{
         {/* card */}
         <div className="mb-7 flex justify-between gap-9 border-[1px] border-neutral-600 px-9 py-7">
           {/* Wallet Address */}
-          <div className="flex h-[30px] w-[137px] items-center justify-center gap-2 border-[1px] border-neutral-600 bg-white py-1 text-xs font-medium uppercase tracking-[0.24px]">
+          <div
+            onClick={copyToClipboard}
+            className="flex h-[30px] w-[137px] cursor-pointer items-center justify-center gap-2 border-[1px] border-neutral-600 bg-white py-1 text-xs font-medium uppercase tracking-[0.24px]"
+          >
             {/* invisible character,  */}
             {showCopiedNotif ? (
               "COPIED!"
@@ -123,10 +126,7 @@ export const AccountDetailsModal: React.FC<{
                 {(
                   <>
                     {shorten(account?.address)}{" "}
-                    <CopyIcon
-                      className={"h-4 cursor-pointer text-black"}
-                      onClick={copyToClipboard}
-                    />{" "}
+                    <CopyIcon className={"h-4 cursor-pointer text-black"} />{" "}
                   </>
                 ) || "‎"}
               </>
@@ -146,21 +146,28 @@ export const AccountDetailsModal: React.FC<{
           Open Market Accounts
         </p>
         {/* market accounts */}
-        {marketAccounts?.map((marketAccount) => (
-          <MarketAccountCard
-            key={marketAccount.market_id.toString() + "deposit card"}
-            onDepositWithdrawClick={onDepositWithdrawClick}
-            marketAccountData={marketAccount}
-          />
-        ))}
+        {marketAccounts?.map((marketAccount, index: number) => {
+          return (
+            <>
+              <MarketAccountCard
+                key={marketAccount.market_id.toString() + "deposit card"}
+                onDepositWithdrawClick={onDepositWithdrawClick}
+                marketAccountData={marketAccount}
+              />
+              {index === marketAccounts.length - 1 && (
+                <div className="h-[50px]"></div>
+              )}
+            </>
+          );
+        })}
       </div>
-      <div className="add-new-account-bg absolute bottom-[19px] left-[50%] mb-[-19px] flex h-[120px] !w-[455px] translate-x-[-50%] items-end justify-center">
+      <div className="add-new-account-bg pointer-events-none absolute bottom-[19px] left-[50%] mb-[-19px] flex h-[120px] !w-[455px] translate-x-[-50%] items-end justify-center">
         <Button
           variant="primary"
           onClick={() => {
             onRegisterAccountClick();
           }}
-          className="mb-[17.4px] h-fit !px-[17.5px] text-xs uppercase"
+          className="pointer-events-auto mb-[17.4px] h-fit !px-[17.5px] text-xs uppercase"
         >
           Add New Account
         </Button>
