@@ -318,7 +318,7 @@ export const OrdersTable: React.FC<{
   });
 
   return (
-    <div className="scrollbar-none grow overflow-auto">
+    <div className="scrollbar-none w-full grow overflow-auto">
       <BaseModal
         isOpen={isModalOpen}
         onClose={closeModal}
@@ -359,9 +359,11 @@ export const OrdersTable: React.FC<{
             ))}
           </tr>
           <tr>
-            <td className="p-0">
-              <div className="h-[1px] w-screen bg-neutral-600"></div>
-            </td>
+            {table.getFlatHeaders().map((header) => (
+              <td className="p-0" key={header.id}>
+                <div className="h-[1px] w-full bg-neutral-600"></div>
+              </td>
+            ))}
           </tr>
         </thead>
 
