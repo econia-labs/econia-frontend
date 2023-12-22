@@ -155,7 +155,7 @@ export const AccountDetailsModal: React.FC<{
                 marketAccountData={marketAccount}
               />
               {index === marketAccounts.length - 1 && (
-                <div className="h-[30px]"></div>
+                <div className="h-[50px]"></div>
               )}
             </>
           );
