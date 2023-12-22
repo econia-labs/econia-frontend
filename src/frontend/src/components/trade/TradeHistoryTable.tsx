@@ -117,7 +117,7 @@ export const TradeHistoryTable: React.FC<{
 
   return (
     <table className={`w-full table-fixed ${className || ""}`}>
-      <thead className="sticky top-0 h-[29px] bg-neutral-800 bg-noise md:top-[30px] md:h-auto">
+      <thead className="sticky top-0 h-[30px] bg-neutral-800 bg-noise md:top-[30px]">
         {table.getHeaderGroups().map((headerGroup) => (
           <tr
             className="text-left font-roboto-mono text-sm text-neutral-500 [&>th]:font-light"
@@ -146,8 +146,8 @@ export const TradeHistoryTable: React.FC<{
         ))}
       </thead>
       <tbody>
-        <tr className="sticky top-[29px] bg-neutral-800 bg-noise md:top-[50px]">
-          <td colSpan={7} className="px-0 pb-[6.53px] pt-0 md:pt-2">
+        <tr className="sticky top-[30px] bg-neutral-800 bg-noise md:top-[60px]">
+          <td colSpan={7} className="px-0 pb-[6.53px] pt-0 md:pt-0">
             <div className="h-[1px] bg-neutral-600"></div>
           </td>
         </tr>

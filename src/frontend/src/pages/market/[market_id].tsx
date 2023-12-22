@@ -429,7 +429,7 @@ export default function Market({ allMarketData, marketData }: Props) {
               />
             </div>
             <div className="scrollbar-none mt-3 h-full max-h-full grid-rows-none  overflow-auto border border-neutral-600">
-              <p className="sticky top-0 bg-neutral-800 bg-noise pl-[17.03px] pt-[6px] font-jost font-bold text-white">
+              <p className="sticky top-0 flex h-[30px] items-end bg-neutral-800 bg-noise pl-[17.03px] font-jost font-bold text-white">
                 Trade History
               </p>
               <TradeHistoryTable

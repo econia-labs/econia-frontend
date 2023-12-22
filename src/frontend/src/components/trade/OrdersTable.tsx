@@ -338,12 +338,7 @@ export const OrdersTable: React.FC<{
       <table
         className={"w-full table-fixed" + (className ? ` ${className}` : "")}
       >
-        <thead
-          className="sticky top-0 h-[30px] bg-neutral-800 shadow-[inset_0_-1px_0_theme(colors.neutral.600)]"
-          style={{
-            backgroundImage: `url(${bg.src})`,
-          }}
-        >
+        <thead className="sticky top-0 h-[30px] bg-neutral-800 bg-noise">
           <tr>
             {table.getFlatHeaders().map((header) => (
               <th
@@ -365,6 +360,11 @@ export const OrdersTable: React.FC<{
           </tr>
         </thead>
         <tbody>
+          <tr className="sticky top-[30px] bg-neutral-800 bg-noise md:top-[30px]">
+            <td colSpan={11} className="px-0 pb-[6.53px] pt-0 md:pt-0">
+              <div className="h-[1px] bg-neutral-600"></div>
+            </td>
+          </tr>
           {!connected ? (
             <></>
           ) : isLoading || !data ? (

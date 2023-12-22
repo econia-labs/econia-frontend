@@ -214,8 +214,8 @@ export function OrderbookTable({
 
   return (
     <div className="flex grow flex-col">
-      {/* title row */}
-      <div className="hidden h-[60px] w-[252px] flex-col justify-center border-b border-neutral-600 pl-[17.03px] pr-[11.27px] lg:flex">
+      {/* Large screen header */}
+      <div className="hidden h-[60px] w-[252px] flex-col justify-center pl-[17.03px] pr-[11.27px] lg:flex">
         <div className="flex justify-between">
           <p className="font-jost text-base font-bold text-white">Order Book</p>
           {/* select */}
@@ -252,8 +252,8 @@ export function OrderbookTable({
           </p>
         </div>
       </div>
-      {/* bids ask spread scrollable container */}
-      <div className="flex justify-between border-b border-neutral-600 pb-[6px] lg:mb-2 lg:hidden">
+      {/* Mobile screen header */}
+      <div className="flex h-[30px] lg:mb-2 lg:hidden">
         <div className="flex w-[50%] justify-between px-3 pl-4 pt-[7px] lg:px-3 lg:pt-[12px]">
           <p className="font-roboto-mono text-xs text-neutral-500">
             BID <TokenSymbol symbol={marketData.quote?.symbol} />
@@ -271,6 +271,8 @@ export function OrderbookTable({
           </p>
         </div>
       </div>
+      {/* Table content */}
+      <div className="h-[1px] bg-neutral-600"></div>
       <div
         className={`scrollbar-none relative flex h-[173px] grow pt-[6.53px] lg:flex-col ${
           (data?.asks?.length ?? 0) < 12 || (data?.bids?.length ?? 0) < 14
