@@ -8,6 +8,7 @@ import React, {
   type MouseEventHandler,
   type PropsWithChildren,
   Fragment,
+  useEffect,
 } from "react";
 
 import { shorten } from "@/utils/formatter";
@@ -235,6 +236,15 @@ const HeaderMobile = ({
   const [isOpen, setIsOpen] = useState(false);
   const { account } = useWallet();
   const toggleMenu = () => {
+    if (!isOpen) {
+      window.scrollTo({
+        behavior: "smooth",
+        top: 0,
+      });
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
     setIsOpen(!isOpen);
   };
 
