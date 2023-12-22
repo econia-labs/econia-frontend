@@ -117,40 +117,42 @@ export const TradeHistoryTable: React.FC<{
 
   return (
     <table className={`w-full table-fixed ${className || ""}`}>
-      <thead className="sticky top-0 h-[30px] bg-neutral-800 bg-noise md:top-[30px]">
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr
-            className="text-left font-roboto-mono text-sm text-neutral-500 [&>th]:font-light"
-            key={headerGroup.id}
-          >
-            {headerGroup.headers.map((header, i) => (
-              <th
-                className={`text-xs ${
-                  i === 0
-                    ? "pl-[16px] text-left md:pl-[17.03px]"
-                    : i === 1
-                    ? "pl-[13.03px] text-left"
-                    : "pr-[12.61px] text-right"
-                } w-full`}
-                key={header.id}
-              >
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext(),
-                    )}
-              </th>
-            ))}
+      <thead className="sticky top-0 bg-neutral-800 bg-noise">
+        <>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr
+              className="text-left font-roboto-mono text-sm text-neutral-500 [&>th]:font-light"
+              key={headerGroup.id}
+            >
+              {headerGroup.headers.map((header, i) => (
+                <th
+                  className={`text-xs ${
+                    i === 0
+                      ? "pl-[16px] text-left md:pl-[17.03px]"
+                      : i === 1
+                      ? "pl-[13.03px] text-left"
+                      : "pr-[12.61px] text-right"
+                  } h-[30px] w-full`}
+                  key={header.id}
+                >
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                </th>
+              ))}
+            </tr>
+          ))}
+          <tr>
+            <td className="p-0">
+              <div className="h-[1px] w-screen bg-neutral-600"></div>
+            </td>
           </tr>
-        ))}
+        </>
       </thead>
       <tbody>
-        <tr className="sticky top-[30px] bg-neutral-800 bg-noise md:top-[60px]">
-          <td colSpan={7} className="px-0 pb-[6.53px] pt-0 md:pt-0">
-            <div className="h-[1px] bg-neutral-600"></div>
-          </td>
-        </tr>
         {isLoading || !data ? (
           <>
             {/* temporarily removing skeletong to help UX and reduce glitchyness. see: ECO-230 */}

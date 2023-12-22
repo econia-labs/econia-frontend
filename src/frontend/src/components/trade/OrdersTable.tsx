@@ -339,7 +339,7 @@ export const OrdersTable: React.FC<{
         className={"w-full table-fixed" + (className ? ` ${className}` : "")}
       >
         <thead className="sticky top-0 h-[30px] bg-neutral-800 bg-noise">
-          <tr>
+          <tr className="h-[30px]">
             {table.getFlatHeaders().map((header) => (
               <th
                 className="cursor-pointer select-none text-left font-roboto-mono text-xs font-normal uppercase tracking-[0.24px] text-neutral-500 transition-all hover:text-blue"
@@ -358,13 +358,14 @@ export const OrdersTable: React.FC<{
               </th>
             ))}
           </tr>
-        </thead>
-        <tbody>
-          <tr className="sticky top-[30px] bg-neutral-800 bg-noise md:top-[30px]">
-            <td colSpan={11} className="px-0 pb-[6.53px] pt-0 md:pt-0">
-              <div className="h-[1px] bg-neutral-600"></div>
+          <tr>
+            <td className="p-0">
+              <div className="h-[1px] w-screen bg-neutral-600"></div>
             </td>
           </tr>
+        </thead>
+
+        <tbody>
           {!connected ? (
             <></>
           ) : isLoading || !data ? (
