@@ -35,7 +35,8 @@ const Row: React.FC<{
 }> = ({ level, type, highestSize, marketData, updatedLevel }) => {
   const { setPrice } = useOrderEntry();
   const [flash, setFlash] = useState<"flash-red" | "flash-green" | "">("");
-  const { focus, setFocus } = useOrderBookData(marketData);
+  const { focus, setFocus, totalAskSize, totalBidSize, calcPreviousSize } =
+    useOrderBookData(marketData);
 
   useEffect(() => {
     if (updatedLevel == undefined) {
@@ -53,7 +54,7 @@ const Row: React.FC<{
     price: level.price,
     marketData,
   }).toNumber();
-
+  const previousSize = calcPreviousSize(type, price);
   const size = toDecimalSize({
     size: level.size,
     marketData: marketData,
@@ -138,8 +139,24 @@ const Row: React.FC<{
           }`}
           // dynamic taillwind?
 
-          style={{ width: `${(100 * level.size) / highestSize}%` }}
-        ></div>
+          style={{
+            width: `${
+              (100 * previousSize) /
+              (type === "ask" ? totalAskSize : totalBidSize)
+            }%`,
+          }}
+        >
+          <div
+            className={`absolute  z-0 h-full ${
+              type === "ask"
+                ? "left-0 bg-red/30 lg:left-[unset] lg:right-0"
+                : "right-0 bg-green/30"
+            }`}
+            // dynamic taillwind?
+
+            style={{ width: `${(100 * size.toNumber()) / previousSize}%` }}
+          ></div>
+        </div>
         <div
           className={`mask pointer-events-none absolute left-0 top-0 w-full bg-white/[0.1] ${
             (focus.side === "ask" && type === "ask" && price <= focus.price) ||
