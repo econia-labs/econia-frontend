@@ -215,7 +215,7 @@ export function OrderbookTable({
   return (
     <div className="flex grow flex-col">
       {/* title row */}
-      <div className="hidden h-[60px] w-[254px] flex-col justify-center border-b border-neutral-600 pl-[17.03px] pr-[11.27px] lg:flex">
+      <div className="hidden h-[60px] w-[252px] flex-col justify-center border-b border-neutral-600 pl-[17.03px] pr-[11.27px] lg:flex">
         <div className="flex justify-between">
           <p className="font-jost text-base font-bold text-white">Order Book</p>
           {/* select */}
