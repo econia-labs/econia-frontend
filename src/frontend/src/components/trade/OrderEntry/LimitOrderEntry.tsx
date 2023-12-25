@@ -20,6 +20,7 @@ import { TypeTag } from "@/utils/TypeTag";
 
 import { OrderEntryInfo } from "./OrderEntryInfo";
 import { OrderEntryInputWrapper } from "./OrderEntryInputWrapper";
+import { formatDecimal } from "@/utils/formatter";
 type LimitFormValues = {
   price: string | undefined;
   size: string;
@@ -273,9 +274,10 @@ export const LimitOrderEntry: React.FC<{
       const maxSize = balance?.quote_available / Number(watchPrice);
       setValue(
         "size",
-        `${Number(
-          Number((percent / 100) * maxSize).toFixed(baseDecimalPlace),
-        )}`,
+        formatDecimal(Number((percent / 100) * maxSize), baseDecimalPlace),
+        // `${Number(
+        //   Number((percent / 100) * maxSize).toFixed(baseDecimalPlace),
+        // )}`,
       );
     }
     if (side === "sell") {
@@ -284,11 +286,15 @@ export const LimitOrderEntry: React.FC<{
       }
       setValue(
         "size",
-        `${Number(
-          Number((balance.base_available * percent) / 100).toFixed(
-            baseDecimalPlace,
-          ),
-        )}`,
+        formatDecimal(
+          Number((balance.base_available * percent) / 100),
+          baseDecimalPlace,
+        ),
+        // `${Number(
+        //   Number((balance.base_available * percent) / 100).toFixed(
+        //     baseDecimalPlace,
+        //   ),
+        // )}`,
       );
     }
   }, [percent, balance, side, watchPrice]);

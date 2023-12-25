@@ -102,3 +102,9 @@ export function shorten(str: string | undefined, maxLen = 10) {
   if (str.length <= maxLen) return str;
   return str.substr(0, maxLen) + "..";
 }
+
+export function formatDecimal(value: number | string, decimal: number = 2) {
+  return Number(
+    Math.floor(Number(value) * 10 ** decimal) / 10 ** decimal,
+  ).toString();
+}
