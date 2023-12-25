@@ -212,7 +212,7 @@ export const TradeHistoryTable: React.FC<{
         </tbody>
       </table>
       {!isLoading && data && data.length === 0 && (
-        <div className="flex h-[calc(100%-69.52px)] flex-col items-center justify-center font-roboto-mono text-[10px] font-light uppercase tracking-[0.2px] text-neutral-500">
+        <div className="flex h-[calc(100%-69.52px)] flex-col items-center justify-center font-roboto-mono text-xs font-light uppercase tracking-[0.2px] text-neutral-500">
           No orders to show
         </div>
       )}
