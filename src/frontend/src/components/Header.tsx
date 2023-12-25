@@ -31,7 +31,7 @@ const NavItem: React.FC<
         href={href}
         target="_blank"
         rel="noreferrer"
-        className={`cursor-pointer font-roboto-mono text-xl font-medium uppercase tracking-wide transition-all md:text-lg ${
+        className={`cursor-pointer font-roboto-mono text-xl font-medium uppercase tracking-wide transition-all lg:text-lg ${
           active ? "text-neutral-100" : "text-neutral-500 hover:text-blue"
         } ${className ? className : ""}`}
       >
@@ -43,7 +43,7 @@ const NavItem: React.FC<
   return (
     <Link
       href={href}
-      className={`cursor-pointer font-roboto-mono text-xl font-medium  uppercase tracking-wide transition-all md:text-lg ${
+      className={`cursor-pointer font-roboto-mono text-xl font-medium  uppercase tracking-wide transition-all lg:text-lg ${
         active ? "text-neutral-100" : "text-neutral-500 hover:text-blue"
       }`}
     >
@@ -184,18 +184,26 @@ const SlidingMenu = ({
           );
         })}
          */}
-        <NavItem href="/market" active={router.pathname.startsWith("/market")}>
+        <NavItem
+          href="/market"
+          active={router.pathname.startsWith("/market")}
+          className=""
+        >
           Trade
         </NavItem>
         {/* <NavItemDivider /> */}
-        <NavItem href="/faucet" active={router.pathname.startsWith("/faucet")}>
+        <NavItem
+          href="/faucet"
+          active={router.pathname.startsWith("/faucet")}
+          className=""
+        >
           Faucet
         </NavItem>
         {/* <NavItemDivider /> */}
         <NavItem
-          className="flex items-center gap-1"
           href="https://econia.dev"
-          external
+          className="flex items-center gap-1"
+          external={true}
         >
           <p>Docs</p>
           <ArrowRightIcon className="inline-block h-3 w-3 -rotate-45" />

@@ -255,13 +255,13 @@ export const LimitOrderEntry: React.FC<{
     }
     if (side === "buy") {
       return (
-        Number(watchPrice) * Number(watchSize) <
+        Number(watchPrice) * Number(watchSize) <=
         Number(balance?.quote_available)
       );
     }
 
     if (side === "sell") {
-      return Number(watchSize) < Number(balance?.base_available);
+      return Number(watchSize) <= Number(balance?.base_available);
     }
   }, [balance, watchSize, watchPrice]); //INSUFFICIENT
 
