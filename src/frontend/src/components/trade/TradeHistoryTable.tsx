@@ -116,99 +116,106 @@ export const TradeHistoryTable: React.FC<{
   });
 
   return (
-    <table className={`w-full table-fixed ${className || ""}`}>
-      <thead className="sticky top-0 h-[30px] bg-neutral-800 bg-noise md:top-[30px]">
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr
-            className="text-left font-roboto-mono text-sm text-neutral-500 [&>th]:font-light"
-            key={headerGroup.id}
-          >
-            {headerGroup.headers.map((header, i) => (
-              <th
-                className={`text-xs ${
-                  i === 0
-                    ? "pl-[16px] text-left md:pl-[17.03px]"
-                    : i === 1
-                    ? "pl-[13.03px] text-left"
-                    : "pr-[12.61px] text-right"
-                } w-full`}
-                key={header.id}
-              >
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext(),
-                    )}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody>
-        <tr className="sticky top-[30px] bg-neutral-800 bg-noise md:top-[60px]">
-          <td colSpan={7} className="px-0 pb-[6.53px] pt-0 md:pt-0">
-            <div className="h-[1px] bg-neutral-600"></div>
-          </td>
-        </tr>
-        {isLoading || !data ? (
-          <>
-            {/* temporarily removing skeletong to help UX and reduce glitchyness. see: ECO-230 */}
-            <tr>
-              {table.getAllColumns().map((column, i) => (
-                <td
+    <>
+      <table className={`w-full table-fixed ${className || ""}`}>
+        <thead className="sticky top-0 h-[30px] bg-neutral-800 bg-noise md:top-[30px]">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr
+              className="text-left font-roboto-mono text-sm text-neutral-500 [&>th]:font-light"
+              key={headerGroup.id}
+            >
+              {headerGroup.headers.map((header, i) => (
+                <th
                   className={`text-xs ${
                     i === 0
                       ? "pl-[16px] text-left md:pl-[17.03px]"
                       : i === 1
                       ? "pl-[13.03px] text-left"
-                      : "pr-4 text-right"
-                  }`}
-                  key={column.id}
+                      : "pr-[12.61px] text-right"
+                  } w-full`}
+                  key={header.id}
                 >
-                  <div className={"px-1"}>
-                    <Skeleton />
-                  </div>
-                </td>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                </th>
               ))}
             </tr>
-          </>
-        ) : data.length === 0 ? (
-          <tr>
-            <td colSpan={7}>
-              <div className="flex h-[150px] flex-col items-center justify-center text-sm font-light uppercase text-neutral-500">
-                No orders to show
-              </div>
+          ))}
+        </thead>
+        <tbody>
+          <tr className="sticky top-[30px] bg-neutral-800 bg-noise md:top-[60px]">
+            <td colSpan={7} className="px-0 pb-[6.53px] pt-0 md:pt-0">
+              <div className="h-[1px] bg-neutral-600"></div>
             </td>
           </tr>
-        ) : (
-          table.getRowModel().rows.map((row) => (
-            <tr
-              className="text-left font-roboto-mono text-sm uppercase text-white [&>th]:font-light"
-              key={row.id}
-            >
-              {row.getVisibleCells().map((cell, i) => (
-                <td
-                  className={`align-bottom text-xs ${
-                    i === 0
-                      ? `pl-[16px] text-left md:pl-[17.03px] ${
-                          cell.row.original.maker_side
-                            ? "text-green"
-                            : "text-red"
-                        }`
-                      : i === 1
-                      ? "pl-[13.03px] text-left"
-                      : "pr-4 text-right"
-                  }`}
-                  key={cell.id}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
+          {isLoading || !data ? (
+            <>
+              {/* temporarily removing skeletong to help UX and reduce glitchyness. see: ECO-230 */}
+              <tr>
+                {table.getAllColumns().map((column, i) => (
+                  <td
+                    className={`text-xs ${
+                      i === 0
+                        ? "pl-[16px] text-left md:pl-[17.03px]"
+                        : i === 1
+                        ? "pl-[13.03px] text-left"
+                        : "pr-4 text-right"
+                    }`}
+                    key={column.id}
+                  >
+                    <div className={"px-1"}>
+                      <Skeleton />
+                    </div>
+                  </td>
+                ))}
+              </tr>
+            </>
+          ) : data.length === 0 ? (
+            <tr>
+              <td colSpan={7}>
+                {/* <div className="flex h-[calc(100%-32px)] flex-col items-center justify-center font-roboto-mono text-[10px] font-light uppercase tracking-[0.2px] text-neutral-500">
+                  No orders to show
+                </div> */}
+              </td>
             </tr>
-          ))
-        )}
-      </tbody>
-    </table>
+          ) : (
+            table.getRowModel().rows.map((row) => (
+              <tr
+                className="text-left font-roboto-mono text-sm uppercase text-white [&>th]:font-light"
+                key={row.id}
+              >
+                {row.getVisibleCells().map((cell, i) => (
+                  <td
+                    className={`align-bottom text-xs ${
+                      i === 0
+                        ? `pl-[16px] text-left md:pl-[17.03px] ${
+                            cell.row.original.maker_side
+                              ? "text-green"
+                              : "text-red"
+                          }`
+                        : i === 1
+                        ? "pl-[13.03px] text-left"
+                        : "pr-4 text-right"
+                    }`}
+                    key={cell.id}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+      {!isLoading && data && data.length === 0 && (
+        <div className="flex h-[calc(100%-69.52px)] flex-col items-center justify-center font-roboto-mono text-[10px] font-light uppercase tracking-[0.2px] text-neutral-500">
+          No orders to show
+        </div>
+      )}
+    </>
   );
 };
