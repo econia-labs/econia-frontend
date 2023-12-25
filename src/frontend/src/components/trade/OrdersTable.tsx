@@ -296,7 +296,7 @@ export const OrdersTable: React.FC<{
                 cancelOrder(orderInfo);
               }}
             >
-              Cancel
+              CANCEL
             </button>
           );
         },
