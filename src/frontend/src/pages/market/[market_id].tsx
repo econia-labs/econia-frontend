@@ -394,7 +394,7 @@ export default function Market({ allMarketData, marketData }: Props) {
                 />
               )}
               {tab === "trade-histories" && (
-                <div className="scrollbar-none h-full overflow-auto">
+                <div className="h-full overflow-hidden">
                   <TradeHistoryTable
                     marketData={marketData}
                     marketId={marketData?.market_id}
@@ -428,8 +428,8 @@ export default function Market({ allMarketData, marketData }: Props) {
                 onDepositWithdrawClick={() => setDepositWithdrawModalOpen(true)}
               />
             </div>
-            <div className="scrollbar-none mt-3 h-full max-h-full grid-rows-none  overflow-auto border border-neutral-600">
-              <p className="sticky top-0 flex h-[30px] items-end bg-neutral-800 bg-noise pl-[17.03px] font-jost font-bold text-white">
+            <div className="scrollbar-none mt-3 h-full max-h-full grid-rows-none overflow-hidden border border-neutral-600">
+              <p className=" top-0 flex h-[30px] items-end bg-neutral-800 bg-noise pl-[17.03px] font-jost font-bold text-white">
                 Trade History
               </p>
               <TradeHistoryTable
