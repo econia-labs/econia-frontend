@@ -394,7 +394,7 @@ export default function Market({ allMarketData, marketData }: Props) {
                 />
               )}
               {tab === "trade-histories" && (
-                <div className="scrollbar-none h-full overflow-auto overflow-x-hidden">
+                <div className="h-full overflow-hidden">
                   <TradeHistoryTable
                     marketData={marketData}
                     marketId={marketData?.market_id}
@@ -432,12 +432,10 @@ export default function Market({ allMarketData, marketData }: Props) {
               <p className=" top-0 flex h-[30px] items-end bg-neutral-800 bg-noise pl-[17.03px] font-jost font-bold text-white">
                 Trade History
               </p>
-              <div className="w-full overflow-auto overflow-x-hidden">
-                <TradeHistoryTable
-                  marketData={marketData}
-                  marketId={marketData?.market_id}
-                />
-              </div>
+              <TradeHistoryTable
+                marketData={marketData}
+                marketId={marketData?.market_id}
+              />
             </div>
           </div>
           <MobileOrderEntry
