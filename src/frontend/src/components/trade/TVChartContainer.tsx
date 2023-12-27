@@ -417,13 +417,13 @@ export const TVChartContainer: React.FC<
 
   return (
     <div className="relative w-full">
-      <div ref={ref} className="relative h-full w-full"></div>
-      <div className="absolute flex h-full w-full animate-fadeIn items-center justify-center text-center font-roboto-mono text-sm font-light leading-6 text-neutral-500 opacity-0 delay-[2000]">
+      <div className="absolute left-0 top-0 flex h-full w-full animate-fadeIn items-center justify-center text-center font-roboto-mono text-sm font-light leading-6 text-neutral-500 opacity-0 delay-[2000]">
         <div>
           The mobile wallet you are using does not support candlesticks. Please
           use a different mobile wallet
         </div>
       </div>
+      <div ref={ref} className="relative h-full w-full"></div>
     </div>
   );
 };
