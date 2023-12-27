@@ -69,13 +69,6 @@ export const MarketAccountCard: React.FC<{
   const quoteAssetIcon = marketAccountData
     ? quoteTokenInfo?.logo_url
     : DEFAULT_TOKEN_ICON;
-  console.log(
-    coinListClient.getCoinInfoByFullName(
-      TypeTag.fromString(
-        `${quote_account_address}::${quote_module_name}::${quote_struct_name}`,
-      ).toString(),
-    ),
-  );
 
   const market: ApiMarket = {
     market_id: marketID,
