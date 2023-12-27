@@ -133,7 +133,7 @@ export const TradeHistoryTable: React.FC<{
                         : i === 1
                         ? "pl-[13.03px] text-left"
                         : "pr-[12.61px] text-right"
-                    } h-[30px] w-full pb-[10px] pt-1`}
+                    } h-[30px] w-full pb-[10px] pt-[3px]`}
                     key={header.id}
                   >
                     {header.isPlaceholder
