@@ -217,7 +217,12 @@ export function OrderbookTable({
       {/* Large screen header */}
       <div className="hidden h-[60px] w-[252px] flex-col justify-center pl-[17.03px] pr-[11.27px] lg:flex">
         <div className="flex justify-between">
-          <p className="font-jost text-base font-bold text-white">Order Book</p>
+          <div className="flex h-[30px] items-center py-1 pt-2">
+            <p className="font-jost text-base font-bold leading-[30px] text-white">
+              Order Book
+            </p>
+          </div>
+
           {/* select */}
           {/* TODO: SHOW WHEN API IS UP */}
           {/* <Listbox value={precision} onChange={setPrecision}>
@@ -243,7 +248,7 @@ export function OrderbookTable({
             </div>
           </Listbox> */}
         </div>
-        <div className="mt-1 flex justify-between">
+        <div className="flex justify-between pb-[10px] pt-1">
           <p className="font-roboto-mono text-xs font-light text-neutral-500">
             PRICE <TokenSymbol symbol={marketData.quote.symbol} />
           </p>
@@ -253,8 +258,8 @@ export function OrderbookTable({
         </div>
       </div>
       {/* Mobile screen header */}
-      <div className="flex h-[30px] lg:mb-2 lg:hidden">
-        <div className="flex w-[50%] justify-between px-3 pl-4 pt-[7px] lg:px-3 lg:pt-[12px]">
+      <div className="flex h-[30px] pb-[10px] pt-1 lg:mb-2 lg:hidden">
+        <div className="flex w-[50%] justify-between px-3 pl-4 lg:px-3 lg:pt-[12px]">
           <p className="whitespace-nowrap font-roboto-mono text-xs text-neutral-500">
             BID <TokenSymbol symbol={marketData.quote?.symbol} />
           </p>
@@ -262,7 +267,7 @@ export function OrderbookTable({
             AMOUNT <TokenSymbol symbol={marketData.base.symbol} />
           </p>
         </div>
-        <div className="flex w-[50%] justify-between px-3 pl-4 pt-[7px] lg:px-3 lg:pt-[12px]">
+        <div className="flex w-[50%] justify-between px-3 pl-4 lg:px-3 lg:pt-[12px]">
           <p className="whitespace-nowrap font-roboto-mono text-xs text-neutral-500">
             ASK <TokenSymbol symbol={marketData.quote?.symbol} />
           </p>
