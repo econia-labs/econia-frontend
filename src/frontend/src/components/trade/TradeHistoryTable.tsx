@@ -122,7 +122,7 @@ export const TradeHistoryTable: React.FC<{
           <>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr
-                className="text-left font-roboto-mono text-sm text-neutral-500 [&>th]:font-light"
+                className="text-left font-roboto-mono text-sm text-neutral-500 [&>th]:font-light "
                 key={headerGroup.id}
               >
                 {headerGroup.headers.map((header, i) => (
@@ -133,7 +133,7 @@ export const TradeHistoryTable: React.FC<{
                         : i === 1
                         ? "pl-[13.03px] text-left"
                         : "pr-[12.61px] text-right"
-                    } h-[30px] w-full`}
+                    } h-[30px] w-full pb-[10px] pt-1`}
                     key={header.id}
                   >
                     {header.isPlaceholder

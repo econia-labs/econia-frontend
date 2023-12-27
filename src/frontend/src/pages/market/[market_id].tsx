@@ -357,7 +357,7 @@ export default function Market({ allMarketData, marketData }: Props) {
             </div>
             <div className="flex h-[260px] max-w-full flex-col border border-neutral-600">
               <div className="flex h-[30px] items-center gap-4 pl-4 pt-2 lg:pl-0 lg:pt-[6px]">
-                <div className="flex gap-4 py-1 text-base lg:py-3 lg:pl-[17.19px]">
+                <div className="flex gap-4 py-1 text-base leading-[30px] lg:py-3 lg:pl-[17.19px]">
                   <p
                     onClick={() => setTab("orders")}
                     className={`cursor-pointer font-jost font-bold ${
@@ -388,10 +388,13 @@ export default function Market({ allMarketData, marketData }: Props) {
               </div>
 
               {tab === "orders" && (
-                <OrdersTable
-                  market_id={marketData.market_id}
-                  marketData={marketData}
-                />
+                // <div className="pr-[1px]">
+                <div className="h-full w-full">
+                  <OrdersTable
+                    market_id={marketData.market_id}
+                    marketData={marketData}
+                  />
+                </div>
               )}
               {tab === "trade-histories" && (
                 <div className="h-full overflow-hidden">
@@ -429,7 +432,7 @@ export default function Market({ allMarketData, marketData }: Props) {
               />
             </div>
             <div className="scrollbar-none mt-3 h-full max-h-full grid-rows-none overflow-hidden border border-neutral-600">
-              <p className=" top-0 flex h-[30px] items-end bg-neutral-800 bg-noise pl-[17.03px] font-jost font-bold text-white">
+              <p className=" top-0 flex h-[30px] items-end bg-neutral-800 bg-noise pl-[17.03px] font-jost font-bold text-white ">
                 Trade History
               </p>
               <TradeHistoryTable

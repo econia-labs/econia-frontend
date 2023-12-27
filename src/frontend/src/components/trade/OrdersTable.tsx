@@ -318,7 +318,7 @@ export const OrdersTable: React.FC<{
   });
 
   return (
-    <div className="scrollbar-none w-full grow overflow-auto">
+    <div className="scrollbar-none h-full w-full grow overflow-auto">
       <BaseModal
         isOpen={isModalOpen}
         onClose={closeModal}
@@ -339,10 +339,10 @@ export const OrdersTable: React.FC<{
         className={"w-full table-fixed" + (className ? ` ${className}` : "")}
       >
         <thead className="sticky top-0 h-[30px] bg-neutral-800 bg-noise">
-          <tr className="h-[30px]">
+          <tr className=" h-[30px]">
             {table.getFlatHeaders().map((header) => (
               <th
-                className="cursor-pointer select-none text-left font-roboto-mono text-xs font-normal uppercase tracking-[0.24px] text-neutral-500 transition-all hover:text-blue"
+                className="cursor-pointer select-none pb-[7px] text-left font-roboto-mono text-xs font-normal uppercase leading-[18px] tracking-[0.24px] text-neutral-500 transition-all hover:text-blue"
                 key={header.id}
                 onClick={header.column.getToggleSortingHandler()}
                 style={{
