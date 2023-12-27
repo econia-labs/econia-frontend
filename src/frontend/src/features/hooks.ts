@@ -21,6 +21,25 @@ export const useOrderBookData = (marketData: ApiMarket) => {
   const orderBook = useAppSelector((state) => state.orderBook);
   const highestBid = orderBook.bids[0];
   const lowestAsk = orderBook.asks[0];
+  const totalBidSize = orderBook.bids.reduce((a, b) => {
+    return (
+      a +
+      toDecimalSize({
+        size: b.size,
+        marketData: marketData,
+      }).toNumber()
+    );
+  }, 0);
+
+  const totalAskSize = orderBook.asks.reduce((a, b) => {
+    return (
+      a +
+      toDecimalSize({
+        size: b.size,
+        marketData: marketData,
+      }).toNumber()
+    );
+  }, 0);
 
   const dispatch = useDispatch();
   const sumBaseF = (side: "ask" | "bid", price: number) => {
@@ -110,6 +129,15 @@ export const useOrderBookData = (marketData: ApiMarket) => {
     highestBid,
     lowestAsk,
     focus: orderBook.focus,
+    totalBidSize,
+    totalAskSize,
     setFocus: _setFocus,
+    calcPreviousSize: (side: "ask" | "bid", price: number) => {
+      const totalBase =
+        side === "ask"
+          ? orderBook.asks.reduce(sumBaseF("ask", price), 0)
+          : orderBook.bids.reduce(sumBaseF("bid", price), 0);
+      return totalBase;
+    },
   };
 };
