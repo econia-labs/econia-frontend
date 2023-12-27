@@ -51,20 +51,23 @@ export const MarketAccountCard: React.FC<{
   const { coinListClient } = useAptos();
 
   const DEFAULT_TOKEN_ICON = "/tokenImages/default.svg";
+  const baseTokenInfo = coinListClient.getCoinInfoByFullName(
+    TypeTag.fromString(
+      `${base_account_address}::${base_module_name}::${base_struct_name}`,
+    ).toString(),
+  );
+
+  const quoteTokenInfo = coinListClient.getCoinInfoByFullName(
+    TypeTag.fromString(
+      `${quote_account_address}::${quote_module_name}::${quote_struct_name}`,
+    ).toString(),
+  );
 
   const baseAssetIcon = marketAccountData
-    ? coinListClient.getCoinInfoByFullName(
-        TypeTag.fromString(
-          `${base_account_address}::${base_module_name}::${base_struct_name}`,
-        ).toString(),
-      )?.logo_url
+    ? baseTokenInfo?.logo_url
     : DEFAULT_TOKEN_ICON;
   const quoteAssetIcon = marketAccountData
-    ? coinListClient.getCoinInfoByFullName(
-        TypeTag.fromString(
-          `${quote_account_address}::${quote_module_name}::${quote_struct_name}`,
-        ).toString(),
-      )?.logo_url
+    ? quoteTokenInfo?.logo_url
     : DEFAULT_TOKEN_ICON;
 
   const market: ApiMarket = {
@@ -119,7 +122,8 @@ export const MarketAccountCard: React.FC<{
                 className="ml-[27.42px] text-left text-xs uppercase text-neutral-500"
                 onClick={toggleExpanded}
               >
-                Native | Layerzero {/** TODO */}
+                {baseTokenInfo?.source || "native"} |{" "}
+                {quoteTokenInfo?.source || "LAYERZERO"} {/** TODO */}
                 {/* <ChevronDownIcon
                   className={`inline-block h-4 w-4 text-center duration-150 ${
                     expanded && "rotate-180"
