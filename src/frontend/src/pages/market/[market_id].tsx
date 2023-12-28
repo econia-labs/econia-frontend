@@ -19,21 +19,22 @@ import { useOrderBook } from "@/hooks/useOrderbook";
 import type { ApiMarket } from "@/types/api";
 import { getAllMarket } from "@/utils/helpers";
 
-import {
-  type ResolutionString,
-  type ThemeName,
-} from "../../../public/static/charting_library";
 let TVChartContainer: undefined | any = undefined;
 
-if (true) {
-  TVChartContainer = dynamic(
-    () =>
-      import("@/components/trade/TVChartContainer").then(
-        (mod) => mod.TVChartContainer,
-      ),
-    { ssr: false },
-  );
-}
+(async () => {
+  try {
+    const a = require("../../../public/static/charting_library");
+    TVChartContainer = dynamic(
+      () =>
+        import("@/components/trade/TVChartContainer").then(
+          (mod) => mod.TVChartContainer,
+        ),
+      { ssr: false },
+    );
+  } catch (error) {
+    console.error("🚀 ~ file: [market_id].tsx:49 ~ error:", error);
+  }
+})();
 
 type Props = {
   marketData: ApiMarket;
@@ -305,7 +306,7 @@ export default function Market({ allMarketData, marketData }: Props) {
   const defaultTVChartProps = useMemo(() => {
     return {
       symbol: `${marketData?.name ?? ""}`,
-      interval: "1" as ResolutionString,
+      interval: "1",
       datafeedUrl: "https://api.coingecko.com",
       libraryPath: "/static/charting_library/",
       clientId: "pontem.exchange",
@@ -313,7 +314,7 @@ export default function Market({ allMarketData, marketData }: Props) {
       fullscreen: false,
       autosize: true,
       studiesOverrides: {},
-      theme: "Dark" as ThemeName,
+      theme: "Dark",
       // antipattern if we render market not found? need ! for typescript purposes
       selectedMarket: marketData as ApiMarket,
       allMarketData: allMarketData as ApiMarket[],

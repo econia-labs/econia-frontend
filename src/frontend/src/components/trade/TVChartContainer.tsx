@@ -19,20 +19,26 @@ import {
   parseFullSymbol,
 } from "@/utils/helpers";
 
-import {
-  type Bar,
-  type ChartingLibraryWidgetOptions,
-  type DatafeedConfiguration,
-  type IBasicDataFeed,
-  type IChartingLibraryWidget,
-  type LibrarySymbolInfo,
-  type ResolutionString,
-  type SearchSymbolResultItem,
+let chartModule: any = {} as any;
+(() => {
+  try {
+    chartModule = require("../../../public/static/charting_library");
+  } catch {}
+})();
+let {
+  Bar,
+  ChartingLibraryWidgetOptions,
+  DatafeedConfiguration,
+  IBasicDataFeed,
+  IChartingLibraryWidget,
+  LibrarySymbolInfo,
+  ResolutionString,
+  SearchSymbolResultItem,
   SeriesFormat,
-  type Timezone,
+  Timezone,
   VisiblePlotsSet,
   widget,
-} from "../../../public/static/charting_library";
+} = chartModule;
 
 const DAY_BY_RESOLUTION: { [key: string]: string } = {
   "1D": "86400",
