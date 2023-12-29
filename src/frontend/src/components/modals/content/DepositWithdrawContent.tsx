@@ -153,9 +153,9 @@ const DepositWithdrawForm: React.FC<{
 
   return (
     <>
-      {!isRegistered && (
+      {/* {!isRegistered && (
         <div className="fixed inset-0 z-40 bg-black bg-opacity-60 backdrop-blur-sm" />
-      )}
+      )} */}
 
       <div className="w-full">
         <SelectCoinInput
