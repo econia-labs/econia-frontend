@@ -21,9 +21,9 @@ import { getAllMarket } from "@/utils/helpers";
 
 let TVChartContainer: undefined | any = undefined;
 
-(async () => {
+(() => {
   try {
-    const a = require("../../../public/static/charting_library");
+    require("../../../public/static/charting_library");
     TVChartContainer = dynamic(
       () =>
         import("@/components/trade/TVChartContainer").then(
@@ -32,7 +32,7 @@ let TVChartContainer: undefined | any = undefined;
       { ssr: false },
     );
   } catch (error) {
-    console.error("🚀 ~ file: [market_id].tsx:49 ~ error:", error);
+    //nothing
   }
 })();
 
@@ -306,16 +306,6 @@ export default function Market({ allMarketData, marketData }: Props) {
   const defaultTVChartProps = useMemo(() => {
     return {
       symbol: `${marketData?.name ?? ""}`,
-      interval: "1",
-      datafeedUrl: "https://api.coingecko.com",
-      libraryPath: "/static/charting_library/",
-      clientId: "pontem.exchange",
-      userId: "public_user_id",
-      fullscreen: false,
-      autosize: true,
-      studiesOverrides: {},
-      theme: "Dark",
-      // antipattern if we render market not found? need ! for typescript purposes
       selectedMarket: marketData as ApiMarket,
       allMarketData: allMarketData as ApiMarket[],
     };
@@ -366,27 +356,24 @@ export default function Market({ allMarketData, marketData }: Props) {
                 <div className="flex gap-4 py-1 text-base lg:py-3 lg:pl-[17.19px]">
                   <p
                     onClick={() => setTab("orders")}
-                    className={`cursor-pointer font-jost font-bold ${
-                      tab === "orders" ? "text-white" : "text-neutral-600"
-                    }`}
+                    className={`cursor-pointer font-jost font-bold ${tab === "orders" ? "text-white" : "text-neutral-600"
+                      }`}
                   >
                     Orders
                   </p>
                   <p
                     onClick={() => setTab("order-book")}
-                    className={`cursor-pointer font-jost font-bold lg:hidden ${
-                      tab === "order-book" ? "text-white" : "text-neutral-600"
-                    }`}
+                    className={`cursor-pointer font-jost font-bold lg:hidden ${tab === "order-book" ? "text-white" : "text-neutral-600"
+                      }`}
                   >
                     Order Book
                   </p>
                   <p
                     onClick={() => setTab("trade-histories")}
-                    className={`cursor-pointer font-jost font-bold md:hidden ${
-                      tab === "trade-histories"
-                        ? "text-white"
-                        : "text-neutral-600"
-                    }`}
+                    className={`cursor-pointer font-jost font-bold md:hidden ${tab === "trade-histories"
+                      ? "text-white"
+                      : "text-neutral-600"
+                      }`}
                   >
                     Trade History
                   </p>
