@@ -356,24 +356,27 @@ export default function Market({ allMarketData, marketData }: Props) {
                 <div className="flex gap-4 py-1 text-base lg:py-3 lg:pl-[17.19px]">
                   <p
                     onClick={() => setTab("orders")}
-                    className={`cursor-pointer font-jost font-bold ${tab === "orders" ? "text-white" : "text-neutral-600"
-                      }`}
+                    className={`cursor-pointer font-jost font-bold ${
+                      tab === "orders" ? "text-white" : "text-neutral-600"
+                    }`}
                   >
                     Orders
                   </p>
                   <p
                     onClick={() => setTab("order-book")}
-                    className={`cursor-pointer font-jost font-bold lg:hidden ${tab === "order-book" ? "text-white" : "text-neutral-600"
-                      }`}
+                    className={`cursor-pointer font-jost font-bold lg:hidden ${
+                      tab === "order-book" ? "text-white" : "text-neutral-600"
+                    }`}
                   >
                     Order Book
                   </p>
                   <p
                     onClick={() => setTab("trade-histories")}
-                    className={`cursor-pointer font-jost font-bold md:hidden ${tab === "trade-histories"
-                      ? "text-white"
-                      : "text-neutral-600"
-                      }`}
+                    className={`cursor-pointer font-jost font-bold md:hidden ${
+                      tab === "trade-histories"
+                        ? "text-white"
+                        : "text-neutral-600"
+                    }`}
                   >
                     Trade History
                   </p>
