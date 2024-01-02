@@ -65,3 +65,23 @@ To generate a `GITHUB_ACCESS_TOKEN`:
 1. In the `Select scopes` section, click on `repo - Full control of private repositories` to select all repository-related options.
 1. Click `Generate token`
 1. Copy the generated token to your Vercel environment variables and name it `GITHUB_ACCESS_TOKEN`
+
+## General architectural
+```mermaid
+  graph TD;
+      ROOT-->SDK;
+      ROOT-->NextApp;
+      NextApp-->TradingView_Library_Submodule;
+      NextApp-->Pages;
+      Pages-->TradePage;
+      Pages-->SwapPage;
+      Pages-->FaucetPage;
+      TradePage-->Header;
+      TradePage-->StatsBar;
+      TradePage-->TradingViewChart;
+      TradePage-->DeepChart;
+      TradePage-->OrdersTable;
+      TradePage-->OrderBook;
+      TradePage-->OrderEntry;
+      TradePage-->TradeHistories;
+```
