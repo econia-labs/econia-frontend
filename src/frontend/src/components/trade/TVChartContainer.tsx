@@ -1,23 +1,10 @@
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef } from "react";
-import { white } from "tailwindcss/colors";
 
 import { API_URL } from "@/env";
-import {
-  type ApiBar,
-  type ApiMarket,
-  type ApiResolution,
-  type APITickerExchange,
-  type MarketData,
-} from "@/types/api";
-import { fromDecimalSize, toDecimalPrice, toDecimalSize } from "@/utils/econia";
-import {
-  generateSymbol,
-  getClientTimezone,
-  makeApiRequest,
-  makeApiRequestMin,
-  parseFullSymbol,
-} from "@/utils/helpers";
+import { type ApiMarket, type MarketData } from "@/types/api";
+import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
+import { getClientTimezone } from "@/utils/helpers";
 
 import {
   type Bar,
@@ -28,9 +15,7 @@ import {
   type LibrarySymbolInfo,
   type ResolutionString,
   type SearchSymbolResultItem,
-  SeriesFormat,
   type Timezone,
-  VisiblePlotsSet,
   widget,
 } from "../../../public/static/charting_library";
 
@@ -80,8 +65,6 @@ const resolutions = [
   "1D",
 ] as ResolutionString[];
 
-type DataStatus = "streaming" | "endofday" | "pulsed" | "delayed_streaming";
-
 const configurationData: DatafeedConfiguration = {
   supported_resolutions: resolutions,
   symbols_types: [
@@ -91,32 +74,6 @@ const configurationData: DatafeedConfiguration = {
     },
   ],
 };
-
-async function getAllCurrency() {
-  const data = await makeApiRequest(`api/v3/simple/supported_vs_currencies`);
-  return data && data.map((item: string) => item.toLowerCase());
-}
-// Obtains all symbols for all exchanges supported by CryptoCompare API
-async function getAllSymbols(exchange: string) {
-  // const data = await makeApiRequest(`api/v3/exchanges/${exchange}/tickers`);
-  // let allSymbols: any[] = [];
-  // const tickers = data?.tickers || [];
-  // const symbols = (tickers as APITickerExchange[]).map((item) => {
-  //   const symbol = generateSymbol(exchange, item.base, item.target);
-  //   return {
-  //     symbol: symbol.short,
-  //     full_name: symbol.full,
-  //     description: symbol.short,
-  //     exchange: exchange,
-  //     target: item.target,
-  //     type: "crypto",
-  //   };
-  // });
-
-  // allSymbols = [...allSymbols, ...symbols];
-  // return allSymbols;
-  return [];
-}
 
 type TVChartContainerProps = {
   selectedMarket: ApiMarket;

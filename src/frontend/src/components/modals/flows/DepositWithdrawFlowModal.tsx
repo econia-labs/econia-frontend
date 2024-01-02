@@ -5,7 +5,6 @@ import { useAptos } from "@/contexts/AptosContext";
 import { ECONIA_ADDR } from "@/env";
 import { type ApiMarket } from "@/types/api";
 
-// import { getAllMarket } from "@/utils/helpers";
 import { BaseModal } from "../BaseModal";
 import { DepositWithdrawContent } from "../content/DepositWithdrawContent";
 
@@ -26,18 +25,9 @@ export const DepositWithdrawFlowModal: React.FC<Props> = ({
   selectedMarket,
   isOpen,
   onClose,
-  allMarketData,
+  // allMarketData,
 }) => {
   const { account, aptosClient } = useAptos();
-
-  // TODO: change this after merge with ECO-319
-  // const { data: registeredMarkets } = useQuery(
-  //   ["userMarketAccounts", account?.address],
-  //   async () => {
-  //     // TODO pull registered markets from SDK (ECO-355)
-  //     return await getAllMarket();
-  //   },
-  // );
 
   const handleCheckRegisteredMarketAccount = useCallback(async () => {
     try {
@@ -68,19 +58,8 @@ export const DepositWithdrawFlowModal: React.FC<Props> = ({
     () => {
       // TODO pull registered markets from SDK (ECO-355)
       return handleCheckRegisteredMarketAccount();
-      // return MOCK_MARKETS;
     },
   );
-
-  // const isRegistered = useMemo(
-  //   () =>
-  //     // !!registeredMarkets &&
-  //     // registeredMarkets.some(
-  //     //   (market) => market.market_id === selectedMarket.market_id,
-  //     // ),
-
-  //   [handleCheckRegisteredMarketAccount],
-  // );
 
   return (
     <>

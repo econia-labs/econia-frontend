@@ -69,17 +69,8 @@ export const LimitOrderEntry: React.FC<{
   const watchPrice = watch("price", undefined);
 
   const watchSize = watch("size");
-  // const { selectedPrice } = useOrderBookData()
 
   const { price } = useOrderEntry();
-
-  // useEffect(() => {
-  //   if (last_price) {
-  //     if (watchPrice === "" || watchPrice === undefined) {
-  //       setValue("price", (last_price / 1000).toString());
-  //     }
-  //   }
-  // }, [last_price]);
 
   useEffect(() => {
     if (price) {
@@ -176,10 +167,6 @@ export const LimitOrderEntry: React.FC<{
       return;
     }
 
-    // const rawPrice = toDecimalPrice({
-    //   price: toRawCoinAmount(Number(price), marketData.quote.decimals),
-    //   marketData,
-    // });
     let rawPrice = fromDecimalPrice({
       price: Number(price),
       lotSize: marketData.lot_size,
@@ -187,8 +174,6 @@ export const LimitOrderEntry: React.FC<{
       baseCoinDecimals: marketData.base.decimals,
       quoteCoinDecimals: marketData.quote.decimals,
     });
-
-    // const rawPrice = toRawCoinAmount(price, marketData.quote.decimals);
 
     // validate tick size
     if (!rawPrice.modulo(marketData.tick_size).eq(0)) {
@@ -275,9 +260,6 @@ export const LimitOrderEntry: React.FC<{
       setValue(
         "size",
         formatDecimal(Number((percent / 100) * maxSize), baseDecimalPlace),
-        // `${Number(
-        //   Number((percent / 100) * maxSize).toFixed(baseDecimalPlace),
-        // )}`,
       );
     }
     if (side === "sell") {
@@ -290,11 +272,6 @@ export const LimitOrderEntry: React.FC<{
           Number((balance.base_available * percent) / 100),
           baseDecimalPlace,
         ),
-        // `${Number(
-        //   Number((balance.base_available * percent) / 100).toFixed(
-        //     baseDecimalPlace,
-        //   ),
-        // )}`,
       );
     }
   }, [percent, balance, side, watchPrice]);
@@ -349,18 +326,6 @@ export const LimitOrderEntry: React.FC<{
                 value: HI_PRICE,
                 message: "Max price is: " + HI_PRICE,
               },
-              // TODO: check that amount * size does not exceed quote currency
-              // balance for bids
-              // onChange: (e) => {
-              //   const size = Number(getValues("size"));
-              //   if (!isNaN(size) && !isNaN(e.target.value)) {
-              //     if()
-              //     const totalSize = (size * e.target.value).toFixed(4);
-              //     setValue("totalSize", totalSize);
-              //   } else {
-              //     setValue("totalSize", "");
-              //   }
-              // },
             })}
             className="w-full bg-transparent pb-3 pl-14 pr-14 pt-3 text-right font-roboto-mono text-xs font-light text-neutral-400 outline-none"
           />

@@ -297,8 +297,6 @@ export default function Market({ allMarketData, marketData }: Props) {
     isLoading: orderbookIsLoading,
   } = useOrderBook(marketData.market_id);
 
-  // const libraryPath = "/static/charting_library/";
-
   const defaultTVChartProps = useMemo(() => {
     return {
       symbol: `${marketData?.name ?? ""}`,
@@ -316,8 +314,6 @@ export default function Market({ allMarketData, marketData }: Props) {
       allMarketData: allMarketData as ApiMarket[],
     };
   }, [marketData, allMarketData]);
-
-  // const isNotSmDevice = useMediaQuery("(min-width: 768px)");
 
   if (!marketData)
     return (
@@ -473,8 +469,6 @@ export default function Market({ allMarketData, marketData }: Props) {
 }
 
 export const getStaticPaths: GetStaticPaths<PathParams> = async () => {
-  // const res = await fetch(new URL("markets", API_URL).href);
-  // const allMarketData: ApiMarket[] = await res.json();
   // TODO: Working API
   const allMarketData = await getAllMarket();
   const paths = allMarketData.map((market: ApiMarket) => ({

@@ -205,7 +205,6 @@ export const MarketOrderEntry: React.FC<{
       type: "entry_function_payload",
       ...payload,
     });
-    // toast('Success')
   };
 
   return (
