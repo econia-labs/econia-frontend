@@ -45,7 +45,6 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
 }) => {
   const [market, setMarket] = useState(selectedMarket);
   const [flowStep, setFlowStep] = useState(FlowStep.Closed);
-  // const [filteredMarkets, setFilteredMarkets] = useState<ApiMarket[]>([]);
   const [selectedMarketToRegister, setSelectedMarketToRegister] =
     useState<ApiMarket>();
   const { account } = useWallet();
@@ -70,7 +69,6 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
       toast.info("No unregistered markets available!");
       return;
     }
-    // setFlowStep(FlowStep.RegisterAccount);
     setFlowStep(FlowStep.MarketSelect);
   };
   const onMarketSelectClick = () => {
@@ -94,21 +92,6 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
       onClose();
       setFlowStep(FlowStep.Closed);
     }
-
-    // on modal action, we want to refetch the user's registered markets
-    // if (allMarketData && registeredMarkets) {
-    //   const filtered = allMarketData.filter(({ market_id }) => {
-    //     if (
-    //       registeredMarkets.find(
-    //         (registeredMarket) => registeredMarket.market_id === market_id,
-    //       )
-    //     ) {
-    //       return false;
-    //     }
-    //     return true;
-    //   });
-    //   setFilteredMarkets(filtered);
-    // }
 
     // TODO: refetch registered markets on chain registration OR flow step change
   }, [isOpen, flowStep, onClose, allMarketData, registeredMarkets]);

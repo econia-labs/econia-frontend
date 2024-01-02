@@ -217,11 +217,7 @@ export const TradeHistoryTable: React.FC<{
               </>
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={7}>
-                  {/* <div className="flex h-[calc(100%-32px)] flex-col items-center justify-center font-roboto-mono text-[10px] font-light uppercase tracking-[0.2px] text-neutral-500">
-                  No orders to show
-                </div> */}
-                </td>
+                <td colSpan={7}></td>
               </tr>
             ) : (
               table.getRowModel().rows.map((row) => (

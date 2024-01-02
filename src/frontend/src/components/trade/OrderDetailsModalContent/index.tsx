@@ -1,6 +1,5 @@
 import React, { ReactNode } from "react";
 
-import { Button } from "@/components/Button";
 import { TradeHistory, type ApiMarket, type ApiOrder } from "@/types/api";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 import bg from "../../../../public/bg.png";
@@ -44,21 +43,6 @@ const RowDetails: React.FC<RowDetailsProps> = ({
   </div>
 );
 
-function capitalizeFirstLetter(str: string | number | undefined) {
-  // Check if the input is a string
-  if (typeof str !== "string") {
-    return str;
-  }
-
-  // Check if the input string is not empty
-  if (str.length === 0) {
-    return str;
-  }
-
-  // Capitalize the first letter and concatenate it with the rest of the string
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
 export const OrderDetailsModalContent: React.FC<
   OrderDetailsModalContentProps
 > = ({
@@ -69,7 +53,7 @@ export const OrderDetailsModalContent: React.FC<
   cancelOrder,
   loading,
 }) => {
-  const { data, isLoading } = useQuery<TradeHistory>(
+  const { data } = useQuery<TradeHistory>(
     ["useOrderDetailsModalContent", orderDetails?.order_id],
     async () => {
       if (!orderDetails) return [];

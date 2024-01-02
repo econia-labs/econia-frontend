@@ -56,8 +56,6 @@ export interface MarketAccountData {
   markets: MarketData;
 }
 
-// get_all_market_account_ids_for_user
-
 export const AccountDetailsModal: React.FC<{
   selectedMarket?: ApiMarket;
   onClose: () => void;

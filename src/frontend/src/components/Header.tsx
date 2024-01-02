@@ -7,8 +7,6 @@ import React, {
   useState,
   type MouseEventHandler,
   type PropsWithChildren,
-  Fragment,
-  useEffect,
 } from "react";
 
 import { shorten } from "@/utils/formatter";
@@ -90,11 +88,6 @@ export function Header({
               />
             </Link>
             <div className="flex flex-1 items-center justify-center gap-6">
-              {/* TODO: Enable swap */}
-              {/* <NavItem href="/swap" active={router.pathname.startsWith("/swap")}>
-            Swap
-          </NavItem>
-          <NavItemDivider /> */}
               <NavItem
                 href="/market"
                 active={router.pathname.startsWith("/market")}
@@ -173,17 +166,6 @@ const SlidingMenu = ({
       }`}
     >
       <div className="mb-8  flex flex-col  items-start justify-between gap-[23.68px] px-[29.28px]">
-        {/* {menuList.map((item: MenuItem, index: number) => {
-          return (
-            <MenuItem
-              item={item}
-              key={index}
-              responsive={true}
-              toggleMenu={toggleMenu}
-            />
-          );
-        })}
-         */}
         <NavItem
           href="/market"
           active={router.pathname.startsWith("/market")}
@@ -191,7 +173,6 @@ const SlidingMenu = ({
         >
           Trade
         </NavItem>
-        {/* <NavItemDivider /> */}
         <NavItem
           href="/faucet"
           active={router.pathname.startsWith("/faucet")}
@@ -199,7 +180,6 @@ const SlidingMenu = ({
         >
           Faucet
         </NavItem>
-        {/* <NavItemDivider /> */}
         <NavItem
           href="https://econia.dev"
           className="flex items-center gap-1"
@@ -231,7 +211,6 @@ const SlidingMenu = ({
           </div>
         </ConnectedButton>
       </div>
-      {/* {account?.address ? <DisconnectWalletButton /> : <ConnectWalletButton />} */}
     </div>
   );
 };
@@ -242,7 +221,6 @@ const HeaderMobile = ({
   onWalletButtonClick,
 }: HeaderProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { account } = useWallet();
   const toggleMenu = () => {
     if (!isOpen) {
       window.scrollTo({

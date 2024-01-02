@@ -83,7 +83,6 @@ const DepositWithdrawForm: React.FC<{
     selectedCoin,
   );
 
-  // TODO add form validation (ECO-353)
   const [amount, setAmount] = useState<string>("");
   const { data: balance } = useCoinBalance(
     TypeTag.fromApiCoin(selectedCoin),

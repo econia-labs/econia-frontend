@@ -1,4 +1,3 @@
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import React from "react";
 
 import { Button } from "@/components/Button";
@@ -124,24 +123,7 @@ export const MarketAccountCard: React.FC<{
               >
                 {baseTokenInfo?.source || "native"} |{" "}
                 {quoteTokenInfo?.source || "LAYERZERO"} {/** TODO */}
-                {/* <ChevronDownIcon
-                  className={`inline-block h-4 w-4 text-center duration-150 ${
-                    expanded && "rotate-180"
-                  }`}
-                /> */}
               </div>
-              {/* expand container */}
-              {/* <div className="relative overflow-hidden">
-                <div
-                  className={`reveal-container ml-[27.42px] ${
-                    expanded && "revealed"
-                  } line-clamp-[10px] text-left text-[8px] text-neutral-500`}
-                >
-                  <div>MARKET ID: {marketID}</div>
-                  <div>LOT SIZE: {lot_size.toLocaleString()}</div>
-                  <div>TICK SIZE: {tick_size.toLocaleString()}</div>
-                </div>
-              </div> */}
             </div>
           </div>
         </div>
