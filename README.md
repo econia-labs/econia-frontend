@@ -1,6 +1,40 @@
 # Econia Frontend
 
-## Getting Started
+## Prequesites
+
+### 1 - Ensure that you clone the Github repositoty with SSH
+
+> *SKIP this part if you've already use SSH*
+
+Open Terminal and run the following commands:
+
+```bash
+git remote set-url origin git@github.com:econia-labs/econia-frontend.git
+```
+
+### 2 - Pull the TradingView submodule
+
+> *NOTE: Skip this part if you do not want to show the trading chart*
+
+The [TradingView](https://github.com/tradingview/charting_library) repository is the submodule of this repository which is used for displaying the trading chart of a specific martket and initialized at `src/frontend/public/static`.
+
+In order to make this repository to be able to use the `TradingView`, run the following commands in your terminal:
+
+```bash
+git submodule init
+git submodule update
+```
+
+In essence, adding the `TradingView` as a submodule is that you are cloning the `TradingView` repository and build it into static files. Therefore, you need to have the access rights to the `TradingView` repository.
+
+Moreover, the submodule path is set up to use SSH protocol with the `github.com` hostname so that you need to manage your SSH keys to make sure that you are using the correct configuration.
+
+#### If you have not had any SSH keys
+
+Follow this [guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) to generate one
+
+
+
 
 The [TradingView repository](https://github.com/tradingview/charting_library) is included as a submodule within this repository at `src/frontend/public/static`. Please note that it is a private repo, so you need to use a GitHub account with access to the TradingView repo.
 
