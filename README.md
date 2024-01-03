@@ -14,16 +14,9 @@ git remote set-url origin git@github.com:econia-labs/econia-frontend.git
 
 ### 2 - Pull the TradingView submodule
 
-> *NOTE: Skip this part if you do not want to show the trading chart*
+> *NOTE: Skip this part if you do not want to show the trading chart or have no access rights to the `TradingView` repository*
 
 The [TradingView](https://github.com/tradingview/charting_library) repository is the submodule of this repository which is used for displaying the trading chart of a specific martket and initialized at `src/frontend/public/static`.
-
-In order to make this repository to be able to use the `TradingView`, run the following commands in your terminal:
-
-```bash
-git submodule init
-git submodule update
-```
 
 In essence, adding the `TradingView` as a submodule is that you are cloning the `TradingView` repository and build it into static files. Therefore, you need to have the access rights to the `TradingView` repository.
 
@@ -33,19 +26,14 @@ Moreover, the submodule path is set up to use SSH protocol with the `github.com`
 
 Follow this [guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) to generate one
 
-
-
-
-The [TradingView repository](https://github.com/tradingview/charting_library) is included as a submodule within this repository at `src/frontend/public/static`. Please note that it is a private repo, so you need to use a GitHub account with access to the TradingView repo.
-
-- Pull the TradingView Submodule
-
-To run the project, you need to pull the TradingView repository by running the following commands:
+In order to make this repository to be able to use the `TradingView`, run the following commands in your terminal:
 
 ```bash
-git submodule init # only the first time
-git submodule update # only the first time
+git submodule init
+git submodule update
 ```
+
+## Installations
 
 - Navigate to the Frontend Folder
 
@@ -59,7 +47,7 @@ cd src/frontend
 pnpm i # pnpm is required
 ```
 
-Copy .env.example file
+- Copy .env.example file
 
 ```bash
 cp -R .env.example .env.local
