@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .scrollbar-none::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    display: none;
+  }
+
+  .reveal-container {
+    margin-top: -100%;
+    transition: all 0.4s;
+    transition-timing-function: ease-in-out;
+  }
+
+  .revealed {
+    margin-top: 0;
+  }
+
+  .flash-bg-once {
+    background-color: transparent;
+    transition: 0.5s linear background-color;
+  }
+
+  .flash-green {
+    transition: none;
+    @apply bg-green/50;
+  }
+
+  .flash-red {
+    transition: none;
+    @apply bg-red/50;
+  }
+
+  .add-new-account-bg {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.00) 0%, rgba(0, 0, 0, 0.67) 58.85%, rgba(0, 0, 0, 0.85) 76.56%, #000 100%);
+  }
+
+  @keyframes flash-bg {
+    to {
+      background-color: transparent;
+    }
+  }
+}
+
+@layer base {
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"] {
+    -webkit-appearance: none;
+    margin: 0;
+    -moz-appearance: textfield !important;
+  }
+}
