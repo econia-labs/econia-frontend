@@ -57,7 +57,7 @@ cp -R .env.example .env.local
 - Run the development server:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 ## Deploying on Vercel
