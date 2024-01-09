@@ -1,5 +1,6 @@
-import { ApiMarket } from "@/types/api";
 import BigNumber from "bignumber.js";
+
+import { type ApiMarket } from "@/types/api";
 
 const TEN = new BigNumber(10);
 

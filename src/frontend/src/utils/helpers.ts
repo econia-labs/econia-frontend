@@ -5,7 +5,11 @@ import { type ApiMarket } from "@/types/api";
 
 import { type Timezone } from "../../public/static/charting_library";
 
-// Makes requests to Coingecko API
+/**
+ * Make a request to Coingecko API
+ * @param path The API path to be called
+ * @returns The API response
+ */
 export async function makeApiRequest(path: string) {
   try {
     const response = await fetch(`https://api.coingecko.com/${path}`);
@@ -19,6 +23,11 @@ export async function makeApiRequest(path: string) {
   }
 }
 
+/**
+ * Retrieves all the markets
+ *
+ * @returns A list of markets
+ */
 export async function getAllMarket() {
   try {
     const res = await fetch(`${API_URL}/markets`);
@@ -59,6 +68,11 @@ export async function getAllMarket() {
   }
 }
 
+/**
+ * Make a request to CryptoCompare APIs
+ * @param path The API path to be called
+ * @returns The API response
+ */
 export async function makeApiRequestMin(path: string) {
   try {
     const response = await fetch(`https://min-api.cryptocompare.com/${path}`);
@@ -68,7 +82,14 @@ export async function makeApiRequestMin(path: string) {
   }
 }
 
-// Generates a symbol ID from a pair of the coins
+/**
+ * Generate a symbol ID from a pair of coins
+ *
+ * @param exchange
+ * @param fromSymbol The first coin of the pair
+ * @param toSymbol The second coin of the pair
+ * @returns The symbol of the pair
+ */
 export function generateSymbol(exchange: any, fromSymbol: any, toSymbol: any) {
   const short = `${fromSymbol}-${toSymbol}`;
   return {
@@ -77,7 +98,12 @@ export function generateSymbol(exchange: any, fromSymbol: any, toSymbol: any) {
   };
 }
 
-// Returns all parts of the symbol
+/**
+ * Returns all part of the symbol
+ *
+ * @param fullSymbol The full symbol of a pair
+ * @returns An object contains all parts
+ */
 export function parseFullSymbol(fullSymbol: string) {
   const match = fullSymbol.match(/^(\w+):(\w+)-(\w+)$/);
   if (!match) {
@@ -91,6 +117,10 @@ export function parseFullSymbol(fullSymbol: string) {
   };
 }
 
+/**
+ * Returns the client timezone
+ * @returns The timezone of client
+ */
 export function getClientTimezone(): Timezone {
   const timezones: { [key: string]: number } = {};
   timezones["America/New_York"] = -5;
