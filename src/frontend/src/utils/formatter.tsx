@@ -1,20 +1,30 @@
-import { type ReactElement } from "react";
-import Skeleton from "react-loading-skeleton";
-
 import { type PriceLevel } from "@/types/global";
 
+/**
+ * Returns the current applying language
+ *
+ * @returns The language symbol
+ */
 export const getLang = () => {
   return typeof window === "undefined"
     ? "en"
     : navigator.language || navigator.languages[0];
 };
 
+/**
+ * Return the notion of a number
+ * @param num The input number
+ * @returns The corresponding notion symbol of the given number
+ */
 export const plusMinus = (num: number | undefined): string => {
   if (!num) return "";
   // no need to return - as numbers will already have that
   return num >= 0 ? `+` : ``;
 };
 
+/**
+ * Format the price value to be displayed correctly
+ */
 export const priceFormatter = Intl.NumberFormat("en", {
   notation: "compact",
   compactDisplay: "short",
@@ -22,6 +32,9 @@ export const priceFormatter = Intl.NumberFormat("en", {
   maximumFractionDigits: 1,
 });
 
+/**
+ * Format the volumme value to be displayed correctly
+ */
 export const volFormatter = Intl.NumberFormat("en", {
   notation: "compact",
   compactDisplay: "short",

@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
-import priceStatsReducer from "../features/priceStatsSlice";
+
 import orderBookReducer from "../features/orderBookSlice";
+import priceStatsReducer from "../features/priceStatsSlice";
 
 export const store = configureStore({
   reducer: {
