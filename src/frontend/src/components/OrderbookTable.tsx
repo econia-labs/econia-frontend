@@ -11,20 +11,6 @@ import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 import { calculateSpread } from "@/utils/formatter";
 
 import { TokenSymbol } from "./TokenSymbol";
-// import { Listbox } from "@headlessui/react";
-// import ChevronDownIcon from "@heroicons/react/24/outline/ChevronDownIcon";
-// import CheckIcon from "@heroicons/react/24/outline/CheckIcon";
-
-// const precisionOptions: Precision[] = [
-//   "0.01",
-//   "0.05",
-//   "0.1",
-//   "0.5",
-//   "1",
-//   "2.5",
-//   "5",
-//   "10",
-// ];
 
 const Row: React.FC<{
   level: PriceLevel;
@@ -58,10 +44,6 @@ const Row: React.FC<{
     size: level.size,
     marketData: marketData,
   });
-
-  // const barPercentage = (level.size * 100) / highestSize;
-  // const barColor =
-  //   type === "bid" ? "rgba(110, 213, 163, 30%)" : "rgba(213, 110, 110, 30%)";
 
   return (
     <Tooltip
@@ -107,16 +89,6 @@ const Row: React.FC<{
         onClick={() => {
           setPrice(price.toString());
         }}
-        // https://github.com/econia-labs/econia/pull/371
-        // commenting out this change because it overrides orderbook flash
-        // style={{
-        //   background: `linear-gradient(
-        //     to left,
-        //     ${barColor},
-        //     ${barColor} ${barPercentage}%,
-        //     transparent ${barPercentage}%
-        //   )`,
-        // }}
       >
         <div className={`flex w-full justify-between  lg:flex-row`}>
           <div
@@ -148,13 +120,6 @@ const Row: React.FC<{
               : "h-0"
           }`}
         ></div>
-        {/* {focus.price === price && (
-          <div className="bg-noise bg-white/[0.1]  border absolute w-fit h-fit p-4 -left-[10px] top-0 z-50 text-neutral-100">
-            <div className="flex justify-between items-center">
-              <span>Average price </span><span>{'6.99'}</span>
-            </div>
-          </div>
-        )} */}
       </div>
     </Tooltip>
   );
@@ -171,7 +136,6 @@ export function OrderbookTable({
   isFetching: boolean;
   isLoading: boolean;
 }) {
-  // const [precision, setPrecision] = useState<Precision>(precisionOptions[0]);
   const [isSmallWindow, setIsSmallWindow] = useState(false);
 
   const { width } = useWindowSize();
@@ -214,63 +178,41 @@ export function OrderbookTable({
 
   return (
     <div className="flex grow flex-col">
-      {/* title row */}
-      <div className="hidden h-[60px] w-[254px] flex-col justify-center border-b border-neutral-600 pl-[17.03px] pr-[11.27px] lg:flex">
+      {/* Large screen header */}
+      <div className="hidden h-[60px] w-[252px] flex-col justify-center pl-[17.03px] pr-[11.27px] lg:flex">
         <div className="flex justify-between">
           <p className="font-jost text-base font-bold text-white">Order Book</p>
-          {/* select */}
-          {/* TODO: SHOW WHEN API IS UP */}
-          {/* <Listbox value={precision} onChange={setPrecision}>
-            <div className="relative z-30 min-h-[30px] border border-neutral-600 py-[4px] pl-[8px] pr-[4px] text-[8px]/[18px]">
-              <Listbox.Button className="flex min-w-[48px] justify-between font-roboto-mono text-neutral-300">
-                {precision}
-                <ChevronDownIcon className="my-auto ml-1 h-[10px] w-[10px] text-neutral-500" />
-              </Listbox.Button>
-              <Listbox.Options className="absolute left-0 top-[20px] mt-2 w-full bg-black shadow ring-1 ring-neutral-600">
-                {precisionOptions.map((precisionOption) => (
-                  <Listbox.Option
-                    key={precisionOption}
-                    value={precisionOption}
-                    className={`weight-300  box-border flex min-h-[30px] cursor-pointer justify-between py-2 pl-[11px] font-roboto-mono text-neutral-300 hover:bg-neutral-800  hover:outline hover:outline-1 hover:outline-neutral-600`}
-                  >
-                    {precisionOption}
-                    {precision === precisionOption && (
-                      <CheckIcon className="my-auto ml-1 mr-2 h-4 w-4 text-white" />
-                    )}
-                  </Listbox.Option>
-                ))}
-              </Listbox.Options>
-            </div>
-          </Listbox> */}
         </div>
         <div className="mt-1 flex justify-between">
           <p className="font-roboto-mono text-xs font-light text-neutral-500">
-            PRICE <TokenSymbol symbol={marketData.quote.symbol} smallSymbol />
+            PRICE <TokenSymbol symbol={marketData.quote.symbol} />
           </p>
           <p className="font-roboto-mono text-xs font-light text-neutral-500">
-            SIZE <TokenSymbol symbol={marketData.base?.symbol} smallSymbol />
+            SIZE <TokenSymbol symbol={marketData.base?.symbol} />
           </p>
         </div>
       </div>
-      {/* bids ask spread scrollable container */}
-      <div className="flex justify-between border-b border-neutral-600 pb-[6px] lg:mb-2 lg:hidden">
+      {/* Mobile screen header */}
+      <div className="flex h-[30px] lg:mb-2 lg:hidden">
         <div className="flex w-[50%] justify-between px-3 pl-4 pt-[7px] lg:px-3 lg:pt-[12px]">
-          <p className="font-roboto-mono text-xs text-neutral-500">
+          <p className="whitespace-nowrap font-roboto-mono text-xs text-neutral-500">
             BID <TokenSymbol symbol={marketData.quote?.symbol} />
           </p>
-          <p className="font-roboto-mono text-xs text-neutral-500">
+          <p className="whitespace-nowrap font-roboto-mono text-xs text-neutral-500">
             AMOUNT <TokenSymbol symbol={marketData.base.symbol} />
           </p>
         </div>
-        <div className="flex w-[50%] justify-between px-3 pt-[3px] lg:pt-[12px]">
-          <p className="font-roboto-mono text-xs text-neutral-500">
+        <div className="flex w-[50%] justify-between px-3 pl-4 pt-[7px] lg:px-3 lg:pt-[12px]">
+          <p className="whitespace-nowrap font-roboto-mono text-xs text-neutral-500">
             ASK <TokenSymbol symbol={marketData.quote?.symbol} />
           </p>
-          <p className="font-roboto-mono text-xs text-neutral-500">
+          <p className="whitespace-nowrap font-roboto-mono text-xs text-neutral-500">
             AMOUNT <TokenSymbol symbol={marketData.base.symbol} />
           </p>
         </div>
       </div>
+      {/* Table content */}
+      <div className="h-[1px] bg-neutral-600"></div>
       <div
         className={`scrollbar-none relative flex h-[173px] grow pt-[6.53px] lg:flex-col ${
           (data?.asks?.length ?? 0) < 12 || (data?.bids?.length ?? 0) < 14
@@ -278,7 +220,6 @@ export function OrderbookTable({
             : ""
         }`}
       >
-        {/* hgyugyiuhi oihioho */}
         {isLoading ? (
           <div className="absolute  w-full">
             {Array.from({ length: 60 }, (_, i) => (

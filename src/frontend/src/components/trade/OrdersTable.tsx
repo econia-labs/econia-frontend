@@ -296,7 +296,7 @@ export const OrdersTable: React.FC<{
                 cancelOrder(orderInfo);
               }}
             >
-              Cancel
+              CANCEL
             </button>
           );
         },
@@ -318,13 +318,13 @@ export const OrdersTable: React.FC<{
   });
 
   return (
-    <div className="scrollbar-none grow overflow-auto">
+    <div className="scrollbar-none w-full grow overflow-auto">
       <BaseModal
         isOpen={isModalOpen}
         onClose={closeModal}
         showCloseButton={true}
         showBackButton={false}
-        className="!w-[700px] font-roboto-mono text-white"
+        className="!w-[480px] !p-0 font-jost text-white"
       >
         <OrderDetailsModalContent
           orderDetails={selectedOrder}
@@ -338,13 +338,8 @@ export const OrdersTable: React.FC<{
       <table
         className={"w-full table-fixed" + (className ? ` ${className}` : "")}
       >
-        <thead
-          className="sticky top-0 h-[30px] bg-neutral-800 shadow-[inset_0_-1px_0_theme(colors.neutral.600)]"
-          style={{
-            backgroundImage: `url(${bg.src})`,
-          }}
-        >
-          <tr>
+        <thead className="sticky top-0 h-[30px] bg-neutral-800 bg-noise">
+          <tr className="h-[30px]">
             {table.getFlatHeaders().map((header) => (
               <th
                 className="cursor-pointer select-none text-left font-roboto-mono text-xs font-normal uppercase tracking-[0.24px] text-neutral-500 transition-all hover:text-blue"
@@ -363,7 +358,15 @@ export const OrdersTable: React.FC<{
               </th>
             ))}
           </tr>
+          <tr>
+            {table.getFlatHeaders().map((header) => (
+              <td className="p-0" key={header.id}>
+                <div className="h-[1px] w-full bg-neutral-600"></div>
+              </td>
+            ))}
+          </tr>
         </thead>
+
         <tbody>
           {!connected ? (
             <></>
@@ -414,7 +417,7 @@ export const OrdersTable: React.FC<{
         </tbody>
       </table>
       {!isLoading && data && data.length === 0 && (
-        <div className="flex h-[calc(100%-32px)] flex-col items-center justify-center font-roboto-mono text-[10px] font-light uppercase tracking-[0.2px] text-neutral-500">
+        <div className="flex h-[calc(100%-37.52px)] flex-col items-center justify-center font-roboto-mono text-xs font-light uppercase tracking-[0.2px] text-neutral-500">
           no orders to show
         </div>
       )}

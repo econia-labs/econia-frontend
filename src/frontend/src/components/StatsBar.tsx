@@ -109,6 +109,9 @@ export const StatsBar: React.FC<{
       );
       const data = await response.json();
       const priceStats = data[0];
+      if (!priceStats) {
+        return {};
+      }
       dispatch(setPriceStats(data[0]));
 
       const formattedPriceStats = Object.keys(priceStats).reduce(

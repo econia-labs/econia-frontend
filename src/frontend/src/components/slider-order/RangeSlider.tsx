@@ -53,8 +53,6 @@ const RangeSlider = ({
       result[curr] = {
         style: {
           display: "none",
-          // position: 'absolute',
-          // color: 'white'
         },
         label: curr,
       };
@@ -77,10 +75,6 @@ const RangeSlider = ({
         width: "4px",
         height: "4px",
       }}
-      // activeDotStyle={{
-      //   backgroundColor: "red",
-      //   borderColor: "red",
-      // }}
       handleRender={handleRender}
       {...styles[variant]}
       {...props}

@@ -7,7 +7,6 @@ import React, {
   useState,
   type MouseEventHandler,
   type PropsWithChildren,
-  Fragment,
 } from "react";
 
 import { shorten } from "@/utils/formatter";
@@ -30,7 +29,7 @@ const NavItem: React.FC<
         href={href}
         target="_blank"
         rel="noreferrer"
-        className={`cursor-pointer font-roboto-mono text-xl font-medium uppercase tracking-wide transition-all md:text-lg ${
+        className={`cursor-pointer font-roboto-mono text-xl font-medium uppercase tracking-wide transition-all lg:text-lg ${
           active ? "text-neutral-100" : "text-neutral-500 hover:text-blue"
         } ${className ? className : ""}`}
       >
@@ -42,7 +41,7 @@ const NavItem: React.FC<
   return (
     <Link
       href={href}
-      className={`cursor-pointer font-roboto-mono text-xl font-medium  uppercase tracking-wide transition-all md:text-lg ${
+      className={`cursor-pointer font-roboto-mono text-xl font-medium  uppercase tracking-wide transition-all lg:text-lg ${
         active ? "text-neutral-100" : "text-neutral-500 hover:text-blue"
       }`}
     >
@@ -89,11 +88,6 @@ export function Header({
               />
             </Link>
             <div className="flex flex-1 items-center justify-center gap-6">
-              {/* TODO: Enable swap */}
-              {/* <NavItem href="/swap" active={router.pathname.startsWith("/swap")}>
-            Swap
-          </NavItem>
-          <NavItemDivider /> */}
               <NavItem
                 href="/market"
                 active={router.pathname.startsWith("/market")}
@@ -172,29 +166,24 @@ const SlidingMenu = ({
       }`}
     >
       <div className="mb-8  flex flex-col  items-start justify-between gap-[23.68px] px-[29.28px]">
-        {/* {menuList.map((item: MenuItem, index: number) => {
-          return (
-            <MenuItem
-              item={item}
-              key={index}
-              responsive={true}
-              toggleMenu={toggleMenu}
-            />
-          );
-        })}
-         */}
-        <NavItem href="/market" active={router.pathname.startsWith("/market")}>
+        <NavItem
+          href="/market"
+          active={router.pathname.startsWith("/market")}
+          className=""
+        >
           Trade
         </NavItem>
-        {/* <NavItemDivider /> */}
-        <NavItem href="/faucet" active={router.pathname.startsWith("/faucet")}>
+        <NavItem
+          href="/faucet"
+          active={router.pathname.startsWith("/faucet")}
+          className=""
+        >
           Faucet
         </NavItem>
-        {/* <NavItemDivider /> */}
         <NavItem
-          className="flex items-center gap-1"
           href="https://econia.dev"
-          external
+          className="flex items-center gap-1"
+          external={true}
         >
           <p>Docs</p>
           <ArrowRightIcon className="inline-block h-3 w-3 -rotate-45" />
@@ -222,7 +211,6 @@ const SlidingMenu = ({
           </div>
         </ConnectedButton>
       </div>
-      {/* {account?.address ? <DisconnectWalletButton /> : <ConnectWalletButton />} */}
     </div>
   );
 };
@@ -233,8 +221,16 @@ const HeaderMobile = ({
   onWalletButtonClick,
 }: HeaderProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { account } = useWallet();
   const toggleMenu = () => {
+    if (!isOpen) {
+      window.scrollTo({
+        behavior: "smooth",
+        top: 0,
+      });
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
     setIsOpen(!isOpen);
   };
 

@@ -38,19 +38,23 @@ export const RegisterAccountContent: React.FC<RegisterAccountContentProps> = ({
     symbol: quote_symbol,
   } = quote;
 
+  const baseTokenInfo = coinListClient.getCoinInfoByFullName(
+    TypeTag.fromString(
+      `${base_account_address}::${base_module_name}::${base_struct_name}`,
+    ).toString(),
+  );
+
+  const quoteTokenInfo = coinListClient.getCoinInfoByFullName(
+    TypeTag.fromString(
+      `${quote_account_address}::${quote_module_name}::${quote_struct_name}`,
+    ).toString(),
+  );
+
   const baseAssetIcon = selectedMarket
-    ? coinListClient.getCoinInfoByFullName(
-        TypeTag.fromString(
-          `${base_account_address}::${base_module_name}::${base_struct_name}`,
-        ).toString(),
-      )?.logo_url
+    ? baseTokenInfo?.logo_url
     : DEFAULT_TOKEN_ICON;
   const quoteAssetIcon = selectedMarket
-    ? coinListClient.getCoinInfoByFullName(
-        TypeTag.fromString(
-          `${quote_account_address}::${quote_module_name}::${quote_struct_name}`,
-        ).toString(),
-      )?.logo_url
+    ? quoteTokenInfo?.logo_url
     : DEFAULT_TOKEN_ICON;
 
   return (
@@ -78,7 +82,8 @@ export const RegisterAccountContent: React.FC<RegisterAccountContentProps> = ({
               )}
             </div>
             <div className="font-roboto-mono text-xs uppercase tracking-[0.24px] text-neutral-500">
-              Native | Layerzero
+              {baseTokenInfo?.source || "native"} |{" "}
+              {quoteTokenInfo?.source || "LAYERZERO"}
             </div>
           </div>
         </div>

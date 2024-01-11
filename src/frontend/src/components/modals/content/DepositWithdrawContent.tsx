@@ -83,7 +83,6 @@ const DepositWithdrawForm: React.FC<{
     selectedCoin,
   );
 
-  // TODO add form validation (ECO-353)
   const [amount, setAmount] = useState<string>("");
   const { data: balance } = useCoinBalance(
     TypeTag.fromApiCoin(selectedCoin),
@@ -153,9 +152,9 @@ const DepositWithdrawForm: React.FC<{
 
   return (
     <>
-      {!isRegistered && (
+      {/* {!isRegistered && (
         <div className="fixed inset-0 z-40 bg-black bg-opacity-60 backdrop-blur-sm" />
-      )}
+      )} */}
 
       <div className="w-full">
         <SelectCoinInput

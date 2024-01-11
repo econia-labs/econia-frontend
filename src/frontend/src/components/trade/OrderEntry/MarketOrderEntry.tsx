@@ -118,11 +118,11 @@ export const MarketOrderEntry: React.FC<{
       const totalSize =
         toDecimalPrice({ price: Number(last_price), marketData }).toNumber() *
         Number(watchSize);
-      return totalSize < Number(balance?.quote_available);
+      return totalSize <= Number(balance?.quote_available);
     }
 
     if (side === "sell") {
-      return Number(watchSize) < Number(balance?.base_available);
+      return Number(watchSize) <= Number(balance?.base_available);
     }
   }, [balance, watchSize, last_price]); //INSUFFICIENT
 
@@ -205,7 +205,6 @@ export const MarketOrderEntry: React.FC<{
       type: "entry_function_payload",
       ...payload,
     });
-    // toast('Success')
   };
 
   return (
