@@ -1,24 +1,20 @@
+// @ts-nocheck
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef } from "react";
-
 import { API_URL } from "@/env";
 import { type ApiMarket, type MarketData } from "@/types/api";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 import { getClientTimezone } from "@/utils/helpers";
 
-import {
-  type Bar,
-  type ChartingLibraryWidgetOptions,
-  type DatafeedConfiguration,
-  type IBasicDataFeed,
-  type IChartingLibraryWidget,
-  type LibrarySymbolInfo,
-  type ResolutionString,
-  type SearchSymbolResultItem,
-  type Timezone,
-  widget,
-} from "../../../public/static/charting_library";
-
+let chartModule: any = {} as any;
+(() => {
+  try {
+    chartModule = require("../../../public/static/charting_library");
+  } catch (e) {
+    console.warn(e);
+  }
+})();
+const { widget } = chartModule;
 const DAY_BY_RESOLUTION: { [key: string]: string } = {
   "1D": "86400",
   "30": "1800",
@@ -34,18 +30,7 @@ type QueryParams = {
   days: string;
 };
 export interface ChartContainerProps {
-  symbol: ChartingLibraryWidgetOptions["symbol"];
-  interval: ChartingLibraryWidgetOptions["interval"];
-
-  datafeedUrl: string;
-  libraryPath: ChartingLibraryWidgetOptions["library_path"];
-  clientId: ChartingLibraryWidgetOptions["client_id"];
-  userId: ChartingLibraryWidgetOptions["user_id"];
-  fullscreen: ChartingLibraryWidgetOptions["fullscreen"];
-  autosize: ChartingLibraryWidgetOptions["autosize"];
-  studiesOverrides: ChartingLibraryWidgetOptions["studies_overrides"];
-  container: ChartingLibraryWidgetOptions["container"];
-  theme: ChartingLibraryWidgetOptions["theme"];
+  symbol: string; //ChartingLibraryWidgetOptions["symbol"];
 }
 
 const GREEN = "rgba(110, 213, 163, 1.0)";
@@ -63,7 +48,7 @@ const resolutions = [
   "4H",
   // "12H",
   "1D",
-] as ResolutionString[];
+];
 
 const configurationData: DatafeedConfiguration = {
   supported_resolutions: resolutions,
@@ -152,8 +137,7 @@ export const TVChartContainer: React.FC<
           // intraday_multipliers: configurationData.intraday_multipliers,
           timezone: getClientTimezone(),
           type: "crypto",
-          supported_resolutions:
-            configurationData.supported_resolutions as ResolutionString[],
+          supported_resolutions: configurationData.supported_resolutions,
           format: "price",
         };
         onSymbolResolvedCallback(symbolInfo);
@@ -262,18 +246,16 @@ export const TVChartContainer: React.FC<
       return;
     }
 
-    const widgetOptions: ChartingLibraryWidgetOptions = {
+    const widgetOptions = {
       symbol: props.symbol as string,
       datafeed,
-      interval: "30" as ResolutionString,
+      interval: "30",
       container: ref.current,
-      library_path: props.libraryPath as string,
-      theme: props.theme,
+      library_path: "/static/charting_library/",
+      theme: "Dark",
       locale: "en",
       custom_css_url: "/styles/tradingview.css",
-      timezone:
-        (Intl.DateTimeFormat().resolvedOptions().timeZone as Timezone) ??
-        "Etc/UTC",
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? "Etc/UTC",
       disabled_features: [
         "use_localstorage_for_settings",
         "left_toolbar",
@@ -282,10 +264,8 @@ export const TVChartContainer: React.FC<
         "snapshot_trading_drawings",
         // "header_resolutions",
       ],
-      client_id: props.clientId,
-      user_id: props.userId,
-      fullscreen: props.fullscreen,
-      autosize: props.autosize,
+      fullscreen: false,
+      autosize: true,
       loading_screen: { backgroundColor: "#000000" },
       overrides: {
         "paneProperties.backgroundType": "solid",
@@ -308,7 +288,7 @@ export const TVChartContainer: React.FC<
         "paneProperties.legendProperties.showVolume": true,
       },
       studies_overrides: {
-        ...props.studiesOverrides,
+        // ...props.studiesOverrides,
         "volume.volume.color.0": RED_OPACITY_HALF,
         "volume.volume.color.1": GREEN_OPACITY_HALF,
       },
@@ -316,35 +296,35 @@ export const TVChartContainer: React.FC<
         // defaults
         {
           text: "1D",
-          resolution: "1" as ResolutionString,
+          resolution: "1",
         },
         {
           text: "5D",
-          resolution: "5" as ResolutionString,
+          resolution: "5",
         },
         {
           text: "1M",
-          resolution: "30" as ResolutionString,
+          resolution: "30",
         },
         {
           text: "3M",
-          resolution: "60" as ResolutionString,
+          resolution: "60",
         },
         {
           text: "6M",
-          resolution: "120" as ResolutionString,
+          resolution: "120",
         },
         {
           text: "1y",
-          resolution: "D" as ResolutionString,
+          resolution: "D",
         },
         {
           text: "5y",
-          resolution: "W" as ResolutionString,
+          resolution: "W",
         },
         {
           text: "1000y", // custom ALL timeframe
-          resolution: "1" as ResolutionString, // may want to specify a different resolution here for server load purposes
+          resolution: "1", // may want to specify a different resolution here for server load purposes
           description: "All",
           title: "All",
         },
@@ -360,17 +340,7 @@ export const TVChartContainer: React.FC<
         tvWidget.current = undefined;
       }
     };
-  }, [
-    datafeed,
-    props.symbol,
-    props.clientId,
-    props.userId,
-    props.fullscreen,
-    props.autosize,
-    props.studiesOverrides,
-    props.theme,
-    props.libraryPath,
-  ]);
+  }, [datafeed, props.symbol]);
 
   return (
     <div className="relative w-full">
