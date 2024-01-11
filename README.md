@@ -78,7 +78,7 @@ To deploy on Vercel, you'll need to set up the following environment variables:
 | `NEXT_PUBLIC_READ_ONLY`                  | Config read only mode, 1 OR 0                                                          |
 | `NEXT_PUBLIC_READ_ONLY_MESSAGE`          | Error message when user attempt do a require sign operator                             |
 
-The variables above will be added into the Vercel project, you can find them at the file `.env.example` or `.env.local` which you created from previous steps. However, the `GITHUB_ACCESS_TOKEN` is still missing, you have to create on your own. 
+The variables above will be added into the Vercel project, you can find them at the file `.env.example` or `.env.local` which you created from previous steps. However, the `GITHUB_ACCESS_TOKEN` is still missing, you have to create on your own.
 
 ### 2 - Generating a `GITHUB_ACCESS_TOKEN`
 
@@ -99,37 +99,33 @@ Now you are navigated to your default team on Vercel and able to create a new pr
 
 ### 4 - Create a Vercel project
 
+#### Step 1: Import project
+
 On your screen, click `Add New` button and select `Project` to create a new project or shortly clicks `Import project` to import the Github repository.
 
 The Vercel webiste displays a list of repositories existing in your Github account.
 
 Now click the `Import` button on the `econia-frontend` repository.
 
-Once imported, the Vercel asks you to configure your project but for now, you can skip all these fields and click `Deploy` button. We will set up the project's configuration later.
+#### Step 2: Configure your project
 
-After several seconds, you can see the success message on screen but with the 404 error. Don't mind it and move onto next step.
+Once imported successfully, Vercel asks you to configure your project and deploy.
 
-### 5 - Set up your project's configuration
+1. **Project Name**: The project name is automatically generated, you can change it as you want.
 
-Back to the project's dashboard and select the `Setting` tab on the navigation section.
+2. **Root Directory**:  At the `Root Directory` field, click the `Edit` button next to it. A modal pops up and tells you to select the directory where your source code is located. Then, you must select the path `econia-frontend/src/frontend` and click `Continue`.
 
-#### a. `General` settings
+3. **Framework Preset**: As the directory at the above path is a NextJS project then Vercel automatically detects that its `Framework Preset` is NextJS.
 
-Under `Build and Development Settings`:
+4. **Build and Output Settings**: Override the `Install Command` with the following:
 
-- Set `Framework Preset` to `NextJS` 
-- Override the `Install Command`'s value to `npm run vercel-install`
-- Click `Save` to update changes
+    ```bash
+    npm run vercel-install
+    ```
 
-Under `Root Directory`:
+5. **Environment Variables**: Paste all the environment variables in `.env.local` file to the table. There's a trick that you don't need to copy and paste each variable at a time, just copy your `.env.local` file and paste into the input field.
 
-- Change the value of input field to `src/frontend`
-- Click `Save` to update changes
+### Step 3: Deploy your project
 
-Ensure that the Node version is `18.x`.
+Click the `Deploy` button, wait for several minutes and see the results.
 
-#### b. `Environment Variables` settings
-
-Concecutively add the keys and correponding values in `.env.local` file to the table.
-
-Once complete the above steps, navigate to the `Domain` tab, you will see the link to the website.
