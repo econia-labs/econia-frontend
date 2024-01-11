@@ -5,7 +5,14 @@ import { type ApiMarket } from "@/types/api";
 
 import { type Timezone } from "../../public/static/charting_library";
 
-// Makes requests to Coingecko API
+/**
+ * Makes an asynchronous API request to the Coingecko API.
+ *
+ * @param {string} path - The API path to be appended to the base URL.
+ * @returns {Promise<any>} - A Promise resolving to the parsed JSON response from the API.
+ *
+ * @throws {Error} - Throws an error if the API request fails or encounters an error during processing.
+ */
 export async function makeApiRequest(path: string) {
   try {
     const response = await fetch(`https://api.coingecko.com/${path}`);
@@ -19,6 +26,13 @@ export async function makeApiRequest(path: string) {
   }
 }
 
+/**
+ * Fetches data for all markets from the specified API endpoint.
+ *
+ * @returns {Promise<ApiMarket[]>} - A Promise resolving to an array of market data objects.
+ *
+ * @throws {Error} - Throws an error if the API request fails or encounters an error during processing.
+ */
 export async function getAllMarket() {
   try {
     const res = await fetch(`${API_URL}/markets`);
@@ -59,6 +73,14 @@ export async function getAllMarket() {
   }
 }
 
+/**
+ * Makes an asynchronous API request to the Cryptocompare API (Min API).
+ *
+ * @param {string} path - The API path to be appended to the base URL.
+ * @returns {Promise<any>} - A Promise resolving to the parsed JSON response from the Cryptocompare API.
+ *
+ * @throws {Error} - Throws an error if the API request fails or encounters an error during processing.
+ */
 export async function makeApiRequestMin(path: string) {
   try {
     const response = await fetch(`https://min-api.cryptocompare.com/${path}`);
@@ -68,7 +90,14 @@ export async function makeApiRequestMin(path: string) {
   }
 }
 
-// Generates a symbol ID from a pair of the coins
+/**
+ * Generates a symbol object containing short and full representations.
+ *
+ * @param {any} exchange - The exchange identifier.
+ * @param {any} fromSymbol - The symbol representing the source currency.
+ * @param {any} toSymbol - The symbol representing the target currency.
+ * @returns {{ short: string, full: string }} - The generated symbol object with short and full representations.
+ */
 export function generateSymbol(exchange: any, fromSymbol: any, toSymbol: any) {
   const short = `${fromSymbol}-${toSymbol}`;
   return {
@@ -77,7 +106,12 @@ export function generateSymbol(exchange: any, fromSymbol: any, toSymbol: any) {
   };
 }
 
-// Returns all parts of the symbol
+/**
+ * Parses a full symbol into an object containing exchange, fromSymbol, and toSymbol properties.
+ *
+ * @param {string} fullSymbol - The full symbol string to be parsed.
+ * @returns {{ exchange: string, fromSymbol: string, toSymbol: string } | null} - The parsed symbol object or null if the input string is not in the expected format.
+ */
 export function parseFullSymbol(fullSymbol: string) {
   const match = fullSymbol.match(/^(\w+):(\w+)-(\w+)$/);
   if (!match) {
@@ -91,6 +125,11 @@ export function parseFullSymbol(fullSymbol: string) {
   };
 }
 
+/**
+ * Retrieves the client's timezone based on the current system time offset.
+ *
+ * @returns {Timezone} - The client's timezone as a string identifier (e.g., "America/New_York").
+ */
 export function getClientTimezone(): Timezone {
   const timezones: { [key: string]: number } = {};
   timezones["America/New_York"] = -5;
