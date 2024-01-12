@@ -129,3 +129,71 @@ Once imported successfully, Vercel asks you to configure your project and deploy
 
 Click the `Deploy` button, wait for several minutes and see the results.
 
+## General architectural
+```mermaid
+  graph TD;
+      src-->sdk;
+      src-->frontend;
+      frontend-->tradingView_library_submodule;
+      frontend-->pages;
+      pages-->trade;
+      pages-->swap;
+      pages-->faucet;
+      trade-->Header;
+      trade-->StatsBar;
+      trade-->TradingViewChart;
+      trade-->DeepChart;
+      trade-->OrdersTable;
+      trade-->OrderBook;
+      trade-->OrderEntry;
+      trade-->TradeHistories;
+```
+### Summary
+
+1. **src**: The foundational source directory containing the entire project's codebase, serving as the starting point for development.
+   - [src](src)
+
+2. **sdk**: An internal package providing functions for interacting with smart contracts and the Aptos network.
+   - [src/sdk](src/sdk)
+
+3. **frontend**: The root directory of a Next.js application, orchestrating frontend components and managing the user interface.
+   - [src/frontend](src/frontend)
+
+4. **tradingView_library_submodule**: A Git submodule linked to the [TradingView Charting Library](https://github.com/tradingview/charting_library) repository. This submodule integrates TradingView charts on the trade page.
+   - [src/frontend/public/static](src/frontend/public/static)
+
+5. **pages**: The pages directory in a Next.js application, where each folder or file corresponds to a distinct page within the application.
+   - [src/frontend/src/pages](src/frontend/src/pages)
+
+6. **trade**: A pivotal page within the application, specifically designed for trading activities and incorporating essential user interface elements for executing trades.
+   - [src/frontend/src/pages/market/[market_id].tsx](src/frontend/src/pages/market/[market_id].tsx)
+
+   - **Header**: The header component at the top of pages, providing a consistent visual identity.
+     - [src/frontend/src/components/Header.tsx](src/frontend/src/components/Header.tsx)
+
+   - **StatsBar**: A component below the header displaying information about the trading pair, including statistical trading data.
+     - [src/frontend/src/components/StatsBar.tsx](src/frontend/src/components/StatsBar.tsx)
+
+   - **TradingViewChart**: An integral component responsible for displaying TradingView charts, utilizing the `tradingView_library_submodule` and handling scenarios where the submodule might be omitted.
+     - [src/frontend/src/components/trade/TVChartContainer.tsx](src/frontend/src/components/trade/TVChartContainer.tsx)
+
+   - **DeepChart**: A specialized chart component placed below the TradingView chart, providing additional depth for in-depth analysis.
+     - [src/frontend/src/components/DepthChart.tsx](src/frontend/src/components/DepthChart.tsx)
+
+   - **OrdersTable**: A table displaying current orders placed by users.
+     - [src/frontend/src/components/trade/OrdersTable.tsx](src/frontend/src/components/trade/OrdersTable.tsx)
+
+   - **OrderBook**: Visualization of the order book, showing buy and sell orders in the market.
+     - [src/frontend/src/components/OrderbookTable.tsx](src/frontend/src/components/OrderbookTable.tsx)
+
+   - **OrderEntry**: An interface allowing users to enter new orders.
+     - [src/frontend/src/components/trade/OrderEntry/index.tsx](src/frontend/src/components/trade/OrderEntry/index.tsx)
+
+   - **TradeHistories**: Displaying a history of past trades, providing users with transaction details.
+     - [src/frontend/src/components/trade/TradeHistoryTable.tsx](src/frontend/src/components/trade/TradeHistoryTable.tsx)
+
+7. **faucet**: A page allowing users to obtain base and quote tokens from a faucet, enabling them to initiate trades.
+   - [src/frontend/src/pages/faucet/index.tsx](src/frontend/src/pages/faucet/index.tsx)
+
+8. **swap**: (Future Development) A page planned for development in the future.
+   - [src/frontend/pages/swap/](src/frontend/src/pages/swap/index.tsx)
