@@ -91,7 +91,6 @@ To generate a `GITHUB_ACCESS_TOKEN`:
 1. Click `Generate token`
 1. Copy the generated token to your Vercel environment variables and name it `GITHUB_ACCESS_TOKEN`
 
-<<<<<<< HEAD
 ### 3 - Log into the Vercel system using your Github account
 
 Use your Github account, that has the access to this `econia-frontend` repository, to connect to Vercel.
@@ -198,24 +197,3 @@ Click the `Deploy` button, wait for several minutes and see the results.
 
 8. **swap**: (Future Development) A page planned for development in the future.
    - [src/frontend/pages/swap/](src/frontend/src/pages/swap/index.tsx)
-=======
-## General architectural
-```mermaid
-  graph TD;
-      ROOT-->SDK;
-      ROOT-->NextApp;
-      NextApp-->TradingView_Library_Submodule;
-      NextApp-->Pages;
-      Pages-->TradePage;
-      Pages-->SwapPage;
-      Pages-->FaucetPage;
-      TradePage-->Header;
-      TradePage-->StatsBar;
-      TradePage-->TradingViewChart;
-      TradePage-->DeepChart;
-      TradePage-->OrdersTable;
-      TradePage-->OrderBook;
-      TradePage-->OrderEntry;
-      TradePage-->TradeHistories;
-```
->>>>>>> d5d3d406ff9818db1363a55a5620b1f8c11accc3
