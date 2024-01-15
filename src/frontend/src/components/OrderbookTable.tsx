@@ -248,9 +248,10 @@ export function OrderbookTable({
           <div className="absolute flex h-full w-full flex-row-reverse pb-2 lg:block">
             {/* ASK */}
             <div
-              className="scrollbar-none flex h-full max-h-full w-[calc(50%-0.5px)] grow flex-col overflow-auto overflow-auto lg:h-[calc((100%-26px)/2)] lg:w-auto"
+              className=" scrollbar-none flex h-full max-h-full w-[calc(50%-0.5px)] grow flex-col overflow-auto lg:h-[calc((100%-26px)/2)] lg:w-auto"
               ref={centerRef}
             >
+              <div className="grow"></div>
               {isSmallWindow
                 ? data?.asks
                     ?.slice()

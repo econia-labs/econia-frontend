@@ -14,10 +14,10 @@ import {
   type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import { useWindowSize } from "@uidotdev/usehooks";
 import { useRouter } from "next/router";
-import { type ReactNode, useMemo, useState, useEffect } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 
-import { NotRecognizedIcon } from "@/components/icons/NotRecognizedIcon";
 import { RecognizedIcon } from "@/components/icons/RecognizedIcon";
 import { MarketIconPair } from "@/components/MarketIconPair";
 import { useAptos } from "@/contexts/AptosContext";
@@ -30,7 +30,6 @@ import { plusMinus } from "@/utils/formatter";
 import { TypeTag } from "@/utils/TypeTag";
 
 import { useAllMarketsData } from ".";
-import { useWindowSize } from "@uidotdev/usehooks";
 
 const colWidths = [
   230,

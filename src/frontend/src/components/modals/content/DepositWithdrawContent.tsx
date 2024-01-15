@@ -2,6 +2,7 @@ import { entryFunctions } from "@econia-labs/sdk";
 import { Menu, Tab } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useQueryClient } from "@tanstack/react-query";
+import Image from "next/image";
 import React, { useMemo, useState } from "react";
 
 import { Button } from "@/components/Button";
@@ -41,7 +42,13 @@ const SelectCoinInput: React.FC<{
             {startAdornment}
           </p>
           <div className="flex cursor-pointer items-center gap-0">
-            <img src={assetIcon} alt="token" className="mr-[6.75px] h-4 w-4" />
+            <Image
+              width={16}
+              height={16}
+              src={assetIcon}
+              alt="token"
+              className="mr-[6.75px] h-4 w-4"
+            />
             <p className="mr-2 whitespace-nowrap font-roboto-mono text-sm font-medium text-white">
               {selectedCoin?.symbol}
             </p>

@@ -158,6 +158,12 @@ export type MarketSelectData = {
   quote_volume_24h: number | null;
   baseAssetIcon?: string;
   quoteAssetIcon?: string;
+  base_symbol?: string;
+  quote_symbol?: string;
+  base_decimals?: number;
+  quote_decimals?: number;
+  base_name?: string;
+  quote_name?: string;
 };
 
 export type MarketStats = {

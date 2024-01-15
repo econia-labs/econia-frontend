@@ -1,6 +1,7 @@
-import { MarketStats } from "@/types/api";
-import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+
+import { type MarketStats } from "@/types/api";
 
 const initialState: MarketStats = {
   last_price: 0,

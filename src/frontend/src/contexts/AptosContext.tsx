@@ -78,6 +78,7 @@ export function AptosContextProvider({ children }: PropsWithChildren) {
           console.error(error);
           return false;
         }
+        //eslint-disable-next-line
       } catch (error: any) {
         if (error && error?.includes("Account not found")) {
           toast.error("You need APT balance!");

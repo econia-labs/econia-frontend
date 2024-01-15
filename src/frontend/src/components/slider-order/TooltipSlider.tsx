@@ -1,7 +1,7 @@
 import "rc-tooltip/assets/bootstrap.css";
 
 import { type SliderProps } from "rc-slider";
-import Tooltip from "rc-tooltip";
+import Tooltip, { type TooltipRef } from "rc-tooltip";
 import raf from "rc-util/lib/raf";
 import { useEffect, useRef } from "react";
 
@@ -19,7 +19,7 @@ const HandleTooltip = (props: {
     ...restProps
   } = props;
 
-  const tooltipRef = useRef<any>();
+  const tooltipRef = useRef<TooltipRef>(null);
   const rafRef = useRef<number | null>(null);
 
   function cancelKeepAlign() {

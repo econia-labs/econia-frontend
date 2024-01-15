@@ -1,10 +1,12 @@
-import { AppDispatch, RootState } from "@/store/store";
-import { useDispatch, useSelector } from "react-redux";
 import type { TypedUseSelectorHook } from "react-redux";
-import { setFocus } from "./orderBookSlice";
-import { ApiMarket } from "@/types/api";
-import { PriceLevel } from "@/types/global";
+import { useDispatch, useSelector } from "react-redux";
+
+import type { AppDispatch, RootState } from "@/store/store";
+import { type ApiMarket } from "@/types/api";
+import { type PriceLevel } from "@/types/global";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
+
+import { setFocus } from "./orderBookSlice";
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch: () => AppDispatch = useDispatch;
