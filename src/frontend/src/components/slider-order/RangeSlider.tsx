@@ -1,5 +1,6 @@
-import Slider, { type SliderProps } from "rc-slider";
 import "rc-slider/assets/index.css";
+
+import Slider, { type SliderProps } from "rc-slider";
 import { type MarkObj } from "rc-slider/lib/Marks";
 
 import { handleRender } from "./TooltipSlider";
@@ -9,7 +10,7 @@ interface RangeSliderProps extends SliderProps {
   variant: VariantType;
 }
 
-const styles: { [key in VariantType]: any } = {
+const styles = {
   primary: {
     styles: {
       rail: {

@@ -1,6 +1,6 @@
-import React from "react";
+import React, { type HTMLAttributes } from "react";
 
-const OpenMenuIcon = (props: any) => {
+const OpenMenuIcon = (props: HTMLAttributes<HTMLOrSVGElement>) => {
   return (
     <svg
       width="38"

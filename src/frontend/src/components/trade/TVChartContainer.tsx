@@ -1,11 +1,12 @@
 // @ts-nocheck
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef } from "react";
+
 import { API_URL } from "@/env";
 import { type ApiMarket, type MarketData } from "@/types/api";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 import { getClientTimezone } from "@/utils/helpers";
-
+//eslint-disable-next-line
 let chartModule: any = {} as any;
 (() => {
   try {
@@ -24,10 +25,6 @@ const DAY_BY_RESOLUTION: { [key: string]: string } = {
   "3D": "43200",
   "5": "300",
   "1": "60",
-};
-type QueryParams = {
-  vs_currency: string;
-  days: string;
 };
 export interface ChartContainerProps {
   symbol: string; //ChartingLibraryWidgetOptions["symbol"];
@@ -79,7 +76,9 @@ export const TVChartContainer: React.FC<
       },
       searchSymbols: async (
         userInput,
+        //eslint-disable-next-line
         exchange,
+        //eslint-disable-next-line
         symbolType,
         onResultReadyCallback,
       ) => {
@@ -106,8 +105,8 @@ export const TVChartContainer: React.FC<
       resolveSymbol: async (
         symbolName,
         onSymbolResolvedCallback,
-        onResolveErrorCallback,
-        extension,
+        // onResolveErrorCallback,
+        // extension,
       ) => {
         if (props.symbol !== symbolName) {
           const market = props.allMarketData?.find(
@@ -186,7 +185,7 @@ export const TVChartContainer: React.FC<
                   high: number;
                   volume: number;
                 },
-                index: number,
+                // index: number,
               ): Bar => ({
                 time: new Date(bar.start_time).getTime(),
                 open: toDecimalPrice({
@@ -238,7 +237,7 @@ export const TVChartContainer: React.FC<
         // TODO
       },
     }),
-    [props.symbol, props.allMarketData],
+    [props.symbol, props.allMarketData, props.selectedMarket],
   );
 
   useEffect(() => {

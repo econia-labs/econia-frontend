@@ -29,3 +29,7 @@ export const READ_ONLY_MODE = Number(process.env.NEXT_PUBLIC_READ_ONLY);
 export const READ_ONLY_MESSAGE = String(
   process.env.NEXT_PUBLIC_READ_ONLY_MESSAGE,
 );
+
+export const DEFAULT_MARKET_ID = Number(
+  process.env.NEXT_PUBLIC_DEFAULT_MARKET_ID,
+);

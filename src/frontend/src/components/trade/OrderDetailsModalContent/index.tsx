@@ -1,11 +1,12 @@
-import React, { ReactNode } from "react";
-
-import { TradeHistory, type ApiMarket, type ApiOrder } from "@/types/api";
-import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
-import bg from "../../../../public/bg.png";
-import { TokenSymbol } from "../../TokenSymbol";
 import { useQuery } from "@tanstack/react-query";
+import React, { type ReactNode } from "react";
+
+import { type ApiMarket, type ApiOrder, type TradeHistory } from "@/types/api";
+import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
+
+import bg from "../../../../public/bg.png";
 import { API_URL, NETWORK_NAME } from "../../../env";
+import { TokenSymbol } from "../../TokenSymbol";
 
 interface RowDetailsProps {
   label: string;
@@ -51,7 +52,7 @@ export const OrderDetailsModalContent: React.FC<
   quoteSymbol,
   marketData,
   cancelOrder,
-  loading,
+  // loading,
 }) => {
   const { data } = useQuery<TradeHistory>(
     ["useOrderDetailsModalContent", orderDetails?.order_id],

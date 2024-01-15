@@ -1,30 +1,7 @@
-import { toast } from "react-toastify";
-
 import { API_URL } from "@/env";
-import { type ApiMarket } from "@/types/api";
+import { type ApiMarket, type MarketSelectData } from "@/types/api";
 
 import { type Timezone } from "../../public/static/charting_library";
-
-/**
- * Makes an asynchronous API request to the Coingecko API.
- *
- * @param {string} path - The API path to be appended to the base URL.
- * @returns {Promise<any>} - A Promise resolving to the parsed JSON response from the API.
- *
- * @throws {Error} - Throws an error if the API request fails or encounters an error during processing.
- */
-export async function makeApiRequest(path: string) {
-  try {
-    const response = await fetch(`https://api.coingecko.com/${path}`);
-    return response.json();
-  } catch (e) {
-    if (e instanceof Error) {
-      toast.error(e.message);
-    } else {
-      console.error(e);
-    }
-  }
-}
 
 /**
  * Fetches data for all markets from the specified API endpoint.
@@ -37,7 +14,7 @@ export async function getAllMarket() {
   try {
     const res = await fetch(`${API_URL}/markets`);
     const data = await res.json();
-    const allMarketData: ApiMarket[] = data.map((item: any) => {
+    const allMarketData: ApiMarket[] = data.map((item: MarketSelectData) => {
       return {
         market_id: item.market_id,
         name: `${item.base_symbol}-${item.quote_symbol}`,
@@ -71,58 +48,6 @@ export async function getAllMarket() {
     console.warn("🚀 ~ file: helpers.ts:117 ~ getAllMarket ~ error:", error);
     throw error;
   }
-}
-
-/**
- * Makes an asynchronous API request to the Cryptocompare API (Min API).
- *
- * @param {string} path - The API path to be appended to the base URL.
- * @returns {Promise<any>} - A Promise resolving to the parsed JSON response from the Cryptocompare API.
- *
- * @throws {Error} - Throws an error if the API request fails or encounters an error during processing.
- */
-export async function makeApiRequestMin(path: string) {
-  try {
-    const response = await fetch(`https://min-api.cryptocompare.com/${path}`);
-    return response.json();
-  } catch (error) {
-    throw new Error(`Coingecko request error: ${error}`);
-  }
-}
-
-/**
- * Generates a symbol object containing short and full representations.
- *
- * @param {any} exchange - The exchange identifier.
- * @param {any} fromSymbol - The symbol representing the source currency.
- * @param {any} toSymbol - The symbol representing the target currency.
- * @returns {{ short: string, full: string }} - The generated symbol object with short and full representations.
- */
-export function generateSymbol(exchange: any, fromSymbol: any, toSymbol: any) {
-  const short = `${fromSymbol}-${toSymbol}`;
-  return {
-    short,
-    full: `${exchange}:${short}`,
-  };
-}
-
-/**
- * Parses a full symbol into an object containing exchange, fromSymbol, and toSymbol properties.
- *
- * @param {string} fullSymbol - The full symbol string to be parsed.
- * @returns {{ exchange: string, fromSymbol: string, toSymbol: string } | null} - The parsed symbol object or null if the input string is not in the expected format.
- */
-export function parseFullSymbol(fullSymbol: string) {
-  const match = fullSymbol.match(/^(\w+):(\w+)-(\w+)$/);
-  if (!match) {
-    return null;
-  }
-
-  return {
-    exchange: match[1],
-    fromSymbol: match[2],
-    toSymbol: match[3],
-  };
 }
 
 /**

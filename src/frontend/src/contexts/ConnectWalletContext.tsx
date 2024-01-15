@@ -48,7 +48,7 @@ const WalletItem: React.FC<
   );
 let t: NodeJS.Timeout | null = null;
 const AutoConnect = () => {
-  const { account, connect, ...res } = useWallet();
+  const { account, connect } = useWallet();
   useEffect(() => {
     if (!account && localStorage.getItem("AptosWalletName")) {
       const f = async () => {

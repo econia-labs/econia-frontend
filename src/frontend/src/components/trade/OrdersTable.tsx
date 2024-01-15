@@ -18,7 +18,6 @@ import { API_URL, ECONIA_ADDR } from "@/env";
 import { type ApiMarket, type ApiOrder } from "@/types/api";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 
-import bg from "../../../public/bg.png";
 import { BaseModal } from "../modals/BaseModal";
 import { OrderDetailsModalContent } from "./OrderDetailsModalContent";
 

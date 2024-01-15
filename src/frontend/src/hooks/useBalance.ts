@@ -1,9 +1,10 @@
 // import { type Address } from "@aptos-labs/wallet-adapter-react";
 import { useQuery } from "@tanstack/react-query";
-import { useAptos } from "@/contexts/AptosContext";
-import { ApiMarket } from "@/types/api";
-import { API_URL } from "@/env";
+
 import { NO_CUSTODIAN } from "@/constants";
+import { useAptos } from "@/contexts/AptosContext";
+import { API_URL } from "@/env";
+import { type ApiMarket } from "@/types/api";
 
 export const useBalance = (marketData: ApiMarket) => {
   const { account } = useAptos();

@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { BaseModal } from "../BaseModal";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import React, { useEffect, useState } from "react";
+
 import { UNCONNECTED_NOTICE_MESSAGE } from "@/env";
+
+import { BaseModal } from "../BaseModal";
 
 const UnConnectedNotice = () => {
   const [isOpen, setOpen] = useState(false);

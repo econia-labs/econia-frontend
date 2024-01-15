@@ -1,7 +1,9 @@
-import { BaseModal } from "@/components/modals/BaseModal";
 import React, { useState } from "react";
+
+import { BaseModal } from "@/components/modals/BaseModal";
+import { type ApiMarket } from "@/types/api";
+
 import { OrderEntry } from "../OrderEntry";
-import { ApiMarket } from "@/types/api";
 
 const MobileOrderEntry = ({
   marketData,

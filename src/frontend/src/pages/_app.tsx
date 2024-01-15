@@ -3,7 +3,9 @@ import "react-toastify/dist/ReactToastify.css";
 import "react-loading-skeleton/dist/skeleton.css";
 
 import { AptosWalletAdapterProvider } from "@aptos-labs/wallet-adapter-react";
-import { Provider } from "react-redux";
+import { MartianWallet } from "@martianwallet/aptos-wallet-adapter";
+import { PontemWallet } from "@pontem/wallet-adapter-plugin";
+import { RiseWallet } from "@rise-wallet/wallet-adapter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
@@ -19,20 +21,18 @@ import {
 } from "chart.js";
 import { type AppProps } from "next/app";
 import { Jost, Roboto_Mono } from "next/font/google";
+import { PetraWallet } from "petra-plugin-wallet-adapter";
 import { useMemo } from "react";
 import { SkeletonTheme } from "react-loading-skeleton";
+import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 
+import UnConnectedNotice from "@/components/modals/flows/UnConnectedNotice";
 import { AptosContextProvider } from "@/contexts/AptosContext";
 import { ConnectWalletContextProvider } from "@/contexts/ConnectWalletContext";
 import { store } from "@/store/store";
-import { MartianWallet } from "@martianwallet/aptos-wallet-adapter";
-import { PetraWallet } from "petra-plugin-wallet-adapter";
-import { PontemWallet } from "@pontem/wallet-adapter-plugin";
-import { RiseWallet } from "@rise-wallet/wallet-adapter";
 
 import bg from "../../public/bg.png";
-import UnConnectedNotice from "@/components/modals/flows/UnConnectedNotice";
 
 Chart.register(
   CategoryScale,

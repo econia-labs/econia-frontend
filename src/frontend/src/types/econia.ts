@@ -9,7 +9,7 @@ import {
 
 // econia::tablist
 
-export type TabList<K, _V = unknown> = {
+export type TabList<K> = {
   head: {
     vec: MoveOption<K>;
   };

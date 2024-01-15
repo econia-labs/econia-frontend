@@ -4,9 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, {
-  useState,
   type MouseEventHandler,
   type PropsWithChildren,
+  useState,
 } from "react";
 
 import { shorten } from "@/utils/formatter";
@@ -147,7 +147,7 @@ export function Header({
 }
 const SlidingMenu = ({
   isOpen,
-  toggleMenu,
+  // toggleMenu,
   onWalletButtonClick,
   onDepositWithdrawClick,
 }: {

@@ -3,6 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 
 import { Header } from "@/components/Header";
+import { DEFAULT_MARKET_ID } from "@/env";
 import { type ApiMarket } from "@/types/api";
 import { getAllMarket } from "@/utils/helpers";
 
@@ -13,11 +14,20 @@ type Props = {
 export default function Trade({ allMarketData }: Props) {
   const router = useRouter();
   if (typeof window !== "undefined" && allMarketData.length > 0) {
-    const firstRecognizedMarket = allMarketData.find((item) => item.recognized);
-    if (firstRecognizedMarket) {
-      router.push(`/market/${firstRecognizedMarket.market_id}`);
+    const defaultMarket = allMarketData.find(
+      (m) => m.market_id === DEFAULT_MARKET_ID,
+    );
+    if (defaultMarket) {
+      router.push(`/market/${defaultMarket.market_id}`);
     } else {
-      router.push(`/market/${allMarketData[0].market_id}?recognized=false`);
+      const firstRecognizedMarket = allMarketData.find(
+        (item) => item.recognized,
+      );
+      if (firstRecognizedMarket) {
+        router.push(`/market/${firstRecognizedMarket.market_id}`);
+      } else {
+        router.push(`/market/${allMarketData[0].market_id}?recognized=false`);
+      }
     }
   }
 

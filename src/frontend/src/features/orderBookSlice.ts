@@ -1,6 +1,7 @@
-import { Orderbook } from "@/types/global";
-import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+
+import { type Orderbook } from "@/types/global";
 
 const initialState: Orderbook = {
   isLoading: true,

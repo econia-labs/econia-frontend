@@ -1,5 +1,6 @@
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useQuery } from "@tanstack/react-query";
+import { useWindowSize } from "@uidotdev/usehooks";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
@@ -21,9 +22,8 @@ import { MediumIcon } from "./icons/MediumIcon";
 import { TwitterIcon } from "./icons/TwitterIcon";
 import { MarketIconPair } from "./MarketIconPair";
 import { BaseModal } from "./modals/BaseModal";
-import { SelectMarketContent } from "./trade/DepositWithdrawModal/SelectMarketContent";
 import { TokenSymbol } from "./TokenSymbol";
-import { useWindowSize } from "@uidotdev/usehooks";
+import { SelectMarketContent } from "./trade/DepositWithdrawModal/SelectMarketContent";
 
 const DEFAULT_TOKEN_ICON = "/tokenImages/default.svg";
 

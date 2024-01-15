@@ -16,11 +16,11 @@ import { type ApiMarket } from "@/types/api";
 import { type Side } from "@/types/global";
 import { toRawCoinAmount } from "@/utils/coin";
 import { fromDecimalPrice, toDecimalPrice } from "@/utils/econia";
+import { formatDecimal } from "@/utils/formatter";
 import { TypeTag } from "@/utils/TypeTag";
 
 import { OrderEntryInfo } from "./OrderEntryInfo";
 import { OrderEntryInputWrapper } from "./OrderEntryInputWrapper";
-import { formatDecimal } from "@/utils/formatter";
 type LimitFormValues = {
   price: string | undefined;
   size: string;

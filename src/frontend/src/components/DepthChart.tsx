@@ -18,123 +18,120 @@ export const DepthChart: React.FC<{
 
   const { data, isFetching } = useOrderBook(marketData.market_id);
 
-  const { labels, midMarket, bidData, askData, minPrice, maxPrice } =
-    useMemo(() => {
-      const labels: number[] = [];
-      const bidData: (number | undefined)[] = [];
-      const askData: (number | undefined)[] = [];
-      let minPrice = Infinity;
-      let maxPrice = -Infinity;
-      if (!isFetching && data?.bids) {
-        // Get min and max price to set a range
-        for (const order of data.bids.concat(data.asks)) {
-          if (order.price < minPrice) {
-            minPrice = order.price;
-          }
-          if (order.price > maxPrice) {
-            maxPrice = order.price;
-          }
+  const { labels, midMarket, bidData, askData } = useMemo(() => {
+    const labels: number[] = [];
+    const bidData: (number | undefined)[] = [];
+    const askData: (number | undefined)[] = [];
+    let minPrice = Infinity;
+    let maxPrice = -Infinity;
+    if (!isFetching && data?.bids) {
+      // Get min and max price to set a range
+      for (const order of data.bids.concat(data.asks)) {
+        if (order.price < minPrice) {
+          minPrice = order.price;
         }
-
-        // Append prices in ascending order to `labels`
-        data.bids
-          .slice()
-          .concat(data.asks.slice())
-          .sort((a, b) => a.price - b.price)
-          .forEach((o) => {
-            labels.push(o.price);
-            bidData.push(undefined);
-            askData.push(undefined);
-          });
-
-        const bidPriceToSize = new Map<number, number>();
-        const askPriceToSize = new Map<number, number>();
-        for (const { price, size } of data.bids) {
-          const priceKey = price;
-          if (!bidPriceToSize.has(priceKey)) {
-            bidPriceToSize.set(priceKey, 0);
-          }
-          bidPriceToSize.set(priceKey, bidPriceToSize.get(priceKey)! + size);
+        if (order.price > maxPrice) {
+          maxPrice = order.price;
         }
-        for (const { price, size } of data.asks) {
-          const priceKey = price;
-          if (!askPriceToSize.has(priceKey)) {
-            askPriceToSize.set(priceKey, 0);
-          }
-          askPriceToSize.set(priceKey, askPriceToSize.get(priceKey)! + size);
-        }
+      }
 
-        let askAcc = ZERO_BIGNUMBER;
-        for (let i = 0; i < labels.length; i++) {
-          const price = labels[i];
-          if (askPriceToSize.has(price))
-            askAcc = askAcc.plus(askPriceToSize.get(price)!);
-          if (askAcc.gt(0))
-            askData[i] = toDecimalSize({
-              size: askAcc,
-              marketData,
-            }).toNumber();
-        }
+      // Append prices in ascending order to `labels`
+      data.bids
+        .slice()
+        .concat(data.asks.slice())
+        .sort((a, b) => a.price - b.price)
+        .forEach((o) => {
+          labels.push(o.price);
+          bidData.push(undefined);
+          askData.push(undefined);
+        });
 
-        // We go in reverse order to get the accumulated bid size
-        let bidAcc = ZERO_BIGNUMBER;
-        for (let i = labels.length - 1; i >= 0; i--) {
-          const price = labels[i];
-          if (bidPriceToSize.has(price))
-            bidAcc = bidAcc.plus(bidPriceToSize.get(price)!);
-          if (bidAcc.gt(0))
-            bidData[i] = toDecimalSize({
-              size: bidAcc,
-              marketData,
-            }).toNumber();
+      const bidPriceToSize = new Map<number, number>();
+      const askPriceToSize = new Map<number, number>();
+      for (const { price, size } of data.bids) {
+        const priceKey = price;
+        if (!bidPriceToSize.has(priceKey)) {
+          bidPriceToSize.set(priceKey, 0);
         }
+        bidPriceToSize.set(priceKey, bidPriceToSize.get(priceKey)! + size);
+      }
+      for (const { price, size } of data.asks) {
+        const priceKey = price;
+        if (!askPriceToSize.has(priceKey)) {
+          askPriceToSize.set(priceKey, 0);
+        }
+        askPriceToSize.set(priceKey, askPriceToSize.get(priceKey)! + size);
+      }
 
-        labels.forEach((price, i) => {
-          labels[i] = toDecimalPrice({
-            price,
+      let askAcc = ZERO_BIGNUMBER;
+      for (let i = 0; i < labels.length; i++) {
+        const price = labels[i];
+        if (askPriceToSize.has(price))
+          askAcc = askAcc.plus(askPriceToSize.get(price)!);
+        if (askAcc.gt(0))
+          askData[i] = toDecimalSize({
+            size: askAcc,
             marketData,
           }).toNumber();
-        });
       }
-      const midMarket = (() => {
-        if (labels.length === 0) {
-          return 0;
-        }
-        if (labels.length === 1) {
-          return labels[0];
-        }
-        if (labels.length % 2 === 0) {
-          return (
-            (labels[labels.length / 2] + labels[labels.length / 2 - 1]) / 2
-          );
-        }
 
-        return labels[(labels.length - 1) / 2];
-      })();
+      // We go in reverse order to get the accumulated bid size
+      let bidAcc = ZERO_BIGNUMBER;
+      for (let i = labels.length - 1; i >= 0; i--) {
+        const price = labels[i];
+        if (bidPriceToSize.has(price))
+          bidAcc = bidAcc.plus(bidPriceToSize.get(price)!);
+        if (bidAcc.gt(0))
+          bidData[i] = toDecimalSize({
+            size: bidAcc,
+            marketData,
+          }).toNumber();
+      }
 
-      return {
-        labels: labels.filter(
-          (l) => l >= (1 - OFFSET) * midMarket && l <= (1 + OFFSET) * midMarket,
-        ),
-        bidData: bidData.filter((b, i) => {
-          const l = labels[i];
-          return l >= (1 - OFFSET) * midMarket && l <= (1 + OFFSET) * midMarket;
-        }),
-        askData: askData.filter((a, i) => {
-          const l = labels[i];
-          return l >= (1 - OFFSET) * midMarket && l <= (1 + OFFSET) * midMarket;
-        }),
-        minPrice: toDecimalPrice({
-          price: minPrice,
+      labels.forEach((price, i) => {
+        labels[i] = toDecimalPrice({
+          price,
           marketData,
-        }),
-        maxPrice: toDecimalPrice({
-          price: maxPrice,
-          marketData,
-        }),
-        midMarket,
-      };
-    }, [marketData, baseCoinInfo, quoteCoinInfo, data, isFetching]);
+        }).toNumber();
+      });
+    }
+    const midMarket = (() => {
+      if (labels.length === 0) {
+        return 0;
+      }
+      if (labels.length === 1) {
+        return labels[0];
+      }
+      if (labels.length % 2 === 0) {
+        return (labels[labels.length / 2] + labels[labels.length / 2 - 1]) / 2;
+      }
+
+      return labels[(labels.length - 1) / 2];
+    })();
+
+    return {
+      labels: labels.filter(
+        (l) => l >= (1 - OFFSET) * midMarket && l <= (1 + OFFSET) * midMarket,
+      ),
+      bidData: bidData.filter((b, i) => {
+        const l = labels[i];
+        return l >= (1 - OFFSET) * midMarket && l <= (1 + OFFSET) * midMarket;
+      }),
+      askData: askData.filter((a, i) => {
+        const l = labels[i];
+        return l >= (1 - OFFSET) * midMarket && l <= (1 + OFFSET) * midMarket;
+      }),
+      minPrice: toDecimalPrice({
+        price: minPrice,
+        marketData,
+      }),
+      maxPrice: toDecimalPrice({
+        price: maxPrice,
+        marketData,
+      }),
+      midMarket,
+    };
+  }, [marketData, data, isFetching]);
 
   return (
     <>
@@ -194,7 +191,7 @@ export const DepthChart: React.FC<{
                 // style tooltip to match the theme
                 // enabled: false,
                 callbacks: {
-                  label: (item: { label: any; raw: any }) => {
+                  label: (item: { label: string; raw: unknown }) => {
                     return [
                       `Price: ${item.label} ${quoteCoinInfo?.symbol}`,
                       `Total Size: ${item.raw} ${baseCoinInfo?.symbol}`,
@@ -214,6 +211,7 @@ export const DepthChart: React.FC<{
                   autoSkip: true,
                   padding: 0,
                   minRotation: 0,
+                  //eslint-disable-next-line
                   callback: function (value, index, values) {
                     // show 1/3 and 2/3 of the way through
                     if (
@@ -288,12 +286,12 @@ export const DepthChart: React.FC<{
   );
 };
 
-// crosshair plugin
-interface CorsairPluginOptions {
-  width: number;
-  color: string;
-  dash: number[];
-}
+// // crosshair plugin
+// interface CorsairPluginOptions {
+//   width: number;
+//   color: string;
+//   dash: number[];
+// }
 
 const plugin = {
   id: "crosshair",
@@ -304,7 +302,9 @@ const plugin = {
   },
   afterInit: (
     chart: { corsair: { x: number; y: number } },
+    //eslint-disable-next-line
     args: any,
+    //eslint-disable-next-line
     opts: any,
   ) => {
     chart.corsair = {
@@ -313,23 +313,31 @@ const plugin = {
     };
   },
   afterEvent: (
+    //eslint-disable-next-line
     chart: { corsair: { x: any; y: any; draw: any }; draw: () => void },
+    //eslint-disable-next-line
     args: { event?: any; inChartArea?: any },
   ) => {
     const { inChartArea } = args;
-    const { type, x, y } = args.event;
+    const { x, y } = args.event;
 
     chart.corsair = { x, y, draw: inChartArea };
     chart.draw();
   },
   beforeDatasetsDraw: (
     chart: {
+      //eslint-disable-next-line
       _active: any;
+      //eslint-disable-next-line
       chartArea?: any;
+      //eslint-disable-next-line
       corsair?: any;
+      //eslint-disable-next-line
       ctx?: any;
     },
+    //eslint-disable-next-line
     args: any,
+    //eslint-disable-next-line
     opts: { width: any; color: any; dash: any },
   ) => {
     const { ctx } = chart;

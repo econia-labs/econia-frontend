@@ -18,7 +18,7 @@ import { OrderEntryContextProvider } from "@/contexts/OrderEntryContext";
 import { useOrderBook } from "@/hooks/useOrderbook";
 import type { ApiMarket } from "@/types/api";
 import { getAllMarket } from "@/utils/helpers";
-
+//eslint-disable-next-line
 let TVChartContainer: undefined | any = undefined;
 
 (() => {

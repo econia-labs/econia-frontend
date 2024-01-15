@@ -77,6 +77,7 @@ To deploy on Vercel, you'll need to set up the following environment variables:
 | `NEXT_PUBLIC_UNCONNECTED_NOTICE_MESSAGE` | Message that show in modal when user have not connected wallet yet                     |
 | `NEXT_PUBLIC_READ_ONLY`                  | Config read only mode, 1 OR 0                                                          |
 | `NEXT_PUBLIC_READ_ONLY_MESSAGE`          | Error message when user attempt do a require sign operator                             |
+| `NEXT_PUBLIC_DEFAULT_MARKET_ID`          | Default market id                                                                      |
 
 The variables above will be added into the Vercel project, you can find them at the file `.env.example` or `.env.local` which you created from previous steps. However, the `GITHUB_ACCESS_TOKEN` is still missing, you have to create on your own.
 
