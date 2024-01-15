@@ -19,18 +19,22 @@ import { useOrderBook } from "@/hooks/useOrderbook";
 import type { ApiMarket } from "@/types/api";
 import { getAllMarket } from "@/utils/helpers";
 
-import {
-  type ResolutionString,
-  type ThemeName,
-} from "../../../public/static/charting_library";
+let TVChartContainer: undefined | any = undefined;
 
-const TVChartContainer = dynamic(
-  () =>
-    import("@/components/trade/TVChartContainer").then(
-      (mod) => mod.TVChartContainer,
-    ),
-  { ssr: false },
-);
+(() => {
+  try {
+    require("../../../public/static/charting_library");
+    TVChartContainer = dynamic(
+      () =>
+        import("@/components/trade/TVChartContainer").then(
+          (mod) => mod.TVChartContainer,
+        ),
+      { ssr: false },
+    );
+  } catch (error) {
+    //nothing
+  }
+})();
 
 type Props = {
   marketData: ApiMarket;
@@ -300,16 +304,6 @@ export default function Market({ allMarketData, marketData }: Props) {
   const defaultTVChartProps = useMemo(() => {
     return {
       symbol: `${marketData?.name ?? ""}`,
-      interval: "1" as ResolutionString,
-      datafeedUrl: "https://api.coingecko.com",
-      libraryPath: "/static/charting_library/",
-      clientId: "pontem.exchange",
-      userId: "public_user_id",
-      fullscreen: false,
-      autosize: true,
-      studiesOverrides: {},
-      theme: "Dark" as ThemeName,
-      // antipattern if we render market not found? need ! for typescript purposes
       selectedMarket: marketData as ApiMarket,
       allMarketData: allMarketData as ApiMarket[],
     };
@@ -344,7 +338,9 @@ export default function Market({ allMarketData, marketData }: Props) {
           <div className="flex flex-col gap-3 pb-0 md:w-[calc(100%-296px)] lg:w-[calc(100%-564px)]">
             <div className=" flex grow flex-col border border-neutral-600">
               <div className="flex h-full min-h-[400px] md:min-h-[unset]">
-                {isScriptReady && <TVChartContainer {...defaultTVChartProps} />}
+                {isScriptReady && TVChartContainer && (
+                  <TVChartContainer {...defaultTVChartProps} />
+                )}
               </div>
 
               <div className="hidden h-[140px] tall:block">
