@@ -57,7 +57,7 @@ cp -R .env.example .env.local
 - Run the development server:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 ## Deploying on Vercel
@@ -131,6 +131,7 @@ Once imported successfully, Vercel asks you to configure your project and deploy
 Click the `Deploy` button, wait for several minutes and see the results.
 
 ## General architectural
+
 ```mermaid
   graph TD;
       src-->sdk;
@@ -149,6 +150,7 @@ Click the `Deploy` button, wait for several minutes and see the results.
       trade-->OrderEntry;
       trade-->TradeHistories;
 ```
+
 ### Summary
 
 1. **src**: The foundational source directory containing the entire project's codebase, serving as the starting point for development.
