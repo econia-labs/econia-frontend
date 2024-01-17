@@ -36,6 +36,8 @@ git submodule update
 
 ## Installations
 
+- Get [`pnpm`](https://pnpm.io/installation) if you don't already have it
+
 - Navigate to the Frontend Folder
 
 ```bash
