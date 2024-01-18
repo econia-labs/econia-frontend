@@ -465,7 +465,6 @@ export default function Market({ allMarketData, marketData }: Props) {
 }
 
 export const getStaticPaths: GetStaticPaths<PathParams> = async () => {
-  // TODO: Working API
   const allMarketData = await getAllMarket();
   const paths = allMarketData.map((market: ApiMarket) => ({
     params: { market_id: `${market.market_id}` },

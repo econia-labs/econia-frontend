@@ -363,7 +363,6 @@ export const LimitOrderEntry: React.FC<{
               required: "PLEASE INPUT AMOUNT",
               min: 0,
               // max: HI_PRICE,
-              // TODO: check that size does not exceed base currency balance for asks
               onChange: (e) => {
                 const price = Number(getValues("price"));
                 if (!isNaN(price) && !isNaN(e.target.value)) {

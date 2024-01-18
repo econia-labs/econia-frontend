@@ -122,7 +122,7 @@ export const MarketAccountCard: React.FC<{
                 onClick={toggleExpanded}
               >
                 {baseTokenInfo?.source || "native"} |{" "}
-                {quoteTokenInfo?.source || "LAYERZERO"} {/** TODO */}
+                {quoteTokenInfo?.source || "LAYERZERO"}
               </div>
             </div>
           </div>

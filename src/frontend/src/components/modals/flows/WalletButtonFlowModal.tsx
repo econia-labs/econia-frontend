@@ -50,11 +50,9 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
   const { account } = useWallet();
   const queryClient = useQueryClient();
 
-  // TODO: change this after merge with ECO-319
   const { data: registeredMarkets } = useQuery(
     ["registeredMarkets", account?.address],
     async () => {
-      // TODO pull registered markets from SDK (ECO-355)
       return await getAllMarket();
     },
   );
@@ -92,8 +90,6 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
       onClose();
       setFlowStep(FlowStep.Closed);
     }
-
-    // TODO: refetch registered markets on chain registration OR flow step change
   }, [isOpen, flowStep, onClose, allMarketData, registeredMarkets]);
 
   return (
