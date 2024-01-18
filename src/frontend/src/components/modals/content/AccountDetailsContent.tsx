@@ -49,7 +49,6 @@ export const AccountDetailsContent: React.FC<AccountDetailsContentProps> = ({
   const { data: registeredMarkets } = useQuery(
     ["registeredMarkets", account?.address],
     async () => {
-      // TODO pull registered markets from SDK (ECO-355)
       const allMarketData = await getAllMarket();
       return allMarketData;
     },
@@ -69,7 +68,6 @@ export const AccountDetailsContent: React.FC<AccountDetailsContentProps> = ({
               {account?.address}
             </p>
           </div>
-          {/* TODO address copy indicator (ECO-356) */}
           <button
             className="ml-2"
             onClick={() => {

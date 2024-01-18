@@ -214,7 +214,6 @@ const DepositWithdrawForm: React.FC<{
               : "Withdraw"}
           </Button>
         ) : (
-          // TODO: copied over from RegsiterAccountContext, make this a util function?
           <Button
             variant="primary"
             onClick={handleRegisterMarketAccount}

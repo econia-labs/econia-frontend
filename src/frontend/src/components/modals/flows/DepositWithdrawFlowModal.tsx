@@ -56,7 +56,6 @@ export const DepositWithdrawFlowModal: React.FC<Props> = ({
       selectedMarket.market_id,
     ],
     () => {
-      // TODO pull registered markets from SDK (ECO-355)
       return handleCheckRegisteredMarketAccount();
     },
   );

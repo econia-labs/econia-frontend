@@ -46,7 +46,6 @@ export default function Trade({ allMarketData }: Props) {
 }
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
-  // TODO: Working API
   const allMarketData = await getAllMarket();
   return {
     props: {
