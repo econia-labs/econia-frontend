@@ -31,7 +31,6 @@ export default function Trade({ allMarketData }: Props) {
     }
   }
 
-  // TODO: Better empty message
   return (
     <>
       <Head>
