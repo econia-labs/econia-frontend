@@ -5,9 +5,6 @@ import { API_URL } from "@/env";
 import { setOrderBook } from "@/features/orderBookSlice";
 import { type Orderbook, type Precision } from "@/types/global";
 
-// TODO: precision not yet implemented in API yet, so does nothing as of now
-// TODO update to include precision when backend is updated (ECO-199)
-
 type OrderBookResponse = {
   market_id: number;
   direction: "bid" | "ask";

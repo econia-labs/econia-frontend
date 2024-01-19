@@ -195,10 +195,10 @@ export const MarketOrderEntry: React.FC<{
       TypeTag.fromApiCoin(marketData.base).toString(),
       TypeTag.fromApiCoin(marketData.quote).toString(),
       BigInt(marketData.market_id), // market id
-      "0x1", // TODO get integrator ID
+      "0x1",
       orderSide,
       BigInt(rawSize.div(marketData.lot_size).toString()),
-      "abort", // TODO don't hardcode this either
+      "abort",
     );
 
     await signAndSubmitTransaction({
