@@ -230,12 +230,8 @@ export const TVChartContainer: React.FC<
         _onRealtimeCallback,
         _subscribeUID,
         _onResetCacheNeededCallback,
-      ) => {
-        // TODO
-      },
-      unsubscribeBars: async (_subscriberUID) => {
-        // TODO
-      },
+      ) => {},
+      unsubscribeBars: async (_subscriberUID) => {},
     }),
     [props.symbol, props.allMarketData, props.selectedMarket],
   );

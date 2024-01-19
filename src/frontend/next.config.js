@@ -8,7 +8,6 @@ const nextConfig = {
         destination: "/market",
         permanent: false,
       },
-      // TODO: Enable swap
       {
         source: "/swap",
         destination: process.env.NODE_ENV === "production" ? "/404" : "/swap",

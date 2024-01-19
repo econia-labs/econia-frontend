@@ -77,10 +77,6 @@ export default function Swap({ allMarketData }: Props) {
 }
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
-  // const allMarketData: ApiMarket[] = await fetch(
-  //   new URL("markets", API_URL).href
-  // ).then((res) => res.json());
-  // TODO
   const allMarketData = await getAllMarket();
 
   return {

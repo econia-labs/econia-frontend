@@ -216,12 +216,12 @@ export const LimitOrderEntry: React.FC<{
       TypeTag.fromApiCoin(marketData.base).toString(),
       TypeTag.fromApiCoin(marketData.quote).toString(),
       BigInt(marketData.market_id), // market id
-      "0x1", // TODO get integrator ID
+      "0x1",
       orderSide,
       BigInt(rawSize.div(marketData.lot_size).toString()),
       BigInt(rawPrice.div(marketData.tick_size).toString()),
-      "noRestriction", // TODO don't hardcode
-      "abort", // don't hardcode this either
+      "noRestriction",
+      "abort",
     );
     await signAndSubmitTransaction({
       type: "entry_function_payload",

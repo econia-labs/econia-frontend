@@ -79,7 +79,6 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
     );
   };
 
-  // TODO: https://github.com/econia-labs/econia/pull/421#discussion_r1323744522
   useEffect(() => {
     if (isOpen && flowStep === FlowStep.Closed) {
       setFlowStep(FlowStep.AccountDetails);
