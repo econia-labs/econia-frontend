@@ -13,7 +13,7 @@ import { API_URL } from "@/env";
 import { useOrderBookData } from "@/features/hooks";
 import { setPriceStats } from "@/features/priceStatsSlice";
 import { type ApiMarket } from "@/types/api";
-import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
+import { toDecimalPrice, toDecimalQuote, toDecimalSize } from "@/utils/econia";
 import { plusMinus } from "@/utils/formatter";
 import { TypeTag } from "@/utils/TypeTag";
 
@@ -24,6 +24,7 @@ import { MarketIconPair } from "./MarketIconPair";
 import { BaseModal } from "./modals/BaseModal";
 import { TokenSymbol } from "./TokenSymbol";
 import { SelectMarketContent } from "./trade/DepositWithdrawModal/SelectMarketContent";
+import BigNumber from "bignumber.js";
 
 const DEFAULT_TOKEN_ICON = "/tokenImages/default.svg";
 
@@ -123,6 +124,13 @@ export const StatsBar: React.FC<{
               price: priceStats[key],
               marketData: selectedMarket,
             }).toNumber();
+          }
+          if (key.includes("quote_volume")) {
+            acc[key] = toDecimalQuote({
+              ticks: BigNumber(priceStats[key]),
+              tickSize: BigNumber(selectedMarket.tick_size),
+              quoteCoinDecimals: BigNumber(selectedMarket.quote.decimals),
+            }).toNumber();
           } else {
             acc[key] = toDecimalSize({
               size: priceStats[key],
@@ -157,6 +165,29 @@ export const StatsBar: React.FC<{
   useEffect(() => {
     setIsSmallWindow(width! < 640);
   }, [width]);
+
+  // const { baseVolume, quoteVolume } = useMemo(() => {
+  //   if (priceInfo || priceInfo?.base_volume == undefined || priceInfo?.quote_volume == undefined) {
+  //     return {
+  //       baseVolume: 0,
+  //       quoteVolume: 0
+  //     }
+  //   }
+  //   const baseVolume = toDecimalSize({
+  //     size: Number(priceInfo.base_volume),
+  //     marketData: selectedMarket,
+  //   });
+
+  //   const quoteVolume = toDecimalSize({
+  //     size: Number(priceInfo?.quote_volume),
+  //     marketData: selectedMarket,
+  //   });
+
+  //   return {
+  //     baseVolume,
+  //     quoteVolume
+  //   }
+  // }, [selectedMarket, priceInfo])
 
   return (
     <>

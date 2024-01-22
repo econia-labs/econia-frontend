@@ -46,6 +46,7 @@ type PathParams = {
 };
 
 export default function Market({ allMarketData, marketData }: Props) {
+  console.log("🚀 ~ Market ~ marketData:", marketData);
   const [tab, setTab] = useState<"orders" | "order-book" | "trade-histories">(
     "orders",
   );
