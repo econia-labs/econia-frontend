@@ -4,7 +4,6 @@ interface ImageWithFallbackProps extends ImageProps {
   fallback?: string;
   alt: string;
   src: string;
-  // [key: string]: any; // allow any other props
 }
 
 const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
@@ -16,7 +15,6 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   return <Image alt={alt} src={src ?? fallback} {...props} />;
 };
 
-// copy paste from statsbar, think about making a unified component later
 const DEFAULT_TOKEN_ICON = "/tokenImages/default.svg";
 type MarketIconPairProps = {
   baseAssetIcon?: string;

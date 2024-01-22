@@ -8,13 +8,11 @@ export const NO_CUSTODIAN = 0;
 
 export const TESTNET_TOKEN_LIST: RawCoinInfo[] = [
   ...DEFAULT_TESTNET_LIST.map((coin) => {
-    // Overrides
     if (coin.symbol === "APT") {
       coin.logo_url = "/tokenImages/APT.png";
     }
     return coin;
   }),
-  // Additions
   {
     name: "Test ETH",
     symbol: "tETH",
@@ -59,11 +57,9 @@ export const TESTNET_TOKEN_LIST: RawCoinInfo[] = [
 
 export const MAINNET_TOKEN_LIST: RawCoinInfo[] = [
   ...PERMISSIONED_LIST.map((coin) => {
-    // Overrides
     if (coin.symbol === "APT") {
       coin.logo_url = "/tokenImages/APT.png";
     }
     return coin;
   }),
-  // Additions
 ];

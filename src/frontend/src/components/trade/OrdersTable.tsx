@@ -51,7 +51,7 @@ export const OrdersTable: React.FC<{
       );
       const responseText = await response.text();
       const orders = JSON.parse(
-        responseText.replace(/"order_id":(\d+)/g, '"order_id":"$1"'), // convert order_id to string to avoid precision loss
+        responseText.replace(/"order_id":(\d+)/g, '"order_id":"$1"'),
       );
       return orders;
     },
@@ -371,7 +371,6 @@ export const OrdersTable: React.FC<{
             <></>
           ) : isLoading || !data ? (
             <>
-              {/* temporarily removing skeletong to help UX and reduce glitchyness. see: ECO-230 */}
               <tr>
                 {table.getAllColumns().map((column, i) => (
                   <td

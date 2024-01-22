@@ -173,7 +173,6 @@ export const StatsBar: React.FC<{
           onSelectMarket={(id, name) => {
             setIsModalOpen(false);
             if (name == undefined) {
-              // selected an undefined market
               toast.error("Selected market is undefined, please try again.");
               return;
             }
@@ -189,7 +188,6 @@ export const StatsBar: React.FC<{
           View on Larger Screen
         </div>
       )}
-      {/* Desktop */}
       <div className="hidden justify-between border-b border-neutral-600 px-[29.19px] py-3 md:flex lg:pr-[46.24px]">
         <div className="flex  overflow-x-clip whitespace-nowrap">
           <button
@@ -209,7 +207,6 @@ export const StatsBar: React.FC<{
               </div>
             </div>
           </button>
-          {/* mobile price */}
           <div className="block md:hidden">
             <p className="font-roboto-mono font-light">
               <span className="inline-block min-w-[4em] text-xl text-white">
@@ -239,7 +236,6 @@ export const StatsBar: React.FC<{
               </span>
             </p>
           </div>
-          {/* price */}
           <div className="ml-[28.83px] hidden md:block">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
               LAST PRICE <TokenSymbol symbol={quoteSymbol} />
@@ -254,7 +250,6 @@ export const StatsBar: React.FC<{
               )}
             </p>
           </div>
-          {/* 24 hr */}
           <div className="ml-4 hidden md:block lg:ml-[21.4px]">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
               24H CHANGE
@@ -291,7 +286,6 @@ export const StatsBar: React.FC<{
               )}
             </p>
           </div>
-          {/* 24 hr high */}
           <div className="ml-4 hidden md:block lg:ml-[28.83px]">
             <span className="font-roboto-mono text-xs font-light uppercase text-neutral-500">
               24h high
@@ -306,7 +300,6 @@ export const StatsBar: React.FC<{
               )}
             </p>
           </div>
-          {/* 24 hr low */}
           <div className="ml-4 hidden md:block lg:ml-[21.4px]">
             <span className="font-roboto-mono text-xs font-light uppercase text-neutral-500">
               24h low
@@ -321,7 +314,6 @@ export const StatsBar: React.FC<{
               )}
             </p>
           </div>
-          {/* 24 hr main */}
           <div className="ml-4 hidden md:block lg:ml-[21.4px]">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
               24H VOLUME <TokenSymbol symbol={baseSymbol} />
@@ -341,7 +333,6 @@ export const StatsBar: React.FC<{
               )}
             </p>
           </div>
-          {/* 24 hr pair */}
           <div className="ml-4 hidden md:block lg:ml-5">
             <span className="font-roboto-mono text-xs font-light text-neutral-500">
               24H VOLUME <TokenSymbol symbol={quoteSymbol} />
@@ -367,7 +358,6 @@ export const StatsBar: React.FC<{
 
         <SocialMediaIcons className={"my-auto hidden md:block"} />
       </div>
-      {/* Mobile */}
       <div className="flex h-[120px] flex-shrink-0 flex-col justify-center border-b border-neutral-600 px-[29.28px] pr-[30.85px] md:hidden">
         <div className="flex w-full justify-between">
           <div className="flex h-fit items-center">
@@ -418,7 +408,6 @@ export const StatsBar: React.FC<{
           </div>
         </div>
         <div className="mt-[5.73px] flex gap-4 pl-[0.07px]">
-          {/* 24 hr high */}
           <div className="flex gap-3">
             <span className="font-roboto-mono text-xs font-light uppercase text-neutral-500">
               high
@@ -472,7 +461,6 @@ export const StatsBar: React.FC<{
           </div>
         </div>
         <div className="mt-1 flex gap-4 pl-[0.07px]">
-          {/* 24 hr high */}
           <div className="flex gap-3">
             <span className="min-w-[28.81px] font-roboto-mono text-xs font-light uppercase text-neutral-500">
               {"low "}

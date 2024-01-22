@@ -158,6 +158,6 @@ export const getStaticProps: GetStaticProps = async () => {
       allMarketData,
       coinInfoList,
     },
-    revalidate: 600, // 10 minutes
+    revalidate: 600,
   };
 };

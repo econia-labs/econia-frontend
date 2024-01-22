@@ -49,8 +49,6 @@ const Row: React.FC<{
     <Tooltip
       placement="left"
       mouseLeaveDelay={0}
-      // showArrow={false}
-
       overlay={
         focus.price === price && focus.side ? (
           <div className="w- h-fit  border border-neutral-600 bg-neutral-800 bg-noise px-4 py-2 font-roboto-mono text-neutral-500">
@@ -178,7 +176,6 @@ export function OrderbookTable({
 
   return (
     <div className="flex grow flex-col">
-      {/* Large screen header */}
       <div className="hidden h-[60px] w-[252px] flex-col justify-center pl-[17.03px] pr-[11.27px] lg:flex">
         <div className="flex justify-between">
           <p className="font-jost text-base font-bold text-white">Order Book</p>
@@ -192,7 +189,6 @@ export function OrderbookTable({
           </p>
         </div>
       </div>
-      {/* Mobile screen header */}
       <div className="flex h-[30px] lg:mb-2 lg:hidden">
         <div className="flex w-[50%] justify-between px-3 pl-4 pt-[7px] lg:px-3 lg:pt-[12px]">
           <p className="whitespace-nowrap font-roboto-mono text-xs text-neutral-500">
@@ -211,7 +207,6 @@ export function OrderbookTable({
           </p>
         </div>
       </div>
-      {/* Table content */}
       <div className="h-[1px] bg-neutral-600"></div>
       <div
         className={`scrollbar-none relative flex h-[173px] grow pt-[6.53px] lg:flex-col ${
@@ -246,7 +241,6 @@ export function OrderbookTable({
           </div>
         ) : (
           <div className="absolute flex h-full w-full flex-row-reverse pb-2 lg:block">
-            {/* ASK */}
             <div
               className=" scrollbar-none flex h-full max-h-full w-[calc(50%-0.5px)] grow flex-col overflow-auto lg:h-[calc((100%-26px)/2)] lg:w-auto"
               ref={centerRef}
@@ -279,7 +273,6 @@ export function OrderbookTable({
                       />
                     ))}
             </div>
-            {/* SPREAD */}
             <div className="hidden items-center justify-between border-y border-neutral-600 lg:flex">
               <div className="z-10 ml-4 text-right font-roboto-mono text-xs text-white">
                 {toDecimalPrice({
@@ -296,7 +289,6 @@ export function OrderbookTable({
                   : "-"}
               </div>
             </div>
-            {/* BID */}
             <div className="scrollbar-none flex h-full w-[calc(50%+0.5px)] grow flex-col overflow-y-auto lg:h-[calc((100%-26px)/2)] lg:w-auto">
               {data?.bids?.map((level) => (
                 <Row

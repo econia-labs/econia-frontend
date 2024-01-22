@@ -72,7 +72,6 @@ export const TradeHistoryTable: React.FC<{
           const currentTime = new Date();
           const timeDifference = currentTime.getTime() - timestamp.getTime();
           const hoursDifference = timeDifference / (1000 * 60 * 60);
-          // If the trade is from more than 24 hours ago, show the date
           if (hoursDifference < 24)
             return (
               <span className="whitespace-nowrap">
@@ -195,7 +194,6 @@ export const TradeHistoryTable: React.FC<{
           <tbody>
             {isLoading || !data ? (
               <>
-                {/* temporarily removing skeletong to help UX and reduce glitchyness. see: ECO-230 */}
                 <tr>
                   {table.getAllColumns().map((column, i) => (
                     <td

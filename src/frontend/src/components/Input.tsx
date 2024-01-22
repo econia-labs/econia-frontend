@@ -29,7 +29,6 @@ export const Input: React.FC<{
 
   return (
     <div className="flex h-10 w-full items-center gap-2 border border-neutral-600 p-4">
-      {/* start adornment */}
       <span className="flex h-full items-center whitespace-nowrap font-roboto-mono text-sm font-medium text-white">
         {startAdornment}
       </span>
@@ -47,7 +46,6 @@ export const Input: React.FC<{
         }}
         disabled={disabled}
       />
-      {/* end adornment */}
       <span className="flex h-full items-center font-roboto-mono font-light text-neutral-400">
         {endAdornment}
       </span>

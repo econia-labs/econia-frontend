@@ -25,7 +25,6 @@ export const DepositWithdrawFlowModal: React.FC<Props> = ({
   selectedMarket,
   isOpen,
   onClose,
-  // allMarketData,
 }) => {
   const { account, aptosClient } = useAptos();
 

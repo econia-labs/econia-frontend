@@ -27,7 +27,7 @@ const DAY_BY_RESOLUTION: { [key: string]: string } = {
   "1": "60",
 };
 export interface ChartContainerProps {
-  symbol: string; //ChartingLibraryWidgetOptions["symbol"];
+  symbol: string;
 }
 
 const GREEN = "rgba(110, 213, 163, 1.0)";
@@ -36,16 +36,7 @@ const RED = "rgba(240, 129, 129, 1.0)";
 const GREEN_OPACITY_HALF = "rgba(110, 213, 163, 0.5)";
 const RED_OPACITY_HALF = "rgba(240, 129, 129, 0.5)";
 
-const resolutions = [
-  "1",
-  "5",
-  "15",
-  "30",
-  "60",
-  "4H",
-  // "12H",
-  "1D",
-];
+const resolutions = ["1", "5", "15", "30", "60", "4H", "1D"];
 
 const configurationData: DatafeedConfiguration = {
   supported_resolutions: resolutions,
@@ -102,12 +93,7 @@ export const TVChartContainer: React.FC<
 
         onResultReadyCallback(symbols);
       },
-      resolveSymbol: async (
-        symbolName,
-        onSymbolResolvedCallback,
-        // onResolveErrorCallback,
-        // extension,
-      ) => {
+      resolveSymbol: async (symbolName, onSymbolResolvedCallback) => {
         if (props.symbol !== symbolName) {
           const market = props.allMarketData?.find(
             (market: ApiMarket | MarketData) => market.name == symbolName,
@@ -133,7 +119,6 @@ export const TVChartContainer: React.FC<
           has_intraday: true,
           has_daily: true,
           has_weekly_and_monthly: false,
-          // intraday_multipliers: configurationData.intraday_multipliers,
           timezone: getClientTimezone(),
           type: "crypto",
           supported_resolutions: configurationData.supported_resolutions,
@@ -176,17 +161,14 @@ export const TVChartContainer: React.FC<
 
           const bars: Bar[] = data
             .map(
-              (
-                bar: {
-                  start_time: string;
-                  open: number;
-                  close: number;
-                  low: number;
-                  high: number;
-                  volume: number;
-                },
-                // index: number,
-              ): Bar => ({
+              (bar: {
+                start_time: string;
+                open: number;
+                close: number;
+                low: number;
+                high: number;
+                volume: number;
+              }): Bar => ({
                 time: new Date(bar.start_time).getTime(),
                 open: toDecimalPrice({
                   price: bar.open,
@@ -257,7 +239,6 @@ export const TVChartContainer: React.FC<
         "control_bar",
         "study_templates",
         "snapshot_trading_drawings",
-        // "header_resolutions",
       ],
       fullscreen: false,
       autosize: true,
@@ -283,12 +264,10 @@ export const TVChartContainer: React.FC<
         "paneProperties.legendProperties.showVolume": true,
       },
       studies_overrides: {
-        // ...props.studiesOverrides,
         "volume.volume.color.0": RED_OPACITY_HALF,
         "volume.volume.color.1": GREEN_OPACITY_HALF,
       },
       time_frames: [
-        // defaults
         {
           text: "1D",
           resolution: "1",
@@ -318,8 +297,8 @@ export const TVChartContainer: React.FC<
           resolution: "W",
         },
         {
-          text: "1000y", // custom ALL timeframe
-          resolution: "1", // may want to specify a different resolution here for server load purposes
+          text: "1000y",
+          resolution: "1",
           description: "All",
           title: "All",
         },

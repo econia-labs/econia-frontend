@@ -88,7 +88,7 @@ export const MarketOrderEntry: React.FC<{
       });
       return Number(rs[0]);
     } catch (e) {
-      return 2000; // default
+      return 2000;
     }
   });
 
@@ -99,7 +99,6 @@ export const MarketOrderEntry: React.FC<{
     if (!takerFeeDivisor || !totalSize) {
       return "--";
     }
-    // check order book
     const takerSize = Number(totalSize) * 1;
     return `${Number(((takerSize * 1) / takerFeeDivisor).toFixed(4))}`;
   }, [takerFeeDivisor, last_price, watchSize]);
@@ -141,13 +140,11 @@ export const MarketOrderEntry: React.FC<{
 
     const rawSize = toRawCoinAmount(size, marketData.base.decimals);
 
-    // check that size satisfies lot size
     if (!rawSize.modulo(marketData.lot_size).eq(0)) {
       setError("size", { message: "INVALID LOT SIZE" });
       return;
     }
 
-    // check that size satisfies min size
     if (rawSize.lt(marketData.min_size)) {
       setError("size", { message: "SIZE TOO SMALL" });
       return;
@@ -163,9 +160,7 @@ export const MarketOrderEntry: React.FC<{
       marketData.quote.decimals,
     );
 
-    // market sell -- make sure user has enough base balance
     if (side === "sell") {
-      // check that user has sufficient base coins on ask
       if (rawBaseBalance.lt(rawSize)) {
         setError("size", { message: "INSUFFICIENT BALANCE" });
         return;
@@ -194,7 +189,7 @@ export const MarketOrderEntry: React.FC<{
       ECONIA_ADDR,
       TypeTag.fromApiCoin(marketData.base).toString(),
       TypeTag.fromApiCoin(marketData.quote).toString(),
-      BigInt(marketData.market_id), // market id
+      BigInt(marketData.market_id),
       "0x1",
       orderSide,
       BigInt(rawSize.div(marketData.lot_size).toString()),

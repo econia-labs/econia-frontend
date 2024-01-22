@@ -25,7 +25,6 @@ export const DepthChart: React.FC<{
     let minPrice = Infinity;
     let maxPrice = -Infinity;
     if (!isFetching && data?.bids) {
-      // Get min and max price to set a range
       for (const order of data.bids.concat(data.asks)) {
         if (order.price < minPrice) {
           minPrice = order.price;
@@ -35,7 +34,6 @@ export const DepthChart: React.FC<{
         }
       }
 
-      // Append prices in ascending order to `labels`
       data.bids
         .slice()
         .concat(data.asks.slice())
@@ -75,7 +73,6 @@ export const DepthChart: React.FC<{
           }).toNumber();
       }
 
-      // We go in reverse order to get the accumulated bid size
       let bidAcc = ZERO_BIGNUMBER;
       for (let i = labels.length - 1; i >= 0; i--) {
         const price = labels[i];
@@ -145,7 +142,6 @@ export const DepthChart: React.FC<{
       >
         <Line
           options={{
-            // responsive: true,
             maintainAspectRatio: false,
             layout: {
               padding: 0,
@@ -164,8 +160,6 @@ export const DepthChart: React.FC<{
               intersect: false,
             },
             plugins: {
-              // needed to add this because crosshair is not a native plugin
-              // one way to fix this is to extend the chart.js types
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
               crosshair: {
@@ -173,10 +167,9 @@ export const DepthChart: React.FC<{
               },
               title: {
                 display: true,
-                text: `MID MARKET ${
-                  // labels length should never be odd
-                  formatNumber(midMarket, 2) ?? "-"
-                } ${marketData.quote.symbol}`,
+                text: `MID MARKET ${formatNumber(midMarket, 2) ?? "-"} ${
+                  marketData.quote.symbol
+                }`,
                 color: "white",
               },
               animation: {
@@ -188,8 +181,6 @@ export const DepthChart: React.FC<{
                 display: false,
               },
               tooltip: {
-                // style tooltip to match the theme
-                // enabled: false,
                 callbacks: {
                   label: (item: { label: string; raw: unknown }) => {
                     return [
@@ -213,14 +204,7 @@ export const DepthChart: React.FC<{
                   minRotation: 0,
                   //eslint-disable-next-line
                   callback: function (value, index, values) {
-                    // show 1/3 and 2/3 of the way through
-                    if (
-                      // index === Math.floor(values.length / 4) ||
-                      // index === Math.floor(values.length / 5) ||
-                      // index === Math.floor((3 * values.length) / 4)
-                      index % 3 ===
-                      2
-                    ) {
+                    if (index % 3 === 2) {
                       return formatNumber(labels[index], 2) ?? "-";
                     } else {
                       return "";
@@ -247,7 +231,6 @@ export const DepthChart: React.FC<{
                     });
                     const formatted = formatter.format(Number(value));
 
-                    // show 0.0 as <0.1
                     return value === 0
                       ? "0"
                       : formatted === "0.0"
@@ -265,7 +248,7 @@ export const DepthChart: React.FC<{
               {
                 fill: true,
                 label: "Size",
-                data: bidData, //.slice(bidData.length - Math.min(bidData.length, askData.length), bidData.length),
+                data: bidData,
                 borderColor: "rgba(110, 213, 163, 1)",
                 backgroundColor: "rgba(110, 213, 163, 0.3)",
                 stepped: true,
@@ -273,7 +256,7 @@ export const DepthChart: React.FC<{
               {
                 fill: true,
                 label: "Size",
-                data: askData, //.slice(askData.length - Math.min(bidData.length, askData.length), askData.length),
+                data: askData,
                 borderColor: "rgba(213, 110, 110, 1)",
                 backgroundColor: "rgba(213, 110, 110, 0.3)",
                 stepped: true,
@@ -285,13 +268,6 @@ export const DepthChart: React.FC<{
     </>
   );
 };
-
-// // crosshair plugin
-// interface CorsairPluginOptions {
-//   width: number;
-//   color: string;
-//   dash: number[];
-// }
 
 const plugin = {
   id: "crosshair",

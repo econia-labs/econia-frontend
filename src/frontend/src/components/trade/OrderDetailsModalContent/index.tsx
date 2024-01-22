@@ -46,14 +46,7 @@ const RowDetails: React.FC<RowDetailsProps> = ({
 
 export const OrderDetailsModalContent: React.FC<
   OrderDetailsModalContentProps
-> = ({
-  orderDetails,
-  baseSymbol,
-  quoteSymbol,
-  marketData,
-  cancelOrder,
-  // loading,
-}) => {
+> = ({ orderDetails, baseSymbol, quoteSymbol, marketData, cancelOrder }) => {
   const { data } = useQuery<TradeHistory>(
     ["useOrderDetailsModalContent", orderDetails?.order_id],
     async () => {
@@ -207,9 +200,7 @@ export const OrderDetailsModalContent: React.FC<
       style={{ backgroundImage: `url(${bg.src})` }}
       className="w-full bg-neutral-800 p-6"
     >
-      {/* Modal Title */}
       <div className="text-center text-lg font-bold">Order Details</div>
-      {/* Modal Content */}
       <div className="flex flex-col pt-2  font-roboto-mono text-sm">
         <RowDetails label="Order ID">{orderId}</RowDetails>
         <RowDetails label="Time Placed">{timePlaced}</RowDetails>

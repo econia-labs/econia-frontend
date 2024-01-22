@@ -143,14 +143,10 @@ export const SelectMarketContent: React.FC<{
         id: "base_volume_24h",
         header: "24h volume",
         cell: (info) => {
-          // const marketData = info.row.original;
           const baseVolume = info.getValue();
           const baseSymbol = info.row.original.name?.split("-")[0] ?? "-";
           if (baseVolume == null) return `- ${baseSymbol}`;
-          // const volume = toDecimalSize({
-          //   size: baseVolume,
-          //   marketData,
-          // }).toNumber();
+
           const volume = baseVolume / (10 ^ 3);
           return `${volume.toLocaleString(undefined, {
             maximumFractionDigits: volume < 10000 ? 2 : 0,
@@ -188,7 +184,6 @@ export const SelectMarketContent: React.FC<{
                 <RecognizedIcon className="m-auto h-5 w-5" />
               ) : (
                 <></>
-                // <NotRecognizedIcon className="m-auto h-5 w-5" />
               )}
             </div>
           );
@@ -321,7 +316,6 @@ export const SelectMarketContent: React.FC<{
                       }
                     }
 
-                    // recognized
                     if (header.id === "is_recognized") {
                       if (
                         selectedTab === 0 &&

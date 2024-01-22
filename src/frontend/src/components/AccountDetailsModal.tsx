@@ -78,7 +78,6 @@ export const AccountDetailsModal: React.FC<{
         return data;
       } catch (e) {
         if (e instanceof Error) {
-          // toast.error(e.message);
           console.warn(e.message);
         } else {
           console.error(e);
@@ -90,7 +89,6 @@ export const AccountDetailsModal: React.FC<{
 
   const copyToClipboard = useCallback(() => {
     setShowCopiedNotif(true);
-    // remove notif after 1 second
     setTimeout(() => {
       setShowCopiedNotif(false);
     }, 1000);
@@ -109,14 +107,11 @@ export const AccountDetailsModal: React.FC<{
         <p className="mb-8 mt-[28px] font-jost text-xl font-bold text-white">
           Account Details
         </p>
-        {/* card */}
         <div className="mb-7 flex justify-between gap-9 border-[1px] border-neutral-600 px-9 py-7">
-          {/* Wallet Address */}
           <div
             onClick={copyToClipboard}
             className="flex h-[30px] w-[137px] cursor-pointer items-center justify-center gap-2 border-[1px] border-neutral-600 bg-white py-1 text-xs font-medium uppercase tracking-[0.24px]"
           >
-            {/* invisible character,  */}
             {showCopiedNotif ? (
               "COPIED!"
             ) : (
@@ -130,7 +125,6 @@ export const AccountDetailsModal: React.FC<{
               </>
             )}
           </div>
-          {/* Disconnect Button */}
           <Button
             variant="secondary"
             onClick={disconnectWallet}
@@ -143,7 +137,6 @@ export const AccountDetailsModal: React.FC<{
         <p className="mb-[26.8px] font-jost font-bold text-white">
           Open Market Accounts
         </p>
-        {/* market accounts */}
         {marketAccounts?.map((marketAccount, index: number) => {
           return (
             <>

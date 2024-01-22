@@ -7,8 +7,6 @@ import {
   type U128,
 } from "@/types/move";
 
-// econia::tablist
-
 export type TabList<K> = {
   head: {
     vec: MoveOption<K>;
@@ -30,8 +28,6 @@ export type TabListNode<K, V> = {
     vec: MoveOption<K>;
   };
 };
-
-// econia::user
 
 export type Collateral = {
   map: TabList<U128>;

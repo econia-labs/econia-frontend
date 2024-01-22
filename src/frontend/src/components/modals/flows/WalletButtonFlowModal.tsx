@@ -19,16 +19,6 @@ type Props = {
   onClose: () => void;
 };
 
-/**
- * Modal flows:
- * 1. Account Details -> Deposit/Withdraw
- * 2. Account Details -> Register Account -> Select Market -> Account Details // wait for on chain registration / loader
- *
- * edge cases:
- * - filtered markets is empty
- *    - show "no markets available" message
- *    - no unregistered markets available
- */
 enum FlowStep {
   AccountDetails,
   DepositWithdraw,
@@ -59,7 +49,6 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
 
   const onDepositWithdrawClick = (selected: ApiMarket) => {
     setMarket(selected);
-    // assumes that market selected is valid
     setFlowStep(FlowStep.DepositWithdraw);
   };
   const onRegisterAccountClick = () => {
@@ -84,7 +73,6 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
       setFlowStep(FlowStep.AccountDetails);
     }
 
-    // if the modal is closed, we want to reset the flow step and trigger the onClose callback
     if (!isOpen) {
       onClose();
       setFlowStep(FlowStep.Closed);
@@ -113,8 +101,6 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
           className="!w-[457.093px] !p-0"
           isOpen={flowStep === FlowStep.DepositWithdraw}
           onClose={onClose}
-          // custom step, so we don't want to close the modal when the user clicks the close button
-          // rather we go back to the account details step
           onBack={() => {
             setFlowStep(FlowStep.AccountDetails);
           }}
@@ -139,7 +125,6 @@ export const WalletButtonFlowModal: React.FC<Props> = ({
           }}
         >
           <RegisterAccountContent
-            // if user hasn't selected one through modal, automatically select the first one that user doesnt have an account for
             selectedMarket={selectedMarketToRegister || allMarketData[0]}
             selectMarket={onMarketSelectClick}
             onAccountCreated={(status: boolean) => {

@@ -35,7 +35,6 @@ export const useOrderBook = (
       const [response1, response2] = await Promise.all(fetchPromises);
       const bids = await response1.json();
       const asks = await response2.json();
-      // change value total_size to size to match the rest of the app
       bids.forEach((bid: OrderBookResponse) => {
         bid.size = bid.total_size;
         delete bid.total_size;
