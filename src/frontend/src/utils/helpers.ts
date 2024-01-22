@@ -1,8 +1,6 @@
 import { API_URL } from "@/env";
 import { type ApiMarket, type MarketSelectData } from "@/types/api";
 
-import { type Timezone } from "../../public/static/charting_library";
-
 /**
  * Fetches data for all markets from the specified API endpoint.
  *
@@ -55,7 +53,7 @@ export async function getAllMarket() {
  *
  * @returns {Timezone} - The client's timezone as a string identifier (e.g., "America/New_York").
  */
-export function getClientTimezone(): Timezone {
+export function getClientTimezone() {
   const timezones: { [key: string]: number } = {};
   timezones["America/New_York"] = -5;
   timezones["America/Los_Angeles"] = -8;
@@ -115,7 +113,7 @@ export function getClientTimezone(): Timezone {
   const timezone = (new Date().getTimezoneOffset() * -1) / 60;
   for (const key in timezones) {
     if (timezones[key] === timezone) {
-      return key as Timezone;
+      return key;
     }
   }
   return "Etc/UTC";
