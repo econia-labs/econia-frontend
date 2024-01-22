@@ -166,29 +166,6 @@ export const StatsBar: React.FC<{
     setIsSmallWindow(width! < 640);
   }, [width]);
 
-  // const { baseVolume, quoteVolume } = useMemo(() => {
-  //   if (priceInfo || priceInfo?.base_volume == undefined || priceInfo?.quote_volume == undefined) {
-  //     return {
-  //       baseVolume: 0,
-  //       quoteVolume: 0
-  //     }
-  //   }
-  //   const baseVolume = toDecimalSize({
-  //     size: Number(priceInfo.base_volume),
-  //     marketData: selectedMarket,
-  //   });
-
-  //   const quoteVolume = toDecimalSize({
-  //     size: Number(priceInfo?.quote_volume),
-  //     marketData: selectedMarket,
-  //   });
-
-  //   return {
-  //     baseVolume,
-  //     quoteVolume
-  //   }
-  // }, [selectedMarket, priceInfo])
-
   return (
     <>
       <BaseModal
