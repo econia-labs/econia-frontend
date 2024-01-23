@@ -215,7 +215,7 @@ export const TVChartContainer: React.FC<
       ) => {},
       unsubscribeBars: async (_subscriberUID) => {},
     }),
-    [props.symbol, props.allMarketData, props.selectedMarket],
+    [props.symbol, props.allMarketData, props.selectedMarket], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   useEffect(() => {
@@ -314,7 +314,7 @@ export const TVChartContainer: React.FC<
         tvWidget.current = undefined;
       }
     };
-  }, [datafeed, props.symbol]);
+  }, [datafeed, props.symbol]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="relative w-full">

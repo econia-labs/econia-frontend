@@ -1,6 +1,13 @@
 import { type Config } from "tailwindcss";
-import colors from "tailwindcss/colors";
+// import colors from "tailwindcss/colors";
 import { fontFamily } from "tailwindcss/defaultTheme";
+let colors = require('tailwindcss/colors')
+delete colors['lightBlue'] // <-----
+delete colors['warmGray']
+delete colors['trueGray']
+delete colors['coolGray']
+delete colors['blueGray']
+colors = { ...colors, ...{ transparent: 'transparent' } }
 
 const config = {
   content: [

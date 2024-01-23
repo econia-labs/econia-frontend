@@ -6,8 +6,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import React from "react";
-import Skeleton from "react-loading-skeleton";
 
+import Skeleton from "@/components/Skeleton";
 import { API_URL } from "@/env";
 import { type ApiMarket, type TradeHistory } from "@/types/api";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";

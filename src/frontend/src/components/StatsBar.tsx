@@ -1,12 +1,13 @@
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useQuery } from "@tanstack/react-query";
 import { useWindowSize } from "@uidotdev/usehooks";
+import BigNumber from "bignumber.js";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import Skeleton from "react-loading-skeleton";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 
+import Skeleton from "@/components/Skeleton";
 import { useAptos } from "@/contexts/AptosContext";
 import { useOrderEntry } from "@/contexts/OrderEntryContext";
 import { API_URL } from "@/env";
@@ -24,7 +25,6 @@ import { MarketIconPair } from "./MarketIconPair";
 import { BaseModal } from "./modals/BaseModal";
 import { TokenSymbol } from "./TokenSymbol";
 import { SelectMarketContent } from "./trade/DepositWithdrawModal/SelectMarketContent";
-import BigNumber from "bignumber.js";
 
 const DEFAULT_TOKEN_ICON = "/tokenImages/default.svg";
 

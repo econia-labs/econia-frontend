@@ -64,7 +64,7 @@ export const MarketOrderEntry: React.FC<{
       }
       setSTotalSize(Number((balance.base_available * percent) / 100));
     }
-  }, [percent, balance, side]);
+  }, [percent, balance, side]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setSTotalSize = (value: number | string) => {
     const quoteDecimalPlace = Math.round(
@@ -101,7 +101,7 @@ export const MarketOrderEntry: React.FC<{
     }
     const takerSize = Number(totalSize) * 1;
     return `${Number(((takerSize * 1) / takerFeeDivisor).toFixed(4))}`;
-  }, [takerFeeDivisor, last_price, watchSize]);
+  }, [takerFeeDivisor, last_price, watchSize]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const isSufficient = useMemo(() => {
     if (!Number(watchSize)) {
@@ -123,7 +123,7 @@ export const MarketOrderEntry: React.FC<{
     if (side === "sell") {
       return Number(watchSize) <= Number(balance?.base_available);
     }
-  }, [balance, watchSize, last_price]); //INSUFFICIENT
+  }, [balance, watchSize, last_price]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSubmit = async ({ size }: MarketFormValues) => {
     if (marketData.base == null) {

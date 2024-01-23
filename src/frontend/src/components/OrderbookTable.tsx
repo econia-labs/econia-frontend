@@ -1,8 +1,10 @@
-import { useWindowSize } from "@uidotdev/usehooks";
+// import { useWindowSize } from "@uidotdev/usehooks";
 import Tooltip from "rc-tooltip";
+import React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import Skeleton from "react-loading-skeleton";
+import { useWindowSize } from "usehooks-ts";
 
+import Skeleton from "@/components/Skeleton";
 import { useOrderEntry } from "@/contexts/OrderEntryContext";
 import { useOrderBookData } from "@/features/hooks";
 import { type ApiMarket } from "@/types/api";
@@ -44,7 +46,6 @@ const Row: React.FC<{
     size: level.size,
     marketData: marketData,
   });
-
   return (
     <Tooltip
       placement="left"
