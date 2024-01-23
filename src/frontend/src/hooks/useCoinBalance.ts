@@ -1,4 +1,3 @@
-// import { type Address } from "@aptos-labs/wallet-adapter-react";
 import { useQuery } from "@tanstack/react-query";
 import { type MaybeHexString } from "aptos";
 

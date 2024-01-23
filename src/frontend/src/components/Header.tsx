@@ -147,7 +147,6 @@ export function Header({
 }
 const SlidingMenu = ({
   isOpen,
-  // toggleMenu,
   onWalletButtonClick,
   onDepositWithdrawClick,
 }: {
@@ -254,7 +253,6 @@ const HeaderMobile = ({
         </Link>
       </div>
 
-      {/* Connection buttons */}
       <div className="flex h-[69px] items-center  gap-5">
         <div
           className="flex flex-col items-end gap-[8px] text-white"

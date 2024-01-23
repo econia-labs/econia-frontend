@@ -101,9 +101,7 @@ export const MarketAccountCard: React.FC<{
 
   return (
     <div className="mb-4 flex h-[107px] w-[378px] items-center justify-between gap-11 border-[1px] border-neutral-600 pb-[16px] pl-5 pr-14 pt-[15px]">
-      {/* left side */}
       <div>
-        {/* input copy row 1 */}
         <div className="mb-[9px] flex items-center">
           <div className="text-white">
             <div className="flex items-center font-bold">
@@ -115,7 +113,6 @@ export const MarketAccountCard: React.FC<{
               {base_symbol}/{quote_symbol}
               <RecognizedIcon className="ml-1 inline-block h-[9px] w-[9px] text-center" />
             </div>
-            {/* row2 within row1 */}
             <div>
               <div
                 className="ml-[27.42px] text-left text-xs uppercase text-neutral-500"
@@ -127,7 +124,6 @@ export const MarketAccountCard: React.FC<{
             </div>
           </div>
         </div>
-        {/* row 2 */}
         <Button
           variant="secondary"
           onClick={() => {
@@ -141,7 +137,6 @@ export const MarketAccountCard: React.FC<{
         </Button>
       </div>
 
-      {/* right side */}
       <div>
         <div className="text-left">
           <span className="font-roboto-mono text-xs font-light text-neutral-500">

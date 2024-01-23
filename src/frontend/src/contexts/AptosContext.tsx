@@ -31,7 +31,6 @@ export const AptosContext = createContext<AptosContextState | undefined>(
   undefined,
 );
 
-// Type guard for EntryFunctionPayload
 const isEntryFunctionPayload = (
   transaction: Types.TransactionPayload,
 ): transaction is Types.TransactionPayload_EntryFunctionPayload => {
@@ -43,7 +42,6 @@ export function AptosContextProvider({ children }: PropsWithChildren) {
     useWallet();
   const aptosClient = useMemo(() => new AptosClient(RPC_NODE_URL), []);
 
-  // returns true if transaction is confirmed, false if transaction fails
   const signAndSubmitTransaction = useCallback(
     async (
       ...args: Parameters<WalletContextState["signAndSubmitTransaction"]>
@@ -68,7 +66,6 @@ export function AptosContextProvider({ children }: PropsWithChildren) {
 
       try {
         const res = await aptosSignAndSubmitTransaction(transaction, options);
-        // taken from https://github.com/aptos-labs/aptos-wallet-adapter/tree/main/packages/wallet-adapter-react#signandsubmittransactionpayload
         try {
           await aptosClient.waitForTransaction(res?.hash || "");
           toast.success("Transaction confirmed");

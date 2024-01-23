@@ -44,7 +44,6 @@ export const LimitOrderEntry: React.FC<{
     setError,
     watch,
   } = useForm<LimitFormValues>({
-    // mode: "onBlur",
     defaultValues: {
       price: undefined,
     },
@@ -60,7 +59,7 @@ export const LimitOrderEntry: React.FC<{
       });
       return Number(rs[0]);
     } catch (e) {
-      return 2000; // default
+      return 2000;
     }
   });
   const [percent, setPercent] = useState(0);
@@ -89,7 +88,6 @@ export const LimitOrderEntry: React.FC<{
       return "--";
     }
 
-    // check order book
     let takerWeight = 0;
     if (
       side === "buy" &&
@@ -157,11 +155,8 @@ export const LimitOrderEntry: React.FC<{
             .toNumber()}`,
         );
       }, 0);
-      // setError("size", { message: "INVALID LOT SIZE" });
-      // return;
     }
 
-    // check that size satisfies min size
     if (rawSize.lt(marketData.min_size)) {
       setError("size", { message: "SIZE TOO SMALL" });
       return;
@@ -175,12 +170,9 @@ export const LimitOrderEntry: React.FC<{
       quoteCoinDecimals: marketData.quote.decimals,
     });
 
-    // validate tick size
     if (!rawPrice.modulo(marketData.tick_size).eq(0)) {
       rawPrice = rawPrice.minus(rawPrice.modulo(marketData.tick_size));
       setValue("price", `${toDecimalPrice({ price: rawPrice, marketData })}`);
-      // setError("price", { message: "INVALID TICK SIZE" });
-      // return;
     }
 
     const rawBaseBalance = toRawCoinAmount(
@@ -215,7 +207,7 @@ export const LimitOrderEntry: React.FC<{
       ECONIA_ADDR,
       TypeTag.fromApiCoin(marketData.base).toString(),
       TypeTag.fromApiCoin(marketData.quote).toString(),
-      BigInt(marketData.market_id), // market id
+      BigInt(marketData.market_id),
       "0x1",
       orderSide,
       BigInt(rawSize.div(marketData.lot_size).toString()),
@@ -249,7 +241,7 @@ export const LimitOrderEntry: React.FC<{
     if (side === "sell") {
       return Number(watchSize) <= Number(balance?.base_available);
     }
-  }, [balance, watchSize, watchPrice]); //INSUFFICIENT
+  }, [balance, watchSize, watchPrice]);
 
   useEffect(() => {
     if (side === "buy") {
@@ -277,7 +269,6 @@ export const LimitOrderEntry: React.FC<{
   }, [percent, balance, side, watchPrice]);
 
   useEffect(() => {
-    // totalSize
     if (!Number(watchPrice) || !Number(watchSize)) {
       setSTotalSize("");
       return;
@@ -362,7 +353,6 @@ export const LimitOrderEntry: React.FC<{
             {...register("size", {
               required: "PLEASE INPUT AMOUNT",
               min: 0,
-              // max: HI_PRICE,
               onChange: (e) => {
                 const price = Number(getValues("price"));
                 if (!isNaN(price) && !isNaN(e.target.value)) {
