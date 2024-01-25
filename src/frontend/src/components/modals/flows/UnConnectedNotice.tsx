@@ -13,7 +13,7 @@ const UnConnectedNotice = () => {
     if (!isLoading && !account?.address) {
       setOpen(true);
     }
-  }, [isLoading]);
+  }, [isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <BaseModal
       isOpen={isOpen}

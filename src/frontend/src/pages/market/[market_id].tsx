@@ -23,6 +23,7 @@ let TVChartContainer: undefined | any = undefined;
 
 (() => {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     require("../../../public/static/charting_library");
     TVChartContainer = dynamic(
       () =>
@@ -106,14 +107,16 @@ export default function Market({ allMarketData, marketData }: Props) {
           onDepositWithdrawClick={() => setDepositWithdrawModalOpen(true)}
           onWalletButtonClick={() => setWalletButtonModalOpen(true)}
         />
-        <StatsBar allMarketData={allMarketData} selectedMarket={marketData} />
+        {isScriptReady && (
+          <StatsBar allMarketData={allMarketData} selectedMarket={marketData} />
+        )}
         <main className="flex h-full min-h-[680px] w-full grow flex-col gap-3 p-3 md:flex-row">
           <div className="flex flex-col gap-3 pb-0 md:w-[calc(100%-296px)] lg:w-[calc(100%-564px)]">
             <div className=" flex grow flex-col border border-neutral-600">
               <div className="flex h-full min-h-[400px] md:min-h-[unset]">
-                {isScriptReady && TVChartContainer && (
+                {isScriptReady && TVChartContainer ? (
                   <TVChartContainer {...defaultTVChartProps} />
-                )}
+                ) : null}
               </div>
 
               <div className="hidden h-[140px] tall:block">

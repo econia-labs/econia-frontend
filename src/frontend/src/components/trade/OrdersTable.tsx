@@ -11,8 +11,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
-import Skeleton from "react-loading-skeleton";
 
+import Skeleton from "@/components/Skeleton";
 import { useAptos } from "@/contexts/AptosContext";
 import { API_URL, ECONIA_ADDR } from "@/env";
 import { type ApiMarket, type ApiOrder } from "@/types/api";

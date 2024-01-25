@@ -129,7 +129,7 @@ export const LimitOrderEntry: React.FC<{
     return `${Number(
       ((sizeApplyFee * 1) / takerFeeDivisor).toFixed(marketData.base.decimals),
     )}`;
-  }, [takerFeeDivisor, watchPrice, watchSize]);
+  }, [takerFeeDivisor, watchPrice, watchSize]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSubmit = async ({ price, size }: LimitFormValues) => {
     if (marketData.base == null) {
@@ -241,7 +241,7 @@ export const LimitOrderEntry: React.FC<{
     if (side === "sell") {
       return Number(watchSize) <= Number(balance?.base_available);
     }
-  }, [balance, watchSize, watchPrice]);
+  }, [balance, watchSize, watchPrice]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (side === "buy") {
@@ -266,7 +266,7 @@ export const LimitOrderEntry: React.FC<{
         ),
       );
     }
-  }, [percent, balance, side, watchPrice]);
+  }, [percent, balance, side, watchPrice]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!Number(watchPrice) || !Number(watchSize)) {
@@ -275,7 +275,7 @@ export const LimitOrderEntry: React.FC<{
     }
     const total = Number(watchSize) * Number(watchPrice);
     setSTotalSize(total);
-  }, [watchSize, watchPrice, side]);
+  }, [watchSize, watchPrice, side]); // eslint-disable-line react-hooks/exhaustive-deps
   const baseDecimalPlace = Math.round(
     Math.log(10 ** marketData.base.decimals / marketData.lot_size) /
       Math.log(10),
