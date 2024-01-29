@@ -59,7 +59,6 @@ export const AccountDetailsContent: React.FC<AccountDetailsContentProps> = ({
         Account Details
       </h2>
       <p className="mt-4 font-roboto-mono text-sm text-white">
-        TODO: everything else here
       </p>
       <div className="mt-8 w-full border border-neutral-600 px-6 py-4">
         <div className="flex">
