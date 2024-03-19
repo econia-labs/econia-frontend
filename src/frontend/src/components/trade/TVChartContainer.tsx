@@ -144,7 +144,8 @@ export const TVChartContainer: React.FC<
             `/candlesticks?${new URLSearchParams({
               market_id: `eq.${props.selectedMarket.market_id}`,
               resolution: `eq.${DAY_BY_RESOLUTION[resolution.toString()]}`,
-              and: `(start_time.lte.${toDateISOString},` +
+              and:
+                `(start_time.lte.${toDateISOString},` +
                 `start_time.gte.${fromDateISOString})`,
             })}`,
             API_URL,
@@ -313,19 +314,24 @@ export const TVChartContainer: React.FC<
       const endDaysAgo = 0;
       const startMilliseconds = now.getTime() - startDaysAgo * MS_IN_ONE_DAY;
       const endMilliseconds = now.getTime() - endDaysAgo * MS_IN_ONE_DAY;
-      const startTimestamp = Math.floor(new Date(startMilliseconds).getTime()) / 1000;
-      const endTimestamp = Math.floor(new Date(endMilliseconds).getTime()) / 1000;
+      const startTimestamp =
+        Math.floor(new Date(startMilliseconds).getTime()) / 1000;
+      const endTimestamp =
+        Math.floor(new Date(endMilliseconds).getTime()) / 1000;
 
-      chart.setVisibleRange({
-        from: startTimestamp,
-        to: endTimestamp
-      }).then(() => {
-        console.debug('Visible range applied!');
-        console.debug('from: ', new Date(startTimestamp * 1000));
-        console.debug('to:   ', new Date(endTimestamp * 1000));
-      }).catch(error => {
-        console.error('Error applying visible range:', error);
-      });
+      chart
+        .setVisibleRange({
+          from: startTimestamp,
+          to: endTimestamp,
+        })
+        .then(() => {
+          console.warn("Visible range applied!");
+          console.warn("from: ", new Date(startTimestamp * 1000));
+          console.warn("to:   ", new Date(endTimestamp * 1000));
+        })
+        .catch((error) => {
+          console.error("Error applying visible range:", error);
+        });
     });
 
     return () => {
