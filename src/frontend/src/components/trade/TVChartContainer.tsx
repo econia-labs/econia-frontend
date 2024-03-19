@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 
 import { API_URL } from "@/env";
 import { type ApiMarket, type MarketData } from "@/types/api";
@@ -23,9 +23,11 @@ const DAY_BY_RESOLUTION: { [key: string]: string } = {
   "15": "900",
   "240": "14400",
   "3D": "43200",
+  "10": "600",
   "5": "300",
   "1": "60",
 };
+const MS_IN_ONE_DAY = 24 * 60 * 60 * 1000;
 export interface ChartContainerProps {
   symbol: string;
 }
@@ -36,7 +38,7 @@ const RED = "rgba(240, 129, 129, 1.0)";
 const GREEN_OPACITY_HALF = "rgba(110, 213, 163, 0.5)";
 const RED_OPACITY_HALF = "rgba(240, 129, 129, 0.5)";
 
-const resolutions = ["1", "5", "15", "30", "60", "4H", "1D"];
+const resolutions = ["1", "5", "10", "15", "30", "60", "4H", "1D"];
 
 const configurationData: DatafeedConfiguration = {
   supported_resolutions: resolutions,
@@ -137,20 +139,18 @@ export const TVChartContainer: React.FC<
       ) => {
         const { from, to } = periodParams;
         try {
-          const res = await fetch(
-            new URL(
-              `/candlesticks?${new URLSearchParams({
-                market_id: `eq.${props.selectedMarket.market_id}`,
-                resolution: `eq.${DAY_BY_RESOLUTION[resolution.toString()]}`,
-                and: `(start_time.lte.${new Date(
-                  to * 1000,
-                ).toISOString()},start_time.gte.${new Date(
-                  from * 1000,
-                ).toISOString()})`,
-              })}`,
-              API_URL,
-            ).href,
-          );
+          const toDateISOString = new Date(to * 1000).toISOString();
+          const fromDateISOString = new Date(from * 1000).toISOString();
+          const url = new URL(
+            `/candlesticks?${new URLSearchParams({
+              market_id: `eq.${props.selectedMarket.market_id}`,
+              resolution: `eq.${DAY_BY_RESOLUTION[resolution.toString()]}`,
+              and: `(start_time.lte.${toDateISOString},` +
+                `start_time.gte.${fromDateISOString})`,
+            })}`,
+            API_URL,
+          ).href;
+          const res = await fetch(url);
           const data = await res.json();
           if (data.length < 1) {
             onHistoryCallback([], {
@@ -226,7 +226,7 @@ export const TVChartContainer: React.FC<
     const widgetOptions = {
       symbol: props.symbol as string,
       datafeed,
-      interval: "30",
+      interval: "5",
       container: ref.current,
       library_path: "/static/charting_library/",
       theme: "Dark",
@@ -306,6 +306,24 @@ export const TVChartContainer: React.FC<
     };
 
     tvWidget.current = new widget(widgetOptions);
+
+    tvWidget.current.onChartReady(() => {
+      const chart = tvWidget.current.activeChart();
+      const now = new Date();
+      const startDaysAgo = 1;
+      const endDaysAgo = 0;
+      const startMilliseconds = now.getTime() - startDaysAgo * MS_IN_ONE_DAY;
+      const endMilliseconds = now.getTime() - endDaysAgo * MS_IN_ONE_DAY;
+      const startTimestamp = Math.floor(new Date(startMilliseconds).getTime()) / 1000;
+      const endTimestamp = Math.floor(new Date(endMilliseconds).getTime()) / 1000;
+
+      chart.setVisibleRange({
+        from: startTimestamp,
+        to: endTimestamp
+      }).catch(error => {
+        console.error('Error applying visible range:', error);
+      });
+    });
 
     return () => {
       console.warn("reject");
