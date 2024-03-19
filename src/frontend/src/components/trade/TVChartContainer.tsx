@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useRouter } from "next/router";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import { API_URL } from "@/env";
 import { type ApiMarket, type MarketData } from "@/types/api";
@@ -23,7 +23,6 @@ const DAY_BY_RESOLUTION: { [key: string]: string } = {
   "15": "900",
   "240": "14400",
   "3D": "43200",
-  "10": "600",
   "5": "300",
   "1": "60",
 };
@@ -38,7 +37,7 @@ const RED = "rgba(240, 129, 129, 1.0)";
 const GREEN_OPACITY_HALF = "rgba(110, 213, 163, 0.5)";
 const RED_OPACITY_HALF = "rgba(240, 129, 129, 0.5)";
 
-const resolutions = ["1", "5", "10", "15", "30", "60", "4H", "1D"];
+const resolutions = ["1", "5", "15", "30", "60", "4H", "1D"];
 
 const configurationData: DatafeedConfiguration = {
   supported_resolutions: resolutions,
@@ -320,6 +319,10 @@ export const TVChartContainer: React.FC<
       chart.setVisibleRange({
         from: startTimestamp,
         to: endTimestamp
+      }).then(() => {
+        console.debug('Visible range applied!');
+        console.debug('from: ', new Date(startTimestamp * 1000));
+        console.debug('to:   ', new Date(endTimestamp * 1000));
       }).catch(error => {
         console.error('Error applying visible range:', error);
       });
