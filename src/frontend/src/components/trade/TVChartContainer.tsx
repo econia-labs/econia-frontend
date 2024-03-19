@@ -26,6 +26,7 @@ const DAY_BY_RESOLUTION: { [key: string]: string } = {
   "5": "300",
   "1": "60",
 };
+const MS_IN_ONE_DAY = 24 * 60 * 60 * 1000;
 export interface ChartContainerProps {
   symbol: string;
 }
@@ -137,20 +138,19 @@ export const TVChartContainer: React.FC<
       ) => {
         const { from, to } = periodParams;
         try {
-          const res = await fetch(
-            new URL(
-              `/candlesticks?${new URLSearchParams({
-                market_id: `eq.${props.selectedMarket.market_id}`,
-                resolution: `eq.${DAY_BY_RESOLUTION[resolution.toString()]}`,
-                and: `(start_time.lte.${new Date(
-                  to * 1000,
-                ).toISOString()},start_time.gte.${new Date(
-                  from * 1000,
-                ).toISOString()})`,
-              })}`,
-              API_URL,
-            ).href,
-          );
+          const toDateISOString = new Date(to * 1000).toISOString();
+          const fromDateISOString = new Date(from * 1000).toISOString();
+          const url = new URL(
+            `/candlesticks?${new URLSearchParams({
+              market_id: `eq.${props.selectedMarket.market_id}`,
+              resolution: `eq.${DAY_BY_RESOLUTION[resolution.toString()]}`,
+              and:
+                `(start_time.lte.${toDateISOString},` +
+                `start_time.gte.${fromDateISOString})`,
+            })}`,
+            API_URL,
+          ).href;
+          const res = await fetch(url);
           const data = await res.json();
           if (data.length < 1) {
             onHistoryCallback([], {
@@ -226,7 +226,7 @@ export const TVChartContainer: React.FC<
     const widgetOptions = {
       symbol: props.symbol as string,
       datafeed,
-      interval: "30",
+      interval: "5",
       container: ref.current,
       library_path: "/static/charting_library/",
       theme: "Dark",
@@ -306,6 +306,33 @@ export const TVChartContainer: React.FC<
     };
 
     tvWidget.current = new widget(widgetOptions);
+
+    tvWidget.current.onChartReady(() => {
+      const chart = tvWidget.current.activeChart();
+      const now = new Date();
+      const startDaysAgo = 1;
+      const endDaysAgo = 0;
+      const startMilliseconds = now.getTime() - startDaysAgo * MS_IN_ONE_DAY;
+      const endMilliseconds = now.getTime() - endDaysAgo * MS_IN_ONE_DAY;
+      const startTimestamp =
+        Math.floor(new Date(startMilliseconds).getTime()) / 1000;
+      const endTimestamp =
+        Math.floor(new Date(endMilliseconds).getTime()) / 1000;
+
+      chart
+        .setVisibleRange({
+          from: startTimestamp,
+          to: endTimestamp,
+        })
+        .then(() => {
+          console.warn("Visible range applied!");
+          console.warn("from: ", new Date(startTimestamp * 1000));
+          console.warn("to:   ", new Date(endTimestamp * 1000));
+        })
+        .catch((error) => {
+          console.error("Error applying visible range:", error);
+        });
+    });
 
     return () => {
       console.warn("reject");
