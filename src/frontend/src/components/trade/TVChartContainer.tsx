@@ -75,7 +75,10 @@ async function fetchData(
 
   const volumeData = data.map((bar) => ({
     time: new Date(bar.start_time).getTime() / 1000,
-    value: bar.volume,
+    value: toDecimalPrice({
+      price: bar.volume,
+      marketData: selectedMarket,
+    }).toNumber(),
     color: bar.close > bar.open ? RED_OPACITY_HALF : GREEN_OPACITY_HALF,
   }));
 
