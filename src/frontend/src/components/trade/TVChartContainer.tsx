@@ -130,7 +130,7 @@ export const TVChartContainer: React.FC<
     const now = new Date();
     const start = new Date(now - START_DAYS_AGO * MS_IN_ONE_DAY);
     const end = new Date(now - END_DAYS_AGO * MS_IN_ONE_DAY);
-    const resolution = "60";
+    const resolution = "5";
 
     fetchData(
       start,
