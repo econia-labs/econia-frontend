@@ -1,5 +1,4 @@
 import type { GetStaticPaths, GetStaticProps } from "next";
-import dynamic from "next/dynamic";
 import Head from "next/head";
 import Script from "next/script";
 import React, { useEffect, useMemo, useState } from "react";
@@ -14,28 +13,11 @@ import MobileOrderEntry from "@/components/trade/MobileOrderEntry";
 import { OrderEntry } from "@/components/trade/OrderEntry";
 import { OrdersTable } from "@/components/trade/OrdersTable";
 import { TradeHistoryTable } from "@/components/trade/TradeHistoryTable";
+import { TVChartContainer } from "@/components/trade/TVChartContainer";
 import { OrderEntryContextProvider } from "@/contexts/OrderEntryContext";
 import { useOrderBook } from "@/hooks/useOrderbook";
 import type { ApiMarket } from "@/types/api";
 import { getAllMarket } from "@/utils/helpers";
-//eslint-disable-next-line
-let TVChartContainer: undefined | any = undefined;
-
-(() => {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require("../../../public/static/charting_library");
-    TVChartContainer = dynamic(
-      () =>
-        import("@/components/trade/TVChartContainer").then(
-          (mod) => mod.TVChartContainer,
-        ),
-      { ssr: false },
-    );
-  } catch (error) {
-    //nothing
-  }
-})();
 
 type Props = {
   marketData: ApiMarket;
