@@ -1,21 +1,11 @@
 // @ts-nocheck
-import { useRouter } from "next/router";
-import { useEffect, useMemo, useRef } from "react";
+import { ColorType, createChart } from "lightweight-charts";
+import { useEffect, useRef } from "react";
 
 import { API_URL } from "@/env";
-import { type ApiMarket, type MarketData } from "@/types/api";
-import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
-import { getClientTimezone } from "@/utils/helpers";
-//eslint-disable-next-line
-let chartModule: any = {} as any;
-(() => {
-  try {
-    chartModule = require("../../../public/static/charting_library");
-  } catch (e) {
-    console.warn(e);
-  }
-})();
-const { widget } = chartModule;
+import { type ApiMarket } from "@/types/api";
+import { toDecimalPrice } from "@/utils/econia";
+
 const DAY_BY_RESOLUTION: { [key: string]: string } = {
   "1D": "86400",
   "30": "1800",
@@ -37,311 +27,134 @@ const RED = "rgba(240, 129, 129, 1.0)";
 const GREEN_OPACITY_HALF = "rgba(110, 213, 163, 0.5)";
 const RED_OPACITY_HALF = "rgba(240, 129, 129, 0.5)";
 
-const resolutions = ["1", "5", "15", "30", "60", "4H", "1D"];
-
-const configurationData: DatafeedConfiguration = {
-  supported_resolutions: resolutions,
-  symbols_types: [
-    {
-      name: "crypto",
-      value: "crypto",
-    },
-  ],
-};
-
 type TVChartContainerProps = {
   selectedMarket: ApiMarket;
   allMarketData: ApiMarket[];
 };
 
+async function fetchData(
+  start: Date,
+  end: Date,
+  marketId: number,
+  resolution: string,
+  selectedMarket: ApiMarket,
+) {
+  const url = new URL(
+    `/candlesticks?${new URLSearchParams({
+      market_id: `eq.${marketId}`,
+      resolution: `eq.${DAY_BY_RESOLUTION[resolution]}`,
+      and:
+        `(start_time.lte.${end.toISOString()},` +
+        `start_time.gte.${start.toISOString()})`,
+    })}`,
+    API_URL,
+  ).href;
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  const priceData = data.map((bar) => ({
+    time: new Date(bar.start_time).getTime() / 1000,
+    open: toDecimalPrice({
+      price: bar.open,
+      marketData: selectedMarket,
+    }).toNumber(),
+    high: toDecimalPrice({
+      price: bar.high,
+      marketData: selectedMarket,
+    }).toNumber(),
+    low: toDecimalPrice({
+      price: bar.low,
+      marketData: selectedMarket,
+    }).toNumber(),
+    close: toDecimalPrice({
+      price: bar.close,
+      marketData: selectedMarket,
+    }).toNumber(),
+  }));
+
+  const volumeData = data.map((bar) => ({
+    time: new Date(bar.start_time).getTime() / 1000,
+    value: bar.volume,
+    color: bar.close > bar.open ? RED_OPACITY_HALF : GREEN_OPACITY_HALF,
+  }));
+
+  return { priceData, volumeData };
+}
+
 export const TVChartContainer: React.FC<
   Partial<ChartContainerProps> & TVChartContainerProps
 > = (props) => {
-  const tvWidget = useRef<IChartingLibraryWidget>();
-  const ref = useRef<HTMLDivElement>(null);
-  const router = useRouter();
-
-  const datafeed: IBasicDataFeed = useMemo(
-    () => ({
-      onReady: (callback) => {
-        setTimeout(() => callback(configurationData));
-      },
-      searchSymbols: async (
-        userInput,
-        //eslint-disable-next-line
-        exchange,
-        //eslint-disable-next-line
-        symbolType,
-        onResultReadyCallback,
-      ) => {
-        const symbols: SearchSymbolResultItem[] = props.allMarketData
-          .map((market) => {
-            return {
-              description: market.name as string,
-              exchange: "Econia",
-              full_name: `Econia:${market.base?.symbol}`,
-              symbol: `${market.market_id}:${market.name}`,
-              ticker: market.name,
-              type: "crypto",
-            };
-          })
-          .filter(
-            (symbol) =>
-              symbol.full_name.toLowerCase().includes(userInput) ||
-              symbol.symbol.toLowerCase().includes(userInput) ||
-              symbol.ticker.toLowerCase().includes(userInput),
-          );
-
-        onResultReadyCallback(symbols);
-      },
-      resolveSymbol: async (symbolName, onSymbolResolvedCallback) => {
-        if (props.symbol !== symbolName) {
-          const market = props.allMarketData?.find(
-            (market: ApiMarket | MarketData) => market.name == symbolName,
-          );
-          if (market) {
-            router.push(`/market/${market.market_id}`);
-          }
-        }
-        const symbol = `${symbolName}`;
-        const symbolInfo: LibrarySymbolInfo = {
-          ticker: symbol,
-          name: symbol,
-          description: symbol,
-          pricescale: 100,
-          volume_precision: -Math.ceil(
-            Math.log10(Number("0.00000100") * Number("100.00000000")),
-          ),
-          minmov: 1,
-          exchange: "Econia",
-          full_name: "",
-          listed_exchange: "",
-          session: "24x7",
-          has_intraday: true,
-          has_daily: true,
-          has_weekly_and_monthly: false,
-          timezone: getClientTimezone(),
-          type: "crypto",
-          supported_resolutions: configurationData.supported_resolutions,
-          format: "price",
-        };
-        onSymbolResolvedCallback(symbolInfo);
-
-        onSymbolResolvedCallback(symbolInfo);
-      },
-      getBars: async (
-        symbolInfo,
-        resolution,
-        periodParams,
-        onHistoryCallback,
-        onErrorCallback,
-      ) => {
-        const { from, to } = periodParams;
-        try {
-          const toDateISOString = new Date(to * 1000).toISOString();
-          const fromDateISOString = new Date(from * 1000).toISOString();
-          const url = new URL(
-            `/candlesticks?${new URLSearchParams({
-              market_id: `eq.${props.selectedMarket.market_id}`,
-              resolution: `eq.${DAY_BY_RESOLUTION[resolution.toString()]}`,
-              and:
-                `(start_time.lte.${toDateISOString},` +
-                `start_time.gte.${fromDateISOString})`,
-            })}`,
-            API_URL,
-          ).href;
-          const res = await fetch(url);
-          const data = await res.json();
-          if (data.length < 1) {
-            onHistoryCallback([], {
-              noData: true,
-            });
-            return;
-          }
-
-          const bars: Bar[] = data
-            .map(
-              (bar: {
-                start_time: string;
-                open: number;
-                close: number;
-                low: number;
-                high: number;
-                volume: number;
-              }): Bar => ({
-                time: new Date(bar.start_time).getTime(),
-                open: toDecimalPrice({
-                  price: bar.open,
-                  marketData: props.selectedMarket,
-                }).toNumber(),
-                high: toDecimalPrice({
-                  price: bar.high,
-                  marketData: props.selectedMarket,
-                }).toNumber(),
-                low: toDecimalPrice({
-                  price: bar.low,
-                  marketData: props.selectedMarket,
-                }).toNumber(),
-                close: toDecimalPrice({
-                  price: bar.close,
-                  marketData: props.selectedMarket,
-                }).toNumber(),
-                volume: toDecimalSize({
-                  size: bar.volume,
-                  marketData: props.selectedMarket,
-                }).toNumber(),
-              }),
-            )
-            .filter(
-              (bar: Bar) => bar.time >= from * 1000 && bar.time <= to * 1000,
-            );
-          console.warn(`[getBars]: returned ${bars.length} bar(s)`);
-          onHistoryCallback(bars, {
-            noData: bars.length === 0,
-          });
-        } catch (e) {
-          if (e instanceof Error) {
-            console.warn("[getBars]: Get error", e);
-            onErrorCallback(e.message);
-          }
-        }
-      },
-      subscribeBars: async (
-        _symbolInfo,
-        _resolution,
-        _onRealtimeCallback,
-        _subscribeUID,
-        _onResetCacheNeededCallback,
-      ) => {},
-      unsubscribeBars: async (_subscriberUID) => {},
-    }),
-    [props.symbol, props.allMarketData, props.selectedMarket], // eslint-disable-line react-hooks/exhaustive-deps
-  );
+  const chartContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!ref.current) {
-      return;
-    }
+    // Guard clause to exit early if the ref isn't attached to an element yet
+    if (!chartContainerRef.current) return;
 
-    const widgetOptions = {
-      symbol: props.symbol as string,
-      datafeed,
-      interval: "5",
-      container: ref.current,
-      library_path: "/static/charting_library/",
-      theme: "Dark",
-      locale: "en",
-      custom_css_url: "/styles/tradingview.css",
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? "Etc/UTC",
-      disabled_features: [
-        "use_localstorage_for_settings",
-        "left_toolbar",
-        "control_bar",
-        "study_templates",
-        "snapshot_trading_drawings",
-      ],
-      fullscreen: false,
-      autosize: true,
-      loading_screen: { backgroundColor: "#000000" },
-      overrides: {
-        "paneProperties.backgroundType": "solid",
-        "paneProperties.background": "#000000",
-        "scalesProperties.backgroundColor": "#000000",
-        "mainSeriesProperties.barStyle.upColor": GREEN,
-        "mainSeriesProperties.barStyle.downColor": RED,
-        "mainSeriesProperties.candleStyle.upColor": GREEN,
-        "mainSeriesProperties.candleStyle.downColor": RED,
-        "mainSeriesProperties.candleStyle.borderUpColor": GREEN,
-        "mainSeriesProperties.candleStyle.borderDownColor": RED,
-        "mainSeriesProperties.candleStyle.wickUpColor": GREEN,
-        "mainSeriesProperties.candleStyle.wickDownColor": RED,
-        "mainSeriesProperties.columnStyle.upColor": GREEN_OPACITY_HALF,
-        "mainSeriesProperties.columnStyle.downColor": RED_OPACITY_HALF,
-        "mainSeriesProperties.hollowCandleStyle.upColor": GREEN,
-        "mainSeriesProperties.hollowCandleStyle.downColor": RED,
-        "mainSeriesProperties.rangeStyle.upColor": GREEN,
-        "mainSeriesProperties.rangeStyle.downColor": RED,
-        "paneProperties.legendProperties.showVolume": true,
+    const chart = createChart(chartContainerRef.current, {
+      layout: {
+        background: { type: ColorType.Solid, color: "#000000" },
+        textColor: "#ffffff",
       },
-      studies_overrides: {
-        "volume.volume.color.0": RED_OPACITY_HALF,
-        "volume.volume.color.1": GREEN_OPACITY_HALF,
+      autoSize: true,
+      grid: {
+        vertLines: {
+          color: "rgba(197, 203, 206, 0.1)",
+        },
+        horzLines: {
+          color: "rgba(197, 203, 206, 0.1)",
+        },
       },
-      time_frames: [
-        {
-          text: "1D",
-          resolution: "1",
-        },
-        {
-          text: "5D",
-          resolution: "5",
-        },
-        {
-          text: "1M",
-          resolution: "30",
-        },
-        {
-          text: "3M",
-          resolution: "60",
-        },
-        {
-          text: "6M",
-          resolution: "120",
-        },
-        {
-          text: "1y",
-          resolution: "D",
-        },
-        {
-          text: "5y",
-          resolution: "W",
-        },
-        {
-          text: "1000y",
-          resolution: "1",
-          description: "All",
-          title: "All",
-        },
-      ],
-    };
+    });
 
-    tvWidget.current = new widget(widgetOptions);
+    const candlestickSeries = chart.addCandlestickSeries({
+      upColor: GREEN,
+      downColor: RED,
+      borderUpColor: GREEN,
+      borderDownColor: RED,
+      wickUpColor: GREEN,
+      wickDownColor: RED,
+      borderVisible: false,
+      wickVisible: true,
+    });
 
-    tvWidget.current.onChartReady(() => {
-      const chart = tvWidget.current.activeChart();
-      const now = new Date();
-      const startDaysAgo = 1;
-      const endDaysAgo = 0;
-      const startMilliseconds = now.getTime() - startDaysAgo * MS_IN_ONE_DAY;
-      const endMilliseconds = now.getTime() - endDaysAgo * MS_IN_ONE_DAY;
-      const startTimestamp =
-        Math.floor(new Date(startMilliseconds).getTime()) / 1000;
-      const endTimestamp =
-        Math.floor(new Date(endMilliseconds).getTime()) / 1000;
+    const volumeSeries = chart.addHistogramSeries({
+      color: "#26a69a",
+      priceFormat: {
+        type: "volume",
+      },
+      priceScaleId: "",
+    });
 
-      chart
-        .setVisibleRange({
-          from: startTimestamp,
-          to: endTimestamp,
-        })
-        .then(() => {
-          console.warn("Visible range applied!");
-          console.warn("from: ", new Date(startTimestamp * 1000));
-          console.warn("to:   ", new Date(endTimestamp * 1000));
-        })
-        .catch((error) => {
-          console.error("Error applying visible range:", error);
-        });
+    const START_DAYS_AGO = 25;
+    const END_DAYS_AGO = 15;
+    const now = new Date();
+    const start = new Date(now - START_DAYS_AGO * MS_IN_ONE_DAY);
+    const end = new Date(now - END_DAYS_AGO * MS_IN_ONE_DAY);
+    const resolution = "60";
+
+    fetchData(
+      start,
+      end,
+      props.selectedMarket.market_id,
+      resolution,
+      props.selectedMarket,
+    ).then((result) => {
+      candlestickSeries.setData(result.priceData);
+      volumeSeries.setData(result.volumeData);
+    });
+
+    chart.priceScale("").applyOptions({
+      scaleMargins: {
+        top: 0.9,
+        bottom: 0,
+      },
     });
 
     return () => {
-      console.warn("reject");
-      if (tvWidget.current != null) {
-        tvWidget.current.remove();
-        tvWidget.current = undefined;
-      }
+      chart.remove();
     };
-  }, [datafeed, props.symbol]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [props.symbol, props.selectedMarket]);
 
   return (
     <div className="relative w-full">
@@ -351,7 +164,7 @@ export const TVChartContainer: React.FC<
           use a different mobile wallet
         </div>
       </div>
-      <div ref={ref} className="relative h-full w-full"></div>
+      <div ref={chartContainerRef} className="relative h-full w-full"></div>
     </div>
   );
 };
