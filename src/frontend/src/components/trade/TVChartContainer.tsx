@@ -88,7 +88,6 @@ export const TVChartContainer: React.FC<
   const chartContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Guard clause to exit early if the ref isn't attached to an element yet
     if (!chartContainerRef.current) return;
 
     const chart = createChart(chartContainerRef.current, {
