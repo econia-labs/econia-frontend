@@ -118,11 +118,12 @@ export const TVChartContainer: React.FC<
   // a longer amount of time to try to fetch more data.
   const startFetchLoop = async (
     start: Date,
+    chart,
     candlestickSeries,
     volumeSeries,
     selectedMarket: ApiMarket,
   ) => {
-    const loop = async (start: Date) => {
+    const loop = async (isInitialFetch: boolean, start: Date) => {
       if (shouldFetchRef.current) {
         const now = new Date();
 
@@ -140,21 +141,30 @@ export const TVChartContainer: React.FC<
           volumeSeries.update(bar);
         });
 
+        // If we are still fetching the initial data, fit the content to the
+        // container every time we receive more chart data.
+        if (isInitialFetch) {
+          chart.timeScale().fitContent();
+          isInitialFetch = false;
+        }
+
         const numElements = result.priceData.length;
         const latestTime = result.latestTime;
 
         // If the number of elements fetched is less than `MAX_ELEMENTS_PER_FETCH`
         // then wait for `UPDATE_FEED_INTERVAL` milliseconds before fetching again.
         if (numElements < MAX_ELEMENTS_PER_FETCH) {
-          setTimeout(() => loop(latestTime), UPDATE_FEED_INTERVAL);
+          // Note that we no longer automatically resize the chart after this
+          // by passing `isInitialFetch` as `false` to `loop`.
+          setTimeout(() => loop(false, latestTime), UPDATE_FEED_INTERVAL);
           // Otherwise, fetch again after `FETCH_INTERVAL` milliseconds.
         } else {
-          setTimeout(() => loop(latestTime), FETCH_INTERVAL);
+          setTimeout(() => loop(isInitialFetch, latestTime), FETCH_INTERVAL);
         }
       }
     };
 
-    loop(start);
+    loop(true, start);
   };
 
   useEffect(() => {
@@ -192,14 +202,25 @@ export const TVChartContainer: React.FC<
       priceFormat: {
         type: "volume",
       },
-      priceScaleId: "",
+      priceScaleId: "id_volume",
     });
 
-    chart.priceScale("").applyOptions({
+    chart.priceScale("id_volume").applyOptions({
       scaleMargins: {
         top: 0.9,
         bottom: 0,
       },
+    });
+    chart.timeScale().applyOptions({
+      leftOffset: 0,
+      rightOffset: 0,
+      secondsVisible: true,
+      ticksVisible: true,
+      timeVisible: true,
+    });
+
+    window.addEventListener("resize", () => {
+      chart.timeScale().fitContent();
     });
 
     const now = new Date();
@@ -207,6 +228,7 @@ export const TVChartContainer: React.FC<
     shouldFetchRef.current = true;
     startFetchLoop(
       start,
+      chart,
       candlestickSeries,
       volumeSeries,
       props.selectedMarket,
@@ -221,14 +243,14 @@ export const TVChartContainer: React.FC<
   }, [props.symbol, props.selectedMarket]);
 
   return (
-    <div className="relative w-full">
+    <div className="relative h-full w-full">
       <div className="absolute left-0 top-0 flex h-full w-full animate-fadeIn items-center justify-center text-center font-roboto-mono text-sm font-light leading-6 text-neutral-500 opacity-0 delay-[2000]">
         <div>
           The mobile wallet you are using does not support candlesticks. Please
           use a different mobile wallet
         </div>
       </div>
-      <div ref={chartContainerRef} className="relative h-full w-full"></div>
+      <div ref={chartContainerRef} className="absolute inset-0"></div>
     </div>
   );
 };
