@@ -27,12 +27,12 @@ const RED = "rgba(240, 129, 129, 1.0)";
 const GREEN_OPACITY_HALF = "rgba(110, 213, 163, 0.5)";
 const RED_OPACITY_HALF = "rgba(240, 129, 129, 0.5)";
 
-const START_DAYS_AGO = 1;
+const START_DAYS_AGO = 21;
 const MAX_ELEMENTS_PER_FETCH = 100;
 
 // Time intervals in milliseconds.
 const UPDATE_FEED_INTERVAL = 10000;
-const FETCH_INTERVAL = 10;
+const FETCH_INTERVAL = 100;
 
 // Used as a key for DAY_BY_RESOLUTION to get the resolution in seconds.
 const RESOLUTION = "5";
@@ -145,7 +145,6 @@ export const TVChartContainer: React.FC<
         // container every time we receive more chart data.
         if (isInitialFetch) {
           chart.timeScale().fitContent();
-          isInitialFetch = false;
         }
 
         const numElements = result.priceData.length;
