@@ -27,6 +27,16 @@ const RED = "rgba(240, 129, 129, 1.0)";
 const GREEN_OPACITY_HALF = "rgba(110, 213, 163, 0.5)";
 const RED_OPACITY_HALF = "rgba(240, 129, 129, 0.5)";
 
+const START_DAYS_AGO = 1;
+const MAX_ELEMENTS_PER_FETCH = 100;
+
+// Time intervals in milliseconds.
+const UPDATE_FEED_INTERVAL = 10000;
+const FETCH_INTERVAL = 10;
+
+// Used as a key for DAY_BY_RESOLUTION to get the resolution in seconds.
+const RESOLUTION = "5";
+
 type TVChartContainerProps = {
   selectedMarket: ApiMarket;
   allMarketData: ApiMarket[];
@@ -36,13 +46,12 @@ async function fetchData(
   start: Date,
   end: Date,
   marketId: number,
-  resolution: string,
   selectedMarket: ApiMarket,
 ) {
   const url = new URL(
     `/candlesticks?${new URLSearchParams({
       market_id: `eq.${marketId}`,
-      resolution: `eq.${DAY_BY_RESOLUTION[resolution]}`,
+      resolution: `eq.${DAY_BY_RESOLUTION[RESOLUTION]}`,
       and:
         `(start_time.lte.${end.toISOString()},` +
         `start_time.gte.${start.toISOString()})`,
@@ -52,26 +61,31 @@ async function fetchData(
 
   const res = await fetch(url);
   const data = await res.json();
+  let latestTime = start;
 
-  const priceData = data.map((bar) => ({
-    time: new Date(bar.start_time).getTime() / 1000,
-    open: toDecimalPrice({
-      price: bar.open,
-      marketData: selectedMarket,
-    }).toNumber(),
-    high: toDecimalPrice({
-      price: bar.high,
-      marketData: selectedMarket,
-    }).toNumber(),
-    low: toDecimalPrice({
-      price: bar.low,
-      marketData: selectedMarket,
-    }).toNumber(),
-    close: toDecimalPrice({
-      price: bar.close,
-      marketData: selectedMarket,
-    }).toNumber(),
-  }));
+  const priceData = data.map((bar) => {
+    const barTime = new Date(bar.start_time);
+    latestTime = latestTime >= barTime ? latestTime : barTime;
+    return {
+      time: barTime.getTime() / 1000,
+      open: toDecimalPrice({
+        price: bar.open,
+        marketData: selectedMarket,
+      }).toNumber(),
+      high: toDecimalPrice({
+        price: bar.high,
+        marketData: selectedMarket,
+      }).toNumber(),
+      low: toDecimalPrice({
+        price: bar.low,
+        marketData: selectedMarket,
+      }).toNumber(),
+      close: toDecimalPrice({
+        price: bar.close,
+        marketData: selectedMarket,
+      }).toNumber(),
+    };
+  });
 
   const volumeData = data.map((bar) => ({
     time: new Date(bar.start_time).getTime() / 1000,
@@ -82,13 +96,66 @@ async function fetchData(
     color: bar.close > bar.open ? RED_OPACITY_HALF : GREEN_OPACITY_HALF,
   }));
 
-  return { priceData, volumeData };
+  return { priceData, volumeData, latestTime };
 }
 
 export const TVChartContainer: React.FC<
   Partial<ChartContainerProps> & TVChartContainerProps
 > = (props) => {
+  // `shouldFetchRef` is used to control the fetch loop, we use a ref to avoid
+  // a dependency cycle that results in an infinite re-render loop.
+  const shouldFetchRef = useRef<boolean>(true);
   const chartContainerRef = useRef<HTMLDivElement>(null);
+
+  // Since the `lightweight-charts` library doesn't use the `getBars(...)` function
+  // with a custom datafeed, we need to provide our own form of pagination to fetch
+  // historical data.
+  // In order to avoid blocking the main thread with a while loop, we use
+  // `setTimeout(() => loop(...), interval)` as an asynchronous scheduling mechanism to
+  // fetch data at regular intervals.
+  // If the data has not been fetched completely, we loop very quickly until the number
+  // of elements fetched is less than `MAX_ELEMENTS_PER_FETCH`. Otherwise, we wait for
+  // a longer amount of time to try to fetch more data.
+  const startFetchLoop = async (
+    start: Date,
+    candlestickSeries,
+    volumeSeries,
+    selectedMarket: ApiMarket,
+  ) => {
+    const loop = async (start: Date) => {
+      if (shouldFetchRef.current) {
+        const now = new Date();
+
+        const result = await fetchData(
+          start,
+          now,
+          selectedMarket.market_id,
+          selectedMarket,
+        );
+
+        result.priceData.forEach((bar) => {
+          candlestickSeries.update(bar);
+        });
+        result.volumeData.forEach((bar) => {
+          volumeSeries.update(bar);
+        });
+
+        const numElements = result.priceData.length;
+        const latestTime = result.latestTime;
+
+        // If the number of elements fetched is less than `MAX_ELEMENTS_PER_FETCH`
+        // then wait for `UPDATE_FEED_INTERVAL` milliseconds before fetching again.
+        if (numElements < MAX_ELEMENTS_PER_FETCH) {
+          setTimeout(() => loop(latestTime), UPDATE_FEED_INTERVAL);
+          // Otherwise, fetch again after `FETCH_INTERVAL` milliseconds.
+        } else {
+          setTimeout(() => loop(latestTime), FETCH_INTERVAL);
+        }
+      }
+    };
+
+    loop(start);
+  };
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
@@ -128,24 +195,6 @@ export const TVChartContainer: React.FC<
       priceScaleId: "",
     });
 
-    const START_DAYS_AGO = 25;
-    const END_DAYS_AGO = 15;
-    const now = new Date();
-    const start = new Date(now - START_DAYS_AGO * MS_IN_ONE_DAY);
-    const end = new Date(now - END_DAYS_AGO * MS_IN_ONE_DAY);
-    const resolution = "5";
-
-    fetchData(
-      start,
-      end,
-      props.selectedMarket.market_id,
-      resolution,
-      props.selectedMarket,
-    ).then((result) => {
-      candlestickSeries.setData(result.priceData);
-      volumeSeries.setData(result.volumeData);
-    });
-
     chart.priceScale("").applyOptions({
       scaleMargins: {
         top: 0.9,
@@ -153,8 +202,21 @@ export const TVChartContainer: React.FC<
       },
     });
 
+    const now = new Date();
+    const start = new Date(now - START_DAYS_AGO * MS_IN_ONE_DAY);
+    shouldFetchRef.current = true;
+    startFetchLoop(
+      start,
+      candlestickSeries,
+      volumeSeries,
+      props.selectedMarket,
+    );
+
     return () => {
+      // Remove the chart and end the fetch loop
+      // scheduler if the component is unmounted.
       chart.remove();
+      shouldFetchRef.current = false;
     };
   }, [props.symbol, props.selectedMarket]);
 
