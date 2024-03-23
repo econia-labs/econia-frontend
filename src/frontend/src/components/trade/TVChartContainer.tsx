@@ -31,7 +31,7 @@ export const TVChartContainer: React.FC<
 
   const chartComponentRef = useRef<HTMLDivElement>(null);
   const [resolution, setResolution] = useState<keyof typeof DAY_BY_RESOLUTION>(
-    "15" as keyof typeof DAY_BY_RESOLUTION,
+    "5" as keyof typeof DAY_BY_RESOLUTION,
   );
 
   const chartData = useChartData(resolution, props.selectedMarket);
