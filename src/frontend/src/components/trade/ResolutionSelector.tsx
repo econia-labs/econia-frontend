@@ -24,7 +24,8 @@ const RES_TO_STRING_FULL = {
   "30": "30 minutes",
   "60": "1 hour",
   "240": "4 hours",
-  "1440": "1 day",
+  "720": "12 hours",
+  "1D": "1 day",
 };
 
 const RES_TO_STRING_SHORT = {
@@ -34,7 +35,8 @@ const RES_TO_STRING_SHORT = {
   "30": "30m",
   "60": "1h",
   "240": "4h",
-  "1440": "1d",
+  "720": "12h",
+  "1D": "1D",
 };
 
 const ResolutionSelector = (props: ResolutionSelectorProps) => {

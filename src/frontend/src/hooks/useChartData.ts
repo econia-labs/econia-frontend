@@ -14,13 +14,13 @@ export const DAY_BY_RESOLUTION: { [key: string]: string } = {
   "60": "3600",
   "15": "900",
   "240": "14400",
-  "3D": "43200",
+  "720": "43200",
   "5": "300",
   "1": "60",
 };
 export const MS_IN_ONE_DAY = 24 * 60 * 60 * 1000;
 
-export const START_DAYS_AGO = 1;
+export const START_DAYS_AGO = 11;
 export const MAX_ELEMENTS_PER_FETCH = 100;
 
 // Time intervals in milliseconds.
@@ -187,32 +187,28 @@ export function useChartData(
         const numElements = Object.keys(result.priceData).length;
         const latestTime = result.latestTime;
 
-        setChartDataDictionary((prev) => {
-          const updatedChartData = {
-            ...prev,
-            [resolution]: {
-              priceData: {
-                ...(prev[resolution]?.priceData || {}),
-                ...result.priceData,
-              },
-              volumeData: {
-                ...(prev[resolution]?.volumeData || {}),
-                ...result.volumeData,
-              },
-              latestTime,
+        const updatedChartData = {
+          ...chartDataRef.current,
+          [resolution]: {
+            priceData: {
+              ...(chartDataRef.current[resolution]?.priceData || {}),
+              ...result.priceData,
             },
-          };
-          chartDataRef.current = updatedChartData;
-          return updatedChartData;
-        });
+            volumeData: {
+              ...(chartDataRef.current[resolution]?.volumeData || {}),
+              ...result.volumeData,
+            },
+            latestTime,
+          },
+        };
+        chartDataRef.current = updatedChartData;
 
         // If the number of elements fetched < `MAX_ELEMENTS_PER_FETCH` - 1
         // then wait for `UPDATE_FEED_INTERVAL` milliseconds before fetching again.
         // We subtract 1 from `MAX_ELEMENTS_PER_FETCH` because we may overlap the
         // last element fetched with the first element fetched in the next fetch.
         if (numElements < MAX_ELEMENTS_PER_FETCH - 1) {
-          // Note that we no longer automatically resize the chart after this
-          // by passing `isInitialFetch` as `false` to `schedulerLoop`.
+          setChartDataDictionary(chartDataRef.current);
           const schedulerID = setTimeout(
             () =>
               schedulerLoop(
