@@ -33,6 +33,7 @@ export const TVChartContainer: React.FC<
   const [resolution, setResolution] = useState<keyof typeof DAY_BY_RESOLUTION>(
     "5" as keyof typeof DAY_BY_RESOLUTION,
   );
+  const dragging = useRef(false);
 
   const chartData = useChartData(resolution, props.selectedMarket);
 
@@ -104,7 +105,6 @@ export const TVChartContainer: React.FC<
       },
     });
     chart.timeScale().applyOptions({
-      rightOffset: 0,
       secondsVisible: true,
       ticksVisible: true,
       timeVisible: true,
@@ -116,12 +116,54 @@ export const TVChartContainer: React.FC<
 
     chartAPIRef.current = chart;
 
+    // Subscribe to logical range changes so that when the user zooms out
+    // too far, we reset the logical range back to the maximum.
+    // We don't do this when the user is dragging the mouse because it
+    // scales the chart improperly when dragging to the right.
+    chart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
+      if (range && !dragging.current) {
+        const numBars = candlestickSeriesRef.current.data().length;
+        const margin = numBars * 0.1;
+
+        if (range.from < 0 - margin || range.to > numBars + margin) {
+          chart.timeScale().setVisibleLogicalRange({
+            from: Math.max(range.from, 0 - margin),
+            to: Math.min(range.to, numBars + margin),
+          });
+        }
+      }
+    });
+
     return () => {
       // Remove the chart and end the fetch loop
       // scheduler if the component is unmounted.
       chart.remove();
     };
   }, [props.symbol, props.selectedMarket]);
+
+  // Track whether the user is dragging the mouse on the chart.
+  useEffect(() => {
+    const chartComponent = chartComponentRef.current;
+
+    if (chartComponent) {
+      const handleMouseDown = () => {
+        dragging.current = true;
+      };
+      const handleMouseUp = () => {
+        dragging.current = false;
+      };
+
+      // We listen to mouseup events on the window because the user might
+      // drag the mouse outside of the chart component.
+      chartComponent.addEventListener("mousedown", handleMouseDown);
+      window.addEventListener("mouseup", handleMouseUp);
+
+      return () => {
+        chartComponent.removeEventListener("mousedown", handleMouseDown);
+        window.removeEventListener("mouseup", handleMouseUp);
+      };
+    }
+  }, [chartComponentRef]); // Depend on chartComponentRef to re-run if it changes
 
   return (
     <div className="relative h-full w-full">
