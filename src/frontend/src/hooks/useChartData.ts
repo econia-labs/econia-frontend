@@ -20,7 +20,8 @@ export const DAY_BY_RESOLUTION: { [key: string]: string } = {
 };
 export const MS_IN_ONE_DAY = 24 * 60 * 60 * 1000;
 
-export const START_DAYS_AGO = 11;
+// This determines at what point in time the chart starts displaying data.
+export const START_DAYS_AGO = 2;
 export const MAX_ELEMENTS_PER_FETCH = 100;
 
 // Time intervals in milliseconds.
@@ -51,6 +52,8 @@ export type ChartDataDictionary = {
 };
 
 // Calculate scale factor relative to a specified base resolution.
+// Essentially, this means we will display the amount of candles that
+// would be displayed if the resolution was the base resolution.
 const BASE_RESOLUTION_SECONDS = Number(DAY_BY_RESOLUTION["5"]);
 const RESOLUTION_SCALE_FACTOR: {
   [key in keyof typeof DAY_BY_RESOLUTION]: number;
@@ -86,6 +89,7 @@ export async function fetchData(
 
   const priceData: PriceData = {};
   const volumeData: VolumeData = {};
+  let allDuplicates = true;
 
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   data.forEach((bar: any) => {
@@ -101,6 +105,7 @@ export async function fetchData(
       !timeEntriesSet.current.has(`${resolution}-${time}`) ||
       barTime.getTime() == priorLatestTime.getTime()
     ) {
+      allDuplicates = false;
       timeEntriesSet.current.add(`${resolution}-${time}`);
       priceData[time] = {
         time,
@@ -132,7 +137,7 @@ export async function fetchData(
     }
   });
 
-  return { priceData, volumeData, latestTime };
+  return { priceData, volumeData, latestTime, allDuplicates };
 }
 
 export function useChartData(
@@ -208,7 +213,10 @@ export function useChartData(
         // We subtract 1 from `MAX_ELEMENTS_PER_FETCH` because we may overlap the
         // last element fetched with the first element fetched in the next fetch.
         if (numElements < MAX_ELEMENTS_PER_FETCH - 1) {
-          setChartDataDictionary(chartDataRef.current);
+          // Avoid updating the chart when the data fetched already exists.
+          if (!result.allDuplicates) {
+            setChartDataDictionary(chartDataRef.current);
+          }
           const schedulerID = setTimeout(
             () =>
               schedulerLoop(
