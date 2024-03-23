@@ -138,7 +138,6 @@ export async function fetchData(
 export function useChartData(
   resolution: keyof typeof DAY_BY_RESOLUTION,
   selectedMarket: ApiMarket,
-  initialStart: Date,
 ) {
   const [chartDataDictionary, setChartDataDictionary] =
     useState<ChartDataDictionary>({});
@@ -154,7 +153,7 @@ export function useChartData(
     const scaledStartDaysAgo =
       START_DAYS_AGO * RESOLUTION_SCALE_FACTOR[resolution];
     const scaledInitialStart = new Date(
-      initialStart.getTime() - scaledStartDaysAgo * MS_IN_ONE_DAY,
+      new Date().getTime() - scaledStartDaysAgo * MS_IN_ONE_DAY,
     );
 
     // Clear all schedulers except for the current resolution's scheduler.
@@ -254,7 +253,7 @@ export function useChartData(
       schedulers.current.forEach(clearTimeout);
       schedulers.current = [];
     };
-  }, [resolution, selectedMarket, initialStart]);
+  }, [resolution, selectedMarket]);
 
   return chartDataDictionary[resolution];
 }
