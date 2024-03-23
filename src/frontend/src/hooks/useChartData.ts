@@ -21,7 +21,7 @@ export const DAY_BY_RESOLUTION: { [key: string]: string } = {
 export const MS_IN_ONE_DAY = 24 * 60 * 60 * 1000;
 
 // This determines at what point in time the chart starts displaying data.
-export const START_DAYS_AGO = 2;
+export const START_DAYS_AGO = 1;
 export const MAX_ELEMENTS_PER_FETCH = 100;
 
 // Time intervals in milliseconds.

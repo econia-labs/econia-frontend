@@ -46,9 +46,14 @@ export const TVChartContainer: React.FC<
     ) {
       const priceData = Object.values(chartData.priceData);
       const volumeData = Object.values(chartData.volumeData);
+
+      const prevNumBars = candlestickSeriesRef.current.data().length;
       candlestickSeriesRef.current.setData(priceData);
       volumeSeriesRef.current.setData(volumeData);
-      chartAPIRef.current.timeScale().fitContent();
+      const currNumBars = candlestickSeriesRef.current.data().length;
+      if (prevNumBars !== currNumBars) {
+        chartAPIRef.current.timeScale().fitContent();
+      }
     }
   }, [chartData]);
 
