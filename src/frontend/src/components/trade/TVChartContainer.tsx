@@ -20,8 +20,6 @@ export type TVChartContainerProps = {
   allMarketData: ApiMarket[];
 };
 
-// This component is responsible for managing state and data that's passed
-// to and between the TradingView chart and the data fetching component.
 export const TVChartContainer: React.FC<
   Partial<ChartContainerProps> & TVChartContainerProps
 > = (props) => {
