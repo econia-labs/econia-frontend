@@ -1,175 +1,65 @@
-// @ts-nocheck
 import { ColorType, createChart } from "lightweight-charts";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { API_URL } from "@/env";
+import { type DAY_BY_RESOLUTION, useChartData } from "@/hooks/useChartData";
 import { type ApiMarket } from "@/types/api";
-import { toDecimalPrice } from "@/utils/econia";
 
-const DAY_BY_RESOLUTION: { [key: string]: string } = {
-  "1D": "86400",
-  "30": "1800",
-  "60": "3600",
-  "15": "900",
-  "240": "14400",
-  "3D": "43200",
-  "5": "300",
-  "1": "60",
-};
-const MS_IN_ONE_DAY = 24 * 60 * 60 * 1000;
+import ResolutionSelector from "./ResolutionSelector";
+
+export const GREEN = "rgba(110, 213, 163, 1.0)";
+export const RED = "rgba(240, 129, 129, 1.0)";
+
+export const GREEN_OPACITY_HALF = "rgba(110, 213, 163, 0.5)";
+export const RED_OPACITY_HALF = "rgba(240, 129, 129, 0.5)";
 export interface ChartContainerProps {
   symbol: string;
 }
 
-const GREEN = "rgba(110, 213, 163, 1.0)";
-const RED = "rgba(240, 129, 129, 1.0)";
-
-const GREEN_OPACITY_HALF = "rgba(110, 213, 163, 0.5)";
-const RED_OPACITY_HALF = "rgba(240, 129, 129, 0.5)";
-
-const START_DAYS_AGO = 1;
-const MAX_ELEMENTS_PER_FETCH = 100;
-
-// Time intervals in milliseconds.
-const UPDATE_FEED_INTERVAL = 10000;
-const FETCH_INTERVAL = 10;
-
-// Used as a key for DAY_BY_RESOLUTION to get the resolution in seconds.
-const RESOLUTION = "5";
-
-type TVChartContainerProps = {
+export type TVChartContainerProps = {
   selectedMarket: ApiMarket;
   allMarketData: ApiMarket[];
 };
 
-async function fetchData(
-  start: Date,
-  end: Date,
-  marketId: number,
-  selectedMarket: ApiMarket,
-) {
-  const url = new URL(
-    `/candlesticks?${new URLSearchParams({
-      market_id: `eq.${marketId}`,
-      resolution: `eq.${DAY_BY_RESOLUTION[RESOLUTION]}`,
-      and:
-        `(start_time.lte.${end.toISOString()},` +
-        `start_time.gte.${start.toISOString()})`,
-    })}`,
-    API_URL,
-  ).href;
-
-  const res = await fetch(url);
-  const data = await res.json();
-  let latestTime = start;
-
-  const priceData = data.map((bar) => {
-    const barTime = new Date(bar.start_time);
-    latestTime = latestTime >= barTime ? latestTime : barTime;
-    return {
-      time: barTime.getTime() / 1000,
-      open: toDecimalPrice({
-        price: bar.open,
-        marketData: selectedMarket,
-      }).toNumber(),
-      high: toDecimalPrice({
-        price: bar.high,
-        marketData: selectedMarket,
-      }).toNumber(),
-      low: toDecimalPrice({
-        price: bar.low,
-        marketData: selectedMarket,
-      }).toNumber(),
-      close: toDecimalPrice({
-        price: bar.close,
-        marketData: selectedMarket,
-      }).toNumber(),
-    };
-  });
-
-  const volumeData = data.map((bar) => ({
-    time: new Date(bar.start_time).getTime() / 1000,
-    value: toDecimalPrice({
-      price: bar.volume,
-      marketData: selectedMarket,
-    }).toNumber(),
-    color: bar.close > bar.open ? RED_OPACITY_HALF : GREEN_OPACITY_HALF,
-  }));
-
-  return { priceData, volumeData, latestTime };
-}
-
+// This component is responsible for managing state and data that's passed
+// to and between the TradingView chart and the data fetching component.
 export const TVChartContainer: React.FC<
   Partial<ChartContainerProps> & TVChartContainerProps
 > = (props) => {
-  // `shouldFetchRef` is used to control the fetch loop, we use a ref to avoid
-  // a dependency cycle that results in an infinite re-render loop.
-  const shouldFetchRef = useRef<boolean>(true);
-  const chartContainerRef = useRef<HTMLDivElement>(null);
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
+  const chartAPIRef = useRef<any>(null);
+  const candlestickSeriesRef = useRef<any>(null);
+  const volumeSeriesRef = useRef<any>(null);
+  /* eslint-enable  @typescript-eslint/no-explicit-any */
 
-  // Since the `lightweight-charts` library doesn't use the `getBars(...)` function
-  // with a custom datafeed, we need to provide our own form of pagination to fetch
-  // historical data.
-  // In order to avoid blocking the main thread with a while loop, we use
-  // `setTimeout(() => loop(...), interval)` as an asynchronous scheduling mechanism to
-  // fetch data at regular intervals.
-  // If the data has not been fetched completely, we loop very quickly until the number
-  // of elements fetched is less than `MAX_ELEMENTS_PER_FETCH`. Otherwise, we wait for
-  // a longer amount of time to try to fetch more data.
-  const startFetchLoop = async (
-    start: Date,
-    chart,
-    candlestickSeries,
-    volumeSeries,
-    selectedMarket: ApiMarket,
-  ) => {
-    const loop = async (isInitialFetch: boolean, start: Date) => {
-      if (shouldFetchRef.current) {
-        const now = new Date();
+  const chartComponentRef = useRef<HTMLDivElement>(null);
+  const [resolution, setResolution] = useState<keyof typeof DAY_BY_RESOLUTION>(
+    "15" as keyof typeof DAY_BY_RESOLUTION,
+  );
 
-        const result = await fetchData(
-          start,
-          now,
-          selectedMarket.market_id,
-          selectedMarket,
-        );
-
-        result.priceData.forEach((bar) => {
-          candlestickSeries.update(bar);
-        });
-        result.volumeData.forEach((bar) => {
-          volumeSeries.update(bar);
-        });
-
-        // If we are still fetching the initial data, fit the content to the
-        // container every time we receive more chart data.
-        if (isInitialFetch) {
-          chart.timeScale().fitContent();
-        }
-
-        const numElements = result.priceData.length;
-        const latestTime = result.latestTime;
-
-        // If the number of elements fetched is less than `MAX_ELEMENTS_PER_FETCH`
-        // then wait for `UPDATE_FEED_INTERVAL` milliseconds before fetching again.
-        if (numElements < MAX_ELEMENTS_PER_FETCH) {
-          // Note that we no longer automatically resize the chart after this
-          // by passing `isInitialFetch` as `false` to `loop`.
-          setTimeout(() => loop(false, latestTime), UPDATE_FEED_INTERVAL);
-          // Otherwise, fetch again after `FETCH_INTERVAL` milliseconds.
-        } else {
-          setTimeout(() => loop(isInitialFetch, latestTime), FETCH_INTERVAL);
-        }
-      }
-    };
-
-    loop(true, start);
-  };
+  const chartData = useChartData(resolution, props.selectedMarket, new Date());
 
   useEffect(() => {
-    if (!chartContainerRef.current) return;
+    if (
+      chartData &&
+      chartComponentRef.current &&
+      chartAPIRef.current &&
+      candlestickSeriesRef.current &&
+      volumeSeriesRef.current
+    ) {
+      const priceData = Object.values(chartData.priceData);
+      const volumeData = Object.values(chartData.volumeData);
+      candlestickSeriesRef.current.setData(priceData);
+      volumeSeriesRef.current.setData(volumeData);
+      chartAPIRef.current.timeScale().fitContent();
+    }
+  }, [chartData]);
 
-    const chart = createChart(chartContainerRef.current, {
+  // Initialization useEffect hook to create the chart with both a price and
+  // volume candlestick series.
+  useEffect(() => {
+    if (!chartComponentRef.current) return;
+
+    const chart = createChart(chartComponentRef.current, {
       layout: {
         background: { type: ColorType.Solid, color: "#000000" },
         textColor: "#ffffff",
@@ -185,7 +75,7 @@ export const TVChartContainer: React.FC<
       },
     });
 
-    const candlestickSeries = chart.addCandlestickSeries({
+    candlestickSeriesRef.current = chart.addCandlestickSeries({
       upColor: GREEN,
       downColor: RED,
       borderUpColor: GREEN,
@@ -196,7 +86,7 @@ export const TVChartContainer: React.FC<
       wickVisible: true,
     });
 
-    const volumeSeries = chart.addHistogramSeries({
+    volumeSeriesRef.current = chart.addHistogramSeries({
       color: "#26a69a",
       priceFormat: {
         type: "volume",
@@ -211,7 +101,6 @@ export const TVChartContainer: React.FC<
       },
     });
     chart.timeScale().applyOptions({
-      leftOffset: 0,
       rightOffset: 0,
       secondsVisible: true,
       ticksVisible: true,
@@ -222,22 +111,12 @@ export const TVChartContainer: React.FC<
       chart.timeScale().fitContent();
     });
 
-    const now = new Date();
-    const start = new Date(now - START_DAYS_AGO * MS_IN_ONE_DAY);
-    shouldFetchRef.current = true;
-    startFetchLoop(
-      start,
-      chart,
-      candlestickSeries,
-      volumeSeries,
-      props.selectedMarket,
-    );
+    chartAPIRef.current = chart;
 
     return () => {
       // Remove the chart and end the fetch loop
       // scheduler if the component is unmounted.
       chart.remove();
-      shouldFetchRef.current = false;
     };
   }, [props.symbol, props.selectedMarket]);
 
@@ -249,7 +128,11 @@ export const TVChartContainer: React.FC<
           use a different mobile wallet
         </div>
       </div>
-      <div ref={chartContainerRef} className="absolute inset-0"></div>
+      <div ref={chartComponentRef} className="absolute inset-0" />
+      <ResolutionSelector
+        resolution={resolution}
+        setResolution={setResolution}
+      />
     </div>
   );
 };
