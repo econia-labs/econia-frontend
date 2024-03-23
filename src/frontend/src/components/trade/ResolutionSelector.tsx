@@ -71,13 +71,12 @@ const ResolutionSelector = (props: ResolutionSelectorProps) => {
         position: "absolute",
         top: "1ch",
         left: "1ch",
-        background: "#00000000",
-        fontSize: "1.1em",
+        background: showDropdown ? "#000000ee" : "#00000000",
         color: hoveringSelector ? "lightgrey" : "white",
         zIndex: 3,
         cursor: "pointer",
       }}
-      className="timeframe-selector font-roboto-mono"
+      className="timeframe-selector font-roboto-mono text-base"
       ref={selectorRef}
     >
       <div
