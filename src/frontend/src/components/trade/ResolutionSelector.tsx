@@ -1,4 +1,10 @@
-import React, { type Dispatch, type SetStateAction, useState } from "react";
+import React, {
+  type Dispatch,
+  type SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import { DAY_BY_RESOLUTION } from "@/hooks/useChartData";
 
@@ -11,28 +17,82 @@ export interface ResolutionSelectorProps {
   setResolution: SetResolutionType;
 }
 
+const RES_TO_STRING_FULL = {
+  "1": "1 minute",
+  "5": "5 minutes",
+  "15": "15 minutes",
+  "30": "30 minutes",
+  "60": "1 hour",
+  "240": "4 hours",
+  "1440": "1 day",
+};
+
+const RES_TO_STRING_SHORT = {
+  "1": "1m",
+  "5": "5m",
+  "15": "15m",
+  "30": "30m",
+  "60": "1h",
+  "240": "4h",
+  "1440": "1d",
+};
+
 const ResolutionSelector = (props: ResolutionSelectorProps) => {
+  const [hoveringSelector, setHoveringSelector] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [hoveredResolution, setHoveredResolution] = useState<string | number>(
+    "",
+  );
+  const selectorRef = useRef<HTMLDivElement | null>(null);
+
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown);
+  };
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      selectorRef.current &&
+      !selectorRef.current.contains(event.target as Node)
+    ) {
+      setShowDropdown(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div
       style={{
         position: "absolute",
-        top: "0",
-        left: "0",
-        background: "white",
+        top: "1ch",
+        left: "1ch",
+        background: "#00000000",
+        fontSize: "1.1em",
+        color: hoveringSelector ? "lightgrey" : "white",
         zIndex: 3,
+        cursor: "pointer",
       }}
-      className="timeframe-selector"
-      onMouseLeave={() => setShowDropdown(false)}
+      className="timeframe-selector font-roboto-mono"
+      ref={selectorRef}
     >
       <div
         className="selected-timeframe"
-        onMouseOver={() => {
-          setShowDropdown(true);
-        }}
+        onMouseOver={() => setHoveringSelector(true)}
+        onMouseLeave={() => setHoveringSelector(false)}
+        onClick={() => toggleDropdown()}
+        onFocus={() => toggleDropdown()}
+        onBlur={() => setShowDropdown(false)}
       >
-        {props.resolution}
+        {
+          RES_TO_STRING_SHORT[
+            props.resolution as keyof typeof RES_TO_STRING_SHORT
+          ]
+        }
       </div>
       {showDropdown && (
         <ul className="dropdown-menu">
@@ -40,12 +100,24 @@ const ResolutionSelector = (props: ResolutionSelectorProps) => {
             <li
               key={key}
               className="dropdown-item"
+              style={{
+                color: "white",
+                background:
+                  key == props.resolution
+                    ? "#2962FF"
+                    : key == hoveredResolution
+                    ? "#2A2E39"
+                    : "#00000000",
+                minWidth: "11ch",
+              }}
+              onMouseEnter={() => setHoveredResolution(key)}
+              onMouseLeave={() => setHoveredResolution("")}
               onClick={() => {
                 props.setResolution(key);
                 setShowDropdown(false);
               }}
             >
-              {key}
+              {RES_TO_STRING_FULL[key as keyof typeof RES_TO_STRING_FULL]}
             </li>
           ))}
         </ul>
