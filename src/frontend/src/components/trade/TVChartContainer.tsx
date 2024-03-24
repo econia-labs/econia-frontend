@@ -122,9 +122,11 @@ export const TVChartContainer: React.FC<
         const margin = numBars * 0.1;
 
         if (range.from < 0 - margin || range.to > numBars + margin) {
+          const newFrom = Math.max(range.from, 0 - margin);
+          const newTo = Math.min(range.to, numBars + margin);
           chart.timeScale().setVisibleLogicalRange({
-            from: Math.max(range.from, 0 - margin),
-            to: Math.min(range.to, numBars + margin),
+            from: newFrom < newTo ? newFrom : 0,
+            to: newTo > newFrom ? newTo : numBars,
           });
         }
       }
