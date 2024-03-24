@@ -161,16 +161,6 @@ export function useChartData(
       new Date().getTime() - scaledStartDaysAgo * MS_IN_ONE_DAY,
     );
 
-    // Clear all schedulers except for the current resolution's scheduler.
-    Object.keys(schedulers.current).forEach((res) => {
-      if (res !== resolution) {
-        if (schedulers.current[Number(res)]) {
-          clearTimeout(schedulers.current[Number(res)]);
-          delete schedulers.current[Number(res)];
-        }
-      }
-    });
-
     // Fetch data for the current resolution, start the scheduler for it,
     // and store the scheduler in the state.
     const schedulerLoop = async (start: Date): Promise<number> => {
@@ -208,12 +198,10 @@ export function useChartData(
         };
         chartDataRef.current = updatedChartData;
 
-        // If the number of elements fetched < `MAX_ELEMENTS_PER_FETCH` - 1
+        // If the number of elements fetched < `MAX_ELEMENTS_PER_FETCH`
         // then wait for `UPDATE_FEED_INTERVAL` milliseconds before fetching again.
-        // We subtract 1 from `MAX_ELEMENTS_PER_FETCH` because we may overlap the
-        // last element fetched with the first element fetched in the next fetch.
-        if (numElements < MAX_ELEMENTS_PER_FETCH - 1) {
-          // Avoid updating the chart when the data fetched already exists.
+        if (numElements < MAX_ELEMENTS_PER_FETCH) {
+          // Update the chart if there is any new data.
           if (!result.allDuplicates) {
             setChartDataDictionary(chartDataRef.current);
           }
@@ -227,8 +215,9 @@ export function useChartData(
           ) as unknown as number;
           schedulers.current.push(schedulerID);
           return schedulerID;
-          // Otherwise, fetch again after `FETCH_INTERVAL` milliseconds.
         } else {
+          // We fetched MAX_ELEMENTS_PER_FETCH elements, so only wait
+          // `FETCH_INTERVAL` milliseconds.
           const schedulerID = setTimeout(
             () =>
               schedulerLoop(
