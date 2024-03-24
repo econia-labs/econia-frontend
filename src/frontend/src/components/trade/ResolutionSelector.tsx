@@ -1,3 +1,4 @@
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import React, {
   type Dispatch,
   type SetStateAction,
@@ -88,12 +89,14 @@ const ResolutionSelector = (props: ResolutionSelectorProps) => {
         onClick={() => toggleDropdown()}
         onFocus={() => toggleDropdown()}
         onBlur={() => setShowDropdown(false)}
+        style={{ display: "flex", alignItems: "center" }}
       >
         {
           RES_TO_STRING_SHORT[
             props.resolution as keyof typeof RES_TO_STRING_SHORT
           ]
         }
+        <ChevronDownIcon className="my-auto ml-1 h-[18px] w-[18px]" />
       </div>
       {showDropdown && (
         <ul className="dropdown-menu">
