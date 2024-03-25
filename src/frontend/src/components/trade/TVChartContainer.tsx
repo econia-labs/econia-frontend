@@ -147,7 +147,6 @@ export const TVChartContainer: React.FC<
             queryParams,
             start: new Date(from * 1000),
             end: new Date(to * 1000),
-            fetchDelay: 0,
           });
           if (data.length < 1) {
             onHistoryCallback([], {
