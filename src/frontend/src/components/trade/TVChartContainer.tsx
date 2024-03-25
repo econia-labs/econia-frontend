@@ -2,10 +2,10 @@
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef } from "react";
 
-import { API_URL } from "@/env";
 import { type ApiMarket, type MarketData } from "@/types/api";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
-import { getClientTimezone } from "@/utils/helpers";
+import { getAllDataInTimeRange, getClientTimezone } from "@/utils/helpers";
+
 //eslint-disable-next-line
 let chartModule: any = {} as any;
 (() => {
@@ -138,20 +138,17 @@ export const TVChartContainer: React.FC<
       ) => {
         const { from, to } = periodParams;
         try {
-          const toDateISOString = new Date(to * 1000).toISOString();
-          const fromDateISOString = new Date(from * 1000).toISOString();
-          const url = new URL(
-            `/candlesticks?${new URLSearchParams({
-              market_id: `eq.${props.selectedMarket.market_id}`,
-              resolution: `eq.${DAY_BY_RESOLUTION[resolution.toString()]}`,
-              and:
-                `(start_time.lte.${toDateISOString},` +
-                `start_time.gte.${fromDateISOString})`,
-            })}`,
-            API_URL,
-          ).href;
-          const res = await fetch(url);
-          const data = await res.json();
+          const queryParams = new URLSearchParams({
+            market_id: `eq.${props.selectedMarket.market_id}`,
+            resolution: `eq.${DAY_BY_RESOLUTION[resolution.toString()]}`,
+          });
+          const data = await getAllDataInTimeRange({
+            queryName: "candlesticks",
+            queryParams,
+            start: new Date(from * 1000),
+            end: new Date(to * 1000),
+            fetchDelay: 0,
+          });
           if (data.length < 1) {
             onHistoryCallback([], {
               noData: true,

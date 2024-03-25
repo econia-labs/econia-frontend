@@ -1,3 +1,4 @@
+import { MAX_ELEMENTS_PER_FETCH } from "@/constants";
 import { API_URL } from "@/env";
 import { type ApiMarket, type MarketSelectData } from "@/types/api";
 
@@ -117,4 +118,78 @@ export function getClientTimezone() {
     }
   }
   return "Etc/UTC";
+}
+
+/**
+ * Helper function to auto-paginate queries for an nodeinfra endpoint
+ * until all of the data from a timeframe is returned.
+ * Since this function's data will likely be used for frontend charting, it's
+ * written with non-blocking pseudo-recursive setTimeout calls to avoid
+ * blocking the main javascript execution thread.
+ * NOTE: This assumes the endpoint can specify the query parameters
+ * "start_time.gte" and "start_time.lte" to confine the data to a timeframe.
+ *
+ * @param queryName The name of the query endpoint to fetch data from, e.g. "candlesticks".
+ * @param queryParams The query parameters to pass to the endpoint.
+ * @param start The start time of the range to fetch data from.
+ * @param end The end time of the range to fetch data from.
+ * @param limit Optional limit to the number of elements to fetch per request,
+ * defaults to `MAX_ELEMENTS_PER_FETCH`.
+ * @param fetchDelay Optional delay in milliseconds between each fetch request.
+ * @returns an Array<T> containing all the data fetched from the endpoint.
+ */
+export async function getAllDataInTimeRange<T>(args: {
+  queryName: string;
+  queryParams: URLSearchParams;
+  start: Date;
+  end: Date;
+  limit?: number;
+  fetchDelay?: number;
+}): Promise<T[]> {
+  const {
+    queryName,
+    queryParams,
+    start,
+    end,
+    limit = MAX_ELEMENTS_PER_FETCH,
+    fetchDelay = 0,
+  } = args;
+  let offset = 0;
+  const allData: T[] = [];
+  let keepFetching = true;
+
+  const timeFilters = `(start_time.gte.${start.toISOString()},start_time.lte.${end.toISOString()})`;
+  queryParams.set("and", timeFilters);
+  queryParams.set("limit", limit.toString());
+
+  const fetchData = async (
+    resolve: (value: T[] | PromiseLike<T[]>) => void,
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    reject: (reason?: any) => void,
+  ) => {
+    if (!keepFetching) {
+      return resolve(allData);
+    }
+
+    queryParams.set("offset", offset.toString());
+    const url = new URL(`/${queryName}?${queryParams}`, API_URL).href;
+
+    try {
+      const res = await fetch(url);
+      const data: T[] = await res.json();
+      allData.push(...data);
+      offset += data.length;
+      if (data.length < limit) {
+        keepFetching = false;
+      }
+
+      setTimeout(() => fetchData(resolve, reject), fetchDelay);
+    } catch (error) {
+      return reject(error);
+    }
+  };
+
+  return new Promise<T[]>((resolve, reject) => {
+    fetchData(resolve, reject);
+  });
 }
