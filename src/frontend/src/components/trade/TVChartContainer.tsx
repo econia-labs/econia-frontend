@@ -35,6 +35,7 @@ export const TVChartContainer: React.FC<
     "5" as keyof typeof DAY_BY_RESOLUTION,
   );
   const chartData = useChartData(resolution, props.selectedMarket);
+  const dragging = useRef(false);
 
   useEffect(() => {
     if (
@@ -118,7 +119,7 @@ export const TVChartContainer: React.FC<
     // Subscribe to logical range changes so that when the user zooms out
     // too far, we reset the logical range back to the maximum.
     chart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
-      if (range) {
+      if (range && !dragging.current) {
         const numBars = candlestickSeriesRef.current.data().length;
         const margin = numBars * 0.1;
 
@@ -139,6 +140,30 @@ export const TVChartContainer: React.FC<
       chart.remove();
     };
   }, [props.symbol, props.selectedMarket]);
+
+  // Track whether the user is dragging the mouse on the chart.
+  useEffect(() => {
+    const chartComponent = chartComponentRef.current;
+
+    if (chartComponent) {
+      const handleMouseDown = () => {
+        dragging.current = true;
+      };
+      const handleMouseUp = () => {
+        dragging.current = false;
+      };
+
+      // We listen to mouseup events on the window because the user might
+      // drag the mouse outside of the chart component.
+      chartComponent.addEventListener("mousedown", handleMouseDown);
+      window.addEventListener("mouseup", handleMouseUp);
+
+      return () => {
+        chartComponent.removeEventListener("mousedown", handleMouseDown);
+        window.removeEventListener("mouseup", handleMouseUp);
+      };
+    }
+  }, [chartComponentRef]);
 
   return (
     <div className="relative h-full w-full">
