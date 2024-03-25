@@ -190,10 +190,11 @@ export const StatsBar: React.FC<{
       </BaseModal>
       {isModalOpen && isSmallWindow && (
         <div
-          className={`fixed inset-0 z-[60] flex h-full w-full items-center justify-center overflow-hidden bg-black text-center font-jost text-3xl font-bold text-white`}
+          className={`fixed inset-0 z-[60] flex h-full w-full items-center justify-center overflow-hidden bg-black text-center font-jost text-2xl font-bold text-white`}
         >
-          💩 <br />
-          View on Larger Screen
+          For the best experience,
+          <br />
+          please use a larger screen.
         </div>
       )}
       <div className="hidden justify-between border-b border-neutral-600 px-[29.19px] py-3 md:flex lg:pr-[46.24px]">
