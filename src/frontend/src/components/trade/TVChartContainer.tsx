@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { type DAY_BY_RESOLUTION, useChartData } from "@/hooks/useChartData";
 import { type ApiMarket } from "@/types/api";
 
+import ResizeChartButton from "./ResizeChartButton";
 import ResolutionSelector from "./ResolutionSelector";
 
 export const GREEN = "rgba(110, 213, 163, 1.0)";
@@ -152,6 +153,7 @@ export const TVChartContainer: React.FC<
         resolution={resolution}
         setResolution={setResolution}
       />
+      <ResizeChartButton chartAPIRef={chartAPIRef} />
     </div>
   );
 };
