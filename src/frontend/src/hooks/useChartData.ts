@@ -69,6 +69,7 @@ export async function fetchChartData(
   end: Date,
   selectedMarket: ApiMarket,
   resolution: keyof typeof DAY_BY_RESOLUTION,
+  timezoneOffset: number,
 ): Promise<ChartData> {
   const queryParams = new URLSearchParams({
     market_id: `eq.${selectedMarket.market_id}`,
@@ -88,11 +89,13 @@ export async function fetchChartData(
 
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   data.forEach((bar: any) => {
-    const barTime = new Date(bar.start_time);
-    const time = barTime.getTime() / 1000;
-    latestTime = barTime;
-    priceData[time] = {
-      time,
+    const barTimeUTC = new Date(bar.start_time);
+    const utcTime = barTimeUTC.getTime() / 1000;
+    const localTimestamp =
+      (barTimeUTC.getTime() - timezoneOffset * 60 * 1000) / 1000;
+    latestTime = barTimeUTC;
+    priceData[utcTime] = {
+      time: localTimestamp,
       open: toDecimalPrice({
         price: bar.open,
         marketData: selectedMarket,
@@ -110,8 +113,8 @@ export async function fetchChartData(
         marketData: selectedMarket,
       }).toNumber(),
     };
-    volumeData[time] = {
-      time,
+    volumeData[utcTime] = {
+      time: localTimestamp,
       value: toDecimalPrice({
         price: bar.volume,
         marketData: selectedMarket,
@@ -131,6 +134,8 @@ export function useChartData(
     useState<ChartDataDictionary>({});
   const chartDataRef = useRef<ChartDataDictionary>(chartDataDictionary);
   const schedulers = useRef<number[]>([]);
+  // Instantiate a date within the client to get the timezone offset later.
+  const localDate = useRef<Date>(new Date());
 
   useEffect(() => {
     schedulers.current.forEach(clearTimeout);
@@ -160,6 +165,7 @@ export function useChartData(
           now,
           selectedMarket,
           resolution,
+          localDate.current.getTimezoneOffset(),
         );
 
         const numElements = Object.keys(chartData.priceData).length;
@@ -188,7 +194,7 @@ export function useChartData(
         // If the number of elements fetched < `MAX_ELEMENTS_PER_FETCH`
         // then wait for `UPDATE_FEED_INTERVAL` milliseconds before fetching again.
         if (numElements < MAX_ELEMENTS_PER_FETCH) {
-          // Only update the state if we've fetched all the data to avoid 
+          // Only update the state if we've fetched all the data to avoid
           // seeing the chart rapidly update on the first few initial fetches.
           setChartDataDictionary(chartDataRef.current);
           const schedulerID = setTimeout(
