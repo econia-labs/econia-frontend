@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { DEFAULT_PRICE_AXIS_WIDTH, VOLUME_PRICE_CHART_ID } from "@/constants";
 import { type DAY_BY_RESOLUTION, useChartData } from "@/hooks/useChartData";
 import { type ApiMarket } from "@/types/api";
+import { debounce } from "@/utils/debounce";
 
 import ResizeChartButton from "./ResizeChartButton";
 import ResolutionSelector from "./ResolutionSelector";
@@ -53,6 +54,11 @@ export const TVChartContainer: React.FC<
       chart.priceScale("right").applyOptions({ autoScale: true });
       chart.priceScale(VOLUME_PRICE_CHART_ID).applyOptions({ autoScale: true });
       chart.timeScale().fitContent();
+      // We use requestAnimationFrame to try to ensure that the API has updated
+      // the priceScale width internally before we set the state.
+      requestAnimationFrame(() => {
+        setPriceScaleWidth(chart.priceScale("right").width());
+      });
     }
   }, []);
 
@@ -154,7 +160,9 @@ export const TVChartContainer: React.FC<
           });
         }
       }
-      setPriceScaleWidth(chart.priceScale("right").width());
+      debounce(() => {
+        setPriceScaleWidth(chart.priceScale("right").width());
+      }, 100);
     });
 
     return () => {
