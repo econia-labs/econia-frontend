@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { DEFAULT_PRICE_AXIS_WIDTH, VOLUME_PRICE_CHART_ID } from "@/constants";
 import { type DAY_BY_RESOLUTION, useChartData } from "@/hooks/useChartData";
 import { type ApiMarket } from "@/types/api";
-import { debounce } from "@/utils/debounce";
 
 import ResizeChartButton from "./ResizeChartButton";
 import ResolutionSelector from "./ResolutionSelector";
