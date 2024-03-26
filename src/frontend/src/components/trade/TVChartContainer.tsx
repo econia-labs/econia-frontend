@@ -1,7 +1,7 @@
 import { ColorType, createChart } from "lightweight-charts";
 import { useEffect, useRef, useState } from "react";
 
-import { DEFAULT_PRICE_AXIS_WIDTH } from "@/constants";
+import { DEFAULT_PRICE_AXIS_WIDTH, VOLUME_PRICE_CHART_ID } from "@/constants";
 import { type DAY_BY_RESOLUTION, useChartData } from "@/hooks/useChartData";
 import { type ApiMarket } from "@/types/api";
 
@@ -38,6 +38,10 @@ export const TVChartContainer: React.FC<
   const chartData = useChartData(resolution, props.selectedMarket);
   const dragging = useRef(false);
 
+  const [priceScaleWidth, setPriceScaleWidth] = useState(
+    DEFAULT_PRICE_AXIS_WIDTH,
+  );
+
   const resizeChart = () => {
     const chart = chartAPIRef.current;
     if (chart) {
@@ -47,10 +51,30 @@ export const TVChartContainer: React.FC<
       // We set `autoScale` to `true` here because if the user previously
       // manually adjusted the priceScale, `autoScale` will be turned off.
       chart.priceScale("right").applyOptions({ autoScale: true });
-      chart.priceScale("id_volume").applyOptions({ autoScale: true });
+      chart.priceScale(VOLUME_PRICE_CHART_ID).applyOptions({ autoScale: true });
       chart.timeScale().fitContent();
+      // For some reason, the width of the price scale is not updated
+      // immediately, so we need to wait before checking the width.
+      // We'll use requestAnimationFrame to wait for the next frame.
+      requestAnimationFrame(() => {
+        setPriceScaleWidth(chart.priceScale("right").width());
+      });
     }
   };
+
+  // There's no way to get the width of the price scale directly from the API
+  // in a way where you can subscribe to the event, so unfortunately we must
+  // use setInterval to check the width every 500ms.
+  useEffect(() => {
+    const intervalID = setInterval(() => {
+      if (!chartAPIRef.current) return;
+      setPriceScaleWidth(chartAPIRef.current.priceScale("right").width());
+    }, 5000000);
+
+    return () => {
+      clearInterval(intervalID);
+    };
+  }, [priceScaleWidth]);
 
   useEffect(() => {
     if (
@@ -67,6 +91,7 @@ export const TVChartContainer: React.FC<
       candlestickSeriesRef.current.setData(priceData);
       volumeSeriesRef.current.setData(volumeData);
       const currNumBars = candlestickSeriesRef.current.data().length;
+
       if (prevNumBars !== currNumBars) {
         resizeChart();
       }
@@ -110,10 +135,10 @@ export const TVChartContainer: React.FC<
       priceFormat: {
         type: "volume",
       },
-      priceScaleId: "id_volume",
+      priceScaleId: VOLUME_PRICE_CHART_ID,
     });
 
-    chart.priceScale("id_volume").applyOptions({
+    chart.priceScale(VOLUME_PRICE_CHART_ID).applyOptions({
       scaleMargins: {
         top: 0.9,
         bottom: 0,
@@ -197,10 +222,7 @@ export const TVChartContainer: React.FC<
       />
       <ResizeChartButton
         handleClick={resizeChart}
-        priceScaleWidth={
-          chartAPIRef.current?.priceScale("right")?.width() ??
-          DEFAULT_PRICE_AXIS_WIDTH
-        }
+        priceScaleWidth={priceScaleWidth}
       />
     </div>
   );
