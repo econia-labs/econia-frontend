@@ -1,6 +1,7 @@
 import { ColorType, createChart } from "lightweight-charts";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
+import { DEFAULT_PRICE_AXIS_WIDTH, VOLUME_PRICE_CHART_ID } from "@/constants";
 import { type DAY_BY_RESOLUTION, useChartData } from "@/hooks/useChartData";
 import { type ApiMarket } from "@/types/api";
 
@@ -37,6 +38,24 @@ export const TVChartContainer: React.FC<
   const chartData = useChartData(resolution, props.selectedMarket);
   const dragging = useRef(false);
 
+  const [priceScaleWidth, setPriceScaleWidth] = useState(
+    DEFAULT_PRICE_AXIS_WIDTH,
+  );
+
+  const resizeChart = useCallback(() => {
+    const chart = chartAPIRef.current;
+    if (chart) {
+      // The ID of the price scale is automatically set to "right"
+      // because it doesn't have an ID otherwise. This is not
+      // documented in the TradingView API.
+      // We set `autoScale` to `true` here because if the user previously
+      // manually adjusted the priceScale, `autoScale` will be turned off.
+      chart.priceScale("right").applyOptions({ autoScale: true });
+      chart.priceScale(VOLUME_PRICE_CHART_ID).applyOptions({ autoScale: true });
+      chart.timeScale().fitContent();
+    }
+  }, []);
+
   useEffect(() => {
     if (
       chartData &&
@@ -52,11 +71,12 @@ export const TVChartContainer: React.FC<
       candlestickSeriesRef.current.setData(priceData);
       volumeSeriesRef.current.setData(volumeData);
       const currNumBars = candlestickSeriesRef.current.data().length;
+
       if (prevNumBars !== currNumBars) {
-        chartAPIRef.current.timeScale().fitContent();
+        resizeChart();
       }
     }
-  }, [chartData]);
+  }, [chartData, resizeChart]);
 
   // Initialization useEffect hook to create the chart with both a price and
   // volume candlestick series.
@@ -95,14 +115,16 @@ export const TVChartContainer: React.FC<
       priceFormat: {
         type: "volume",
       },
-      priceScaleId: "id_volume",
+      priceScaleId: VOLUME_PRICE_CHART_ID,
     });
 
-    chart.priceScale("id_volume").applyOptions({
+    chart.priceScale(VOLUME_PRICE_CHART_ID).applyOptions({
       scaleMargins: {
         top: 0.9,
         bottom: 0,
       },
+      autoScale: true,
+      minimumWidth: DEFAULT_PRICE_AXIS_WIDTH,
     });
     chart.timeScale().applyOptions({
       secondsVisible: true,
@@ -132,6 +154,7 @@ export const TVChartContainer: React.FC<
           });
         }
       }
+      setPriceScaleWidth(chart.priceScale("right").width());
     });
 
     return () => {
@@ -178,7 +201,10 @@ export const TVChartContainer: React.FC<
         resolution={resolution}
         setResolution={setResolution}
       />
-      <ResizeChartButton chartAPIRef={chartAPIRef} />
+      <ResizeChartButton
+        handleClick={resizeChart}
+        priceScaleWidth={priceScaleWidth}
+      />
     </div>
   );
 };

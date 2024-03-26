@@ -2,26 +2,21 @@ import React from "react";
 
 export interface ResizeChartButtonProps {
   /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
-  chartAPIRef: React.MutableRefObject<any>;
+  handleClick: () => void;
+  priceScaleWidth: number;
 }
 
 export const ResizeChartButton = (props: ResizeChartButtonProps) => {
-  const handleClick = () => {
-    if (props.chartAPIRef.current) {
-      props.chartAPIRef.current.timeScale().fitContent();
-    }
-  };
-
   return (
     <button
       style={{
         position: "absolute",
         zIndex: 3,
         top: "1ch",
-        right: "66px",
+        right: `${props.priceScaleWidth + 4}px`,
         color: "white",
       }}
-      onClick={handleClick}
+      onClick={props.handleClick}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

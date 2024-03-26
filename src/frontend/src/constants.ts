@@ -65,3 +65,5 @@ export const MAINNET_TOKEN_LIST: RawCoinInfo[] = [
 ];
 
 export const MAX_ELEMENTS_PER_FETCH = 100;
+export const DEFAULT_PRICE_AXIS_WIDTH = 58;
+export const VOLUME_PRICE_CHART_ID = "id_volume";
