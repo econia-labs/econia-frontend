@@ -13,7 +13,7 @@ export const ResizeChartButton = (props: ResizeChartButtonProps) => {
         position: "absolute",
         zIndex: 3,
         top: "1ch",
-        right: `${props.priceScaleWidth + 3}px`,
+        right: `${props.priceScaleWidth + 4}px`,
         color: "white",
       }}
       onClick={props.handleClick}
