@@ -1,5 +1,5 @@
 import { ColorType, createChart } from "lightweight-charts";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { DEFAULT_PRICE_AXIS_WIDTH, VOLUME_PRICE_CHART_ID } from "@/constants";
 import { type DAY_BY_RESOLUTION, useChartData } from "@/hooks/useChartData";
@@ -38,11 +38,16 @@ export const TVChartContainer: React.FC<
   const chartData = useChartData(resolution, props.selectedMarket);
   const dragging = useRef(false);
 
+  // For some reason, the width of the price scale returned from
+  // the lightweight-charts API is not updated immediately, so we
+  // need to wait before checking the width.
+  // We use requestAnimationFrame combined with setPriceScaleWidth
+  // to wait for the next frame.
   const [priceScaleWidth, setPriceScaleWidth] = useState(
     DEFAULT_PRICE_AXIS_WIDTH,
   );
 
-  const resizeChart = () => {
+  const resizeChart = useCallback(() => {
     const chart = chartAPIRef.current;
     if (chart) {
       // The ID of the price scale is automatically set to "right"
@@ -53,28 +58,9 @@ export const TVChartContainer: React.FC<
       chart.priceScale("right").applyOptions({ autoScale: true });
       chart.priceScale(VOLUME_PRICE_CHART_ID).applyOptions({ autoScale: true });
       chart.timeScale().fitContent();
-      // For some reason, the width of the price scale is not updated
-      // immediately, so we need to wait before checking the width.
-      // We'll use requestAnimationFrame to wait for the next frame.
-      requestAnimationFrame(() => {
-        setPriceScaleWidth(chart.priceScale("right").width());
-      });
+      setPriceScaleWidth(chart.priceScale("right").width());
     }
-  };
-
-  // There's no way to get the width of the price scale directly from the API
-  // in a way where you can subscribe to the event, so unfortunately we must
-  // use setInterval to check the width every 500ms.
-  useEffect(() => {
-    const intervalID = setInterval(() => {
-      if (!chartAPIRef.current) return;
-      setPriceScaleWidth(chartAPIRef.current.priceScale("right").width());
-    }, 5000000);
-
-    return () => {
-      clearInterval(intervalID);
-    };
-  }, [priceScaleWidth]);
+  }, []);
 
   useEffect(() => {
     if (
@@ -96,7 +82,7 @@ export const TVChartContainer: React.FC<
         resizeChart();
       }
     }
-  }, [chartData]);
+  }, [chartData, resizeChart]);
 
   // Initialization useEffect hook to create the chart with both a price and
   // volume candlestick series.
@@ -161,6 +147,7 @@ export const TVChartContainer: React.FC<
     // Subscribe to logical range changes so that when the user zooms out
     // too far, we reset the logical range back to the maximum.
     chart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
+      setPriceScaleWidth(chart.priceScale("right").width());
       if (range && !dragging.current) {
         const numBars = candlestickSeriesRef.current.data().length;
         const margin = numBars * 0.1;
