@@ -144,10 +144,6 @@ export const TVChartContainer: React.FC<
 
     chartAPIRef.current = chart;
 
-    const debouncedUpdatePriceScaleWidth = debounce(() => {
-      setPriceScaleWidth(chart.priceScale("right").width());
-    }, 50);
-
     // Subscribe to logical range changes so that when the user zooms out
     // too far, we reset the logical range back to the maximum.
     const rangeChangeHandler = (range: LogicalRange | null) => {
@@ -164,7 +160,7 @@ export const TVChartContainer: React.FC<
           });
         }
       }
-      debouncedUpdatePriceScaleWidth();
+      setPriceScaleWidth(chart.priceScale("right").width());
     };
 
     chart.timeScale().subscribeVisibleLogicalRangeChange(rangeChangeHandler);
