@@ -65,3 +65,4 @@ export const MAINNET_TOKEN_LIST: RawCoinInfo[] = [
 ];
 
 export const MAX_ELEMENTS_PER_FETCH = 100;
+export const DEFAULT_PRICE_AXIS_WIDTH = 58;

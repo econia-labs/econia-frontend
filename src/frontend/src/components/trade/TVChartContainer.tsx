@@ -1,6 +1,7 @@
 import { ColorType, createChart } from "lightweight-charts";
 import { useEffect, useRef, useState } from "react";
 
+import { DEFAULT_PRICE_AXIS_WIDTH } from "@/constants";
 import { type DAY_BY_RESOLUTION, useChartData } from "@/hooks/useChartData";
 import { type ApiMarket } from "@/types/api";
 
@@ -37,6 +38,20 @@ export const TVChartContainer: React.FC<
   const chartData = useChartData(resolution, props.selectedMarket);
   const dragging = useRef(false);
 
+  const resizeChart = () => {
+    const chart = chartAPIRef.current;
+    if (chart) {
+      // The ID of the price scale is automatically set to "right"
+      // because it doesn't have an ID otherwise. This is not
+      // documented in the TradingView API.
+      // We set `autoScale` to `true` here because if the user previously
+      // manually adjusted the priceScale, `autoScale` will be turned off.
+      chart.priceScale("right").applyOptions({ autoScale: true });
+      chart.priceScale("id_volume").applyOptions({ autoScale: true });
+      chart.timeScale().fitContent();
+    }
+  };
+
   useEffect(() => {
     if (
       chartData &&
@@ -53,7 +68,7 @@ export const TVChartContainer: React.FC<
       volumeSeriesRef.current.setData(volumeData);
       const currNumBars = candlestickSeriesRef.current.data().length;
       if (prevNumBars !== currNumBars) {
-        chartAPIRef.current.timeScale().fitContent();
+        resizeChart();
       }
     }
   }, [chartData]);
@@ -103,6 +118,8 @@ export const TVChartContainer: React.FC<
         top: 0.9,
         bottom: 0,
       },
+      autoScale: true,
+      minimumWidth: DEFAULT_PRICE_AXIS_WIDTH,
     });
     chart.timeScale().applyOptions({
       secondsVisible: true,
@@ -178,7 +195,13 @@ export const TVChartContainer: React.FC<
         resolution={resolution}
         setResolution={setResolution}
       />
-      <ResizeChartButton chartAPIRef={chartAPIRef} />
+      <ResizeChartButton
+        handleClick={resizeChart}
+        priceScaleWidth={
+          chartAPIRef.current?.priceScale("right")?.width() ??
+          DEFAULT_PRICE_AXIS_WIDTH
+        }
+      />
     </div>
   );
 };
