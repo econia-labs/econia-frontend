@@ -38,11 +38,6 @@ export const TVChartContainer: React.FC<
   const chartData = useChartData(resolution, props.selectedMarket);
   const dragging = useRef(false);
 
-  // For some reason, the width of the price scale returned from
-  // the lightweight-charts API is not updated immediately, so we
-  // need to wait before checking the width.
-  // We use requestAnimationFrame combined with setPriceScaleWidth
-  // to wait for the next frame.
   const [priceScaleWidth, setPriceScaleWidth] = useState(
     DEFAULT_PRICE_AXIS_WIDTH,
   );
@@ -58,7 +53,6 @@ export const TVChartContainer: React.FC<
       chart.priceScale("right").applyOptions({ autoScale: true });
       chart.priceScale(VOLUME_PRICE_CHART_ID).applyOptions({ autoScale: true });
       chart.timeScale().fitContent();
-      setPriceScaleWidth(chart.priceScale("right").width());
     }
   }, []);
 
@@ -147,7 +141,6 @@ export const TVChartContainer: React.FC<
     // Subscribe to logical range changes so that when the user zooms out
     // too far, we reset the logical range back to the maximum.
     chart.timeScale().subscribeVisibleLogicalRangeChange((range) => {
-      setPriceScaleWidth(chart.priceScale("right").width());
       if (range && !dragging.current) {
         const numBars = candlestickSeriesRef.current.data().length;
         const margin = numBars * 0.1;
@@ -161,6 +154,7 @@ export const TVChartContainer: React.FC<
           });
         }
       }
+      setPriceScaleWidth(chart.priceScale("right").width());
     });
 
     return () => {
