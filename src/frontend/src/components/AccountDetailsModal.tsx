@@ -72,7 +72,7 @@ export const AccountDetailsModal: React.FC<{
       if (!account?.address) return null;
       try {
         const response = await fetch(
-          `${API_URL}/user_balances?select=*,markets(*)&user=eq.${account.address}`,
+          `${API_URL}/user_balances?select=*,markets(*)&address=eq.${account.address}`,
         );
         const data = await response.json();
         return data;
