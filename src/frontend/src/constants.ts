@@ -63,3 +63,5 @@ export const MAINNET_TOKEN_LIST: RawCoinInfo[] = [
     return coin;
   }),
 ];
+
+export const MAX_ELEMENTS_PER_FETCH = 100;

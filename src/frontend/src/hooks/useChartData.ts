@@ -4,9 +4,10 @@ import {
   GREEN_OPACITY_HALF,
   RED_OPACITY_HALF,
 } from "@/components/trade/TVChartContainer";
-import { API_URL } from "@/env";
+import { MAX_ELEMENTS_PER_FETCH } from "@/constants";
 import { type ApiMarket } from "@/types/api";
 import { toDecimalPrice } from "@/utils/econia";
+import { getAllDataInTimeRange } from "@/utils/helpers";
 
 export const DAY_BY_RESOLUTION: { [key: string]: string } = {
   "1D": "86400",
@@ -22,7 +23,6 @@ export const MS_IN_ONE_DAY = 24 * 60 * 60 * 1000;
 
 // This determines at what point in time the chart starts displaying data.
 export const START_DAYS_AGO = 1;
-export const MAX_ELEMENTS_PER_FETCH = 100;
 
 // Time intervals in milliseconds.
 export const UPDATE_FEED_INTERVAL = 10000;
@@ -63,81 +63,64 @@ const RESOLUTION_SCALE_FACTOR: {
   return acc;
 }, {} as { [key in keyof typeof DAY_BY_RESOLUTION]: number });
 
-export async function fetchData(
+export async function fetchChartData(
+  queryName: string,
   start: Date,
   end: Date,
-  priorLatestTime: Date,
-  marketId: number,
   selectedMarket: ApiMarket,
   resolution: keyof typeof DAY_BY_RESOLUTION,
-  timeEntriesSet: React.MutableRefObject<Set<string>>,
-) {
-  const url = new URL(
-    `/candlesticks?${new URLSearchParams({
-      market_id: `eq.${marketId}`,
-      resolution: `eq.${DAY_BY_RESOLUTION[resolution]}`,
-      and:
-        `(start_time.lte.${end.toISOString()},` +
-        `start_time.gte.${start.toISOString()})`,
-    })}`,
-    API_URL,
-  ).href;
-
-  const res = await fetch(url);
-  const data = await res.json();
-  let latestTime = priorLatestTime;
+): Promise<ChartData> {
+  const queryParams = new URLSearchParams({
+    market_id: `eq.${selectedMarket.market_id}`,
+    resolution: `eq.${DAY_BY_RESOLUTION[resolution.toString()]}`,
+    order: "start_time.asc",
+  });
+  const data = await getAllDataInTimeRange({
+    queryName,
+    queryParams,
+    start,
+    end,
+  });
 
   const priceData: PriceData = {};
   const volumeData: VolumeData = {};
-  let allDuplicates = true;
+  let latestTime = new Date(0);
 
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   data.forEach((bar: any) => {
     const barTime = new Date(bar.start_time);
     const time = barTime.getTime() / 1000;
-    latestTime = latestTime >= barTime ? latestTime : barTime;
-    // We only want to add the time entry if it doesn't already exist in the
-    // set, unless it's the latest bar because the data might have changed.
-    // Note that our set checks uniqueness by resolution and time, not just
-    // time, because different time resolutions have different candlestick
-    // and volume data.
-    if (
-      !timeEntriesSet.current.has(`${resolution}-${time}`) ||
-      barTime.getTime() == priorLatestTime.getTime()
-    ) {
-      allDuplicates = false;
-      timeEntriesSet.current.add(`${resolution}-${time}`);
-      priceData[time] = {
-        time,
-        open: toDecimalPrice({
-          price: bar.open,
-          marketData: selectedMarket,
-        }).toNumber(),
-        high: toDecimalPrice({
-          price: bar.high,
-          marketData: selectedMarket,
-        }).toNumber(),
-        low: toDecimalPrice({
-          price: bar.low,
-          marketData: selectedMarket,
-        }).toNumber(),
-        close: toDecimalPrice({
-          price: bar.close,
-          marketData: selectedMarket,
-        }).toNumber(),
-      };
-      volumeData[time] = {
-        time,
-        value: toDecimalPrice({
-          price: bar.volume,
-          marketData: selectedMarket,
-        }).toNumber(),
-        color: bar.close > bar.open ? RED_OPACITY_HALF : GREEN_OPACITY_HALF,
-      };
-    }
+    latestTime = barTime;
+    priceData[time] = {
+      time,
+      open: toDecimalPrice({
+        price: bar.open,
+        marketData: selectedMarket,
+      }).toNumber(),
+      high: toDecimalPrice({
+        price: bar.high,
+        marketData: selectedMarket,
+      }).toNumber(),
+      low: toDecimalPrice({
+        price: bar.low,
+        marketData: selectedMarket,
+      }).toNumber(),
+      close: toDecimalPrice({
+        price: bar.close,
+        marketData: selectedMarket,
+      }).toNumber(),
+    };
+    volumeData[time] = {
+      time,
+      value: toDecimalPrice({
+        price: bar.volume,
+        marketData: selectedMarket,
+      }).toNumber(),
+      color: bar.close > bar.open ? RED_OPACITY_HALF : GREEN_OPACITY_HALF,
+    };
   });
 
-  return { priceData, volumeData, latestTime, allDuplicates };
+  return { priceData, volumeData, latestTime };
 }
 
 export function useChartData(
@@ -147,7 +130,6 @@ export function useChartData(
   const [chartDataDictionary, setChartDataDictionary] =
     useState<ChartDataDictionary>({});
   const chartDataRef = useRef<ChartDataDictionary>(chartDataDictionary);
-  const timeEntriesSet = useRef<Set<string>>(new Set());
   const schedulers = useRef<number[]>([]);
 
   useEffect(() => {
@@ -163,35 +145,40 @@ export function useChartData(
 
     // Fetch data for the current resolution, start the scheduler for it,
     // and store the scheduler in the state.
-    const schedulerLoop = async (start: Date): Promise<number> => {
+    const schedulerLoop = async (): Promise<number> => {
       try {
         schedulers.current.forEach(clearTimeout);
         schedulers.current = [];
 
+        const latestForCurrentRes =
+          chartDataRef.current[resolution]?.latestTime || scaledInitialStart;
+
         const now = new Date();
-        const result = await fetchData(
-          start,
+        const chartData = await fetchChartData(
+          "candlesticks",
+          latestForCurrentRes,
           now,
-          chartDataRef.current[resolution]?.latestTime || start,
-          selectedMarket.market_id,
           selectedMarket,
           resolution,
-          timeEntriesSet,
         );
 
-        const numElements = Object.keys(result.priceData).length;
-        const latestTime = result.latestTime;
+        const numElements = Object.keys(chartData.priceData).length;
+        const returnedLatest = chartData.latestTime;
+        const latestTime =
+          returnedLatest > latestForCurrentRes
+            ? returnedLatest
+            : latestForCurrentRes;
 
         const updatedChartData = {
           ...chartDataRef.current,
           [resolution]: {
             priceData: {
               ...(chartDataRef.current[resolution]?.priceData || {}),
-              ...result.priceData,
+              ...chartData.priceData,
             },
             volumeData: {
               ...(chartDataRef.current[resolution]?.volumeData || {}),
-              ...result.volumeData,
+              ...chartData.volumeData,
             },
             latestTime,
           },
@@ -201,16 +188,10 @@ export function useChartData(
         // If the number of elements fetched < `MAX_ELEMENTS_PER_FETCH`
         // then wait for `UPDATE_FEED_INTERVAL` milliseconds before fetching again.
         if (numElements < MAX_ELEMENTS_PER_FETCH) {
-          // Update the chart if there is any new data.
-          if (!result.allDuplicates) {
-            setChartDataDictionary(chartDataRef.current);
-          }
+          // Only update the state if we've fetched all the data.
+          setChartDataDictionary(chartDataRef.current);
           const schedulerID = setTimeout(
-            () =>
-              schedulerLoop(
-                chartDataRef.current[resolution]?.latestTime ||
-                  scaledInitialStart,
-              ),
+            () => schedulerLoop(),
             UPDATE_FEED_INTERVAL,
           ) as unknown as number;
           schedulers.current.push(schedulerID);
@@ -219,11 +200,7 @@ export function useChartData(
           // We fetched MAX_ELEMENTS_PER_FETCH elements, so only wait
           // `FETCH_INTERVAL` milliseconds.
           const schedulerID = setTimeout(
-            () =>
-              schedulerLoop(
-                chartDataRef.current[resolution]?.latestTime ||
-                  scaledInitialStart,
-              ),
+            () => schedulerLoop(),
             FETCH_INTERVAL,
           ) as unknown as number;
           schedulers.current.push(schedulerID);
@@ -237,7 +214,7 @@ export function useChartData(
 
     // Add the initial scheduled timeout ID to the list of schedulers, so we
     // can end it in case the component unmounts or the resolution changes.
-    schedulerLoop(scaledInitialStart).then((schedulerID) => {
+    schedulerLoop().then((schedulerID) => {
       schedulers.current.push(schedulerID);
     });
 
