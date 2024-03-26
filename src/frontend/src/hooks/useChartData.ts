@@ -188,7 +188,8 @@ export function useChartData(
         // If the number of elements fetched < `MAX_ELEMENTS_PER_FETCH`
         // then wait for `UPDATE_FEED_INTERVAL` milliseconds before fetching again.
         if (numElements < MAX_ELEMENTS_PER_FETCH) {
-          // Only update the state if we've fetched all the data.
+          // Only update the state if we've fetched all the data to avoid 
+          // seeing the chart rapidly update on the first few initial fetches.
           setChartDataDictionary(chartDataRef.current);
           const schedulerID = setTimeout(
             () => schedulerLoop(),
