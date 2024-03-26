@@ -121,7 +121,7 @@ export function getClientTimezone() {
 }
 
 /**
- * Helper function to auto-paginate queries for an nodeinfra endpoint
+ * Helper function to auto-paginate queries for a DSS REST API endpoint
  * until all of the data from a timeframe is returned.
  * Since this function's data will likely be used for frontend charting, it's
  * written with non-blocking pseudo-recursive setTimeout calls to avoid
