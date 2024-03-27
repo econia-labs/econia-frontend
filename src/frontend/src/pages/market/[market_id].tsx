@@ -10,6 +10,7 @@ import { DepositWithdrawFlowModal } from "@/components/modals/flows/DepositWithd
 import { WalletButtonFlowModal } from "@/components/modals/flows/WalletButtonFlowModal";
 import { OrderbookTable } from "@/components/OrderbookTable";
 import { StatsBar } from "@/components/StatsBar";
+import { LightweightChartsContainer } from "@/components/trade/LightweightChartsContainer";
 import MobileOrderEntry from "@/components/trade/MobileOrderEntry";
 import { OrderEntry } from "@/components/trade/OrderEntry";
 import { OrdersTable } from "@/components/trade/OrdersTable";
@@ -18,24 +19,6 @@ import { OrderEntryContextProvider } from "@/contexts/OrderEntryContext";
 import { useOrderBook } from "@/hooks/useOrderbook";
 import type { ApiMarket } from "@/types/api";
 import { getAllMarket } from "@/utils/helpers";
-//eslint-disable-next-line
-let TVChartContainer: undefined | any = undefined;
-
-(() => {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require("../../../public/static/charting_library");
-    TVChartContainer = dynamic(
-      () =>
-        import("@/components/trade/TVChartContainer").then(
-          (mod) => mod.TVChartContainer,
-        ),
-      { ssr: false },
-    );
-  } catch (error) {
-    //nothing
-  }
-})();
 
 type Props = {
   marketData: ApiMarket;
@@ -45,6 +28,14 @@ type Props = {
 type PathParams = {
   market_id: string;
 };
+
+const TVChartContainer = dynamic(
+  () =>
+    import("@/components/trade/TVChartContainer").then(
+      (mod) => mod.TVChartContainer,
+    ),
+  { ssr: false },
+);
 
 export default function Market({ allMarketData, marketData }: Props) {
   const [tab, setTab] = useState<"orders" | "order-book" | "trade-histories">(
@@ -116,7 +107,9 @@ export default function Market({ allMarketData, marketData }: Props) {
               <div className="flex h-full min-h-[400px] md:min-h-[unset]">
                 {isScriptReady && TVChartContainer ? (
                   <TVChartContainer {...defaultTVChartProps} />
-                ) : null}
+                ) : (
+                  <LightweightChartsContainer {...defaultTVChartProps} />
+                )}
               </div>
 
               <div className="hidden h-[140px] tall:block">

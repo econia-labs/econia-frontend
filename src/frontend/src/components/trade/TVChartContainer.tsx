@@ -2,6 +2,14 @@
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef } from "react";
 
+import {
+  GREEN,
+  GREEN_OPACITY_HALF,
+  RED,
+  RED_OPACITY_HALF,
+  TV_CHARTING_LIBRARY_RESOLUTIONS,
+} from "@/constants";
+import { DAY_BY_RESOLUTION, MS_IN_ONE_DAY } from "@/hooks/useChartData";
 import { type ApiMarket, type MarketData } from "@/types/api";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 import { getAllDataInTimeRange, getClientTimezone } from "@/utils/helpers";
@@ -16,31 +24,13 @@ let chartModule: any = {} as any;
   }
 })();
 const { widget } = chartModule;
-const DAY_BY_RESOLUTION: { [key: string]: string } = {
-  "1D": "86400",
-  "30": "1800",
-  "60": "3600",
-  "15": "900",
-  "240": "14400",
-  "3D": "43200",
-  "5": "300",
-  "1": "60",
-};
-const MS_IN_ONE_DAY = 24 * 60 * 60 * 1000;
+
 export interface ChartContainerProps {
   symbol: string;
 }
 
-const GREEN = "rgba(110, 213, 163, 1.0)";
-const RED = "rgba(240, 129, 129, 1.0)";
-
-const GREEN_OPACITY_HALF = "rgba(110, 213, 163, 0.5)";
-const RED_OPACITY_HALF = "rgba(240, 129, 129, 0.5)";
-
-const resolutions = ["1", "5", "15", "30", "60", "4H", "1D"];
-
 const configurationData: DatafeedConfiguration = {
-  supported_resolutions: resolutions,
+  supported_resolutions: TV_CHARTING_LIBRARY_RESOLUTIONS,
   symbols_types: [
     {
       name: "crypto",

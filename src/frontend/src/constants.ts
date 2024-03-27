@@ -65,3 +65,19 @@ export const MAINNET_TOKEN_LIST: RawCoinInfo[] = [
 ];
 
 export const MAX_ELEMENTS_PER_FETCH = 100;
+export const DEFAULT_PRICE_AXIS_WIDTH = 58;
+export const VOLUME_PRICE_CHART_ID = "id_volume";
+export const TV_CHARTING_LIBRARY_RESOLUTIONS = [
+  "1",
+  "5",
+  "15",
+  "30",
+  "60",
+  "4H",
+  "1D",
+];
+
+export const GREEN = "rgba(110, 213, 163, 1.0)";
+export const RED = "rgba(240, 129, 129, 1.0)";
+export const GREEN_OPACITY_HALF = "rgba(110, 213, 163, 0.5)";
+export const RED_OPACITY_HALF = "rgba(240, 129, 129, 0.5)";
