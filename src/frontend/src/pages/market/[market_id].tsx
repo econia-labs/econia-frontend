@@ -1,4 +1,5 @@
 import type { GetStaticPaths, GetStaticProps } from "next";
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import Script from "next/script";
 import React, { useEffect, useMemo, useState } from "react";
@@ -9,11 +10,11 @@ import { DepositWithdrawFlowModal } from "@/components/modals/flows/DepositWithd
 import { WalletButtonFlowModal } from "@/components/modals/flows/WalletButtonFlowModal";
 import { OrderbookTable } from "@/components/OrderbookTable";
 import { StatsBar } from "@/components/StatsBar";
+import { LightweightChartsContainer } from "@/components/trade/LightweightChartsContainer";
 import MobileOrderEntry from "@/components/trade/MobileOrderEntry";
 import { OrderEntry } from "@/components/trade/OrderEntry";
 import { OrdersTable } from "@/components/trade/OrdersTable";
 import { TradeHistoryTable } from "@/components/trade/TradeHistoryTable";
-import { TVChartContainer } from "@/components/trade/TVChartContainer";
 import { OrderEntryContextProvider } from "@/contexts/OrderEntryContext";
 import { useOrderBook } from "@/hooks/useOrderbook";
 import type { ApiMarket } from "@/types/api";
@@ -27,6 +28,14 @@ type Props = {
 type PathParams = {
   market_id: string;
 };
+
+const TVChartContainer = dynamic(
+  () =>
+    import("@/components/trade/TVChartContainer").then(
+      (mod) => mod.TVChartContainer,
+    ),
+  { ssr: false },
+);
 
 export default function Market({ allMarketData, marketData }: Props) {
   const [tab, setTab] = useState<"orders" | "order-book" | "trade-histories">(
@@ -98,7 +107,9 @@ export default function Market({ allMarketData, marketData }: Props) {
               <div className="flex h-full min-h-[400px] md:min-h-[unset]">
                 {isScriptReady && TVChartContainer ? (
                   <TVChartContainer {...defaultTVChartProps} />
-                ) : null}
+                ) : (
+                  <LightweightChartsContainer {...defaultTVChartProps} />
+                )}
               </div>
 
               <div className="hidden h-[140px] tall:block">

@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import {
-  GREEN_OPACITY_HALF,
-  RED_OPACITY_HALF,
-} from "@/components/trade/TVChartContainer";
+import { GREEN_OPACITY_HALF, RED_OPACITY_HALF } from "@/constants";
 import { MAX_ELEMENTS_PER_FETCH } from "@/constants";
 import { type ApiMarket } from "@/types/api";
 import { toDecimalPrice } from "@/utils/econia";
