@@ -1,10 +1,14 @@
 # Econia Frontend
 
-## Prequesites
+This repository contains a reference frontend implementation for the Econia protocol.
+By default the candlestick chart functionality relies on the closed source [TradingView Advanced Charts] repository.
+If you do not have access to the private repository, the candlestick functionality falls back on the open source [Lightweight Charts](https://github.com/tradingview/lightweight-charts) repository.
 
-### 1 - Ensure that you clone the Github repositoty with SSH
+## Prerequisites
 
-> *SKIP this part if you've already use SSH*
+### 1 - Ensure that you clone the Github repository with SSH
+
+> *NOTE: Skip this part if you've already used SSH or want to use the open source charting library*
 
 Open Terminal and run the following commands:
 
@@ -16,22 +20,30 @@ git remote set-url origin git@github.com:econia-labs/econia-frontend.git
 
 > *NOTE: Skip this part if you do not want to show the trading chart or have no access rights to the `TradingView` repository*
 
-The [TradingView](https://github.com/tradingview/charting_library) repository is the submodule of this repository which is used for displaying the trading chart of a specific martket and initialized at `src/frontend/public/static`.
+The [TradingView Advanced Charts] repository is the submodule of this repository which is used for displaying the trading chart of a specific market, and is initialized at `src/frontend/public/static`.
 
-In essence, adding the `TradingView` as a submodule is that you are cloning the `TradingView` repository and build it into static files. Therefore, you need to have the access rights to the `TradingView` repository.
+In essence, adding the `TradingView` as a submodule clones the `TradingView` repository and builds it into static files.
+Therefore, you need to have the access rights to the `TradingView` repository.
+
 > To get the access rights, you have to contact the `TradingView` team and wait for approval.
 
 Moreover, the submodule path is set up to use SSH protocol with the `github.com` hostname so that you need to manage your SSH keys to make sure that you are using the correct configuration.
 
 #### If you don't have any SSH keys
 
-Follow this [guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) to generate one
+Follow this [guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) to generate one.
 
 In order to make this repository to be able to use the `TradingView`, run the following commands in your terminal:
 
 ```bash
 git submodule init
 git submodule update
+```
+
+> *NOTE*: If you don't mind using the open source charting library, you can simply run:
+
+```bash
+git clone https://github.com/econia-labs/econia-frontend.git
 ```
 
 ## Installations
@@ -77,12 +89,12 @@ To deploy on Vercel, you'll need to set up the following environment variables:
 | `NEXT_PUBLIC_NETWORK_NAME`               | The network name (for example, testnet)                                                |
 | `NEXT_PUBLIC_API_URL`                    | The Econia REST API URL                                                                |
 | `NEXT_PUBLIC_RPC_NODE_URL`               | Aptos RPC url                                                                          |
-| `GITHUB_ACCESS_TOKEN`                    | Access token for GitHub account with TradingView repo access (only required in Vercel) |
+| `GITHUB_ACCESS_TOKEN`                    | Access token for GitHub account with private `TradingView` repo access (only required in Vercel) |
 | `NEXT_PUBLIC_UNCONNECTED_NOTICE_MESSAGE` | Message that show in modal when user have not connected wallet yet                     |
 | `NEXT_PUBLIC_READ_ONLY`                  | Config read only mode, 1 OR 0                                                          |
 | `NEXT_PUBLIC_READ_ONLY_MESSAGE`          | Error message when user attempt do a require sign operator                             |
 | `NEXT_PUBLIC_DEFAULT_MARKET_ID`          | Default market id                                                                      |
-| `TRY_CLONING_TRADINGVIEW`                | Set `TRY_CLONING_TRADINGVIEW` to any value other than "1" to skip submodule cloning    |
+| `TRY_CLONING_TRADINGVIEW`                | Set `TRY_CLONING_TRADINGVIEW` to any value other than "1" to skip private submodule cloning |
 
 The variables above will be added into the Vercel project, you can find them at the file `.env.example` or `.env.local` which you created from previous steps. However, the `GITHUB_ACCESS_TOKEN` is still missing, you have to create on your own.
 
@@ -205,3 +217,5 @@ Click the `Deploy` button, wait for several minutes and see the results.
 
 8. **swap**: (Future Development) A page planned for development in the future.
    - [src/frontend/pages/swap/](src/frontend/src/pages/swap/index.tsx)
+
+[TradingView Advanced Charts]: https://github.com/tradingview/charting_library
