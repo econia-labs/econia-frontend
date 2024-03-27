@@ -150,10 +150,10 @@ Click the `Deploy` button, wait for several minutes and see the results.
 ## General architectural
 
 ```mermaid
-  graph TD;
+   graph TD;
       src-->sdk;
       src-->frontend;
-      frontend-->tradingView_library_submodule;
+      frontend-->charting_library_submodule;
       frontend-->pages;
       pages-->trade;
       pages-->swap;
@@ -166,6 +166,8 @@ Click the `Deploy` button, wait for several minutes and see the results.
       trade-->OrderBook;
       trade-->OrderEntry;
       trade-->TradeHistories;
+      TradingViewChart-->TVChartContainer;
+      TVChartContainer--"`*if the charting_library submodule isn't available*`"-->LightweightChartsContainer;
 ```
 
 ### Summary
@@ -182,7 +184,7 @@ Click the `Deploy` button, wait for several minutes and see the results.
 
    - [src/frontend](src/frontend)
 
-1. **tradingView_library_submodule**: A Git submodule linked to the [TradingView Charting Library](https://github.com/tradingview/charting_library) repository. This submodule integrates TradingView charts on the trade page.
+1. **charting_library_submodule**: An optional Git submodule linked to the [TradingView Charting Library](https://github.com/tradingview/charting_library) repository for their private charting library.
 
    - [src/frontend/public/static](src/frontend/public/static)
 
@@ -202,9 +204,11 @@ Click the `Deploy` button, wait for several minutes and see the results.
 
      - [src/frontend/src/components/StatsBar.tsx](src/frontend/src/components/StatsBar.tsx)
 
-   - **TradingViewChart**: An integral component responsible for displaying TradingView charts, utilizing the `tradingView_library_submodule` and handling scenarios where the submodule might be omitted.
+   - **TradingViewChart**: An integral component responsible for displaying TradingView charts, utilizing the `charting_library_submodule` if it's available and falling back to using the open source library otherwise.
 
-     - [src/frontend/src/components/trade/TVChartContainer.tsx](src/frontend/src/components/trade/TVChartContainer.tsx)
+     - If `charting_library` is properly linked in [src/frontend/public/static](src/frontend/public/static/) the frontend will use the [src/frontend/src/components/trade/TVChartContainer.tsx](src/frontend/src/components/trade/TVChartContainer.tsx) component.
+   
+     - Otherwise, it will fall back to using our custom charting implementation built on top of the open source library, located at [src/frontend/src/components/trade/LightweightChartsContainer.tsx](src/frontend/src/components/trade/LightweightChartsContainer.tsx)
 
    - **DeepChart**: A specialized chart component placed below the TradingView chart, providing additional depth for in-depth analysis.
 
