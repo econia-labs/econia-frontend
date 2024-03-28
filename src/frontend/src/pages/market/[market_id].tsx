@@ -29,13 +29,55 @@ type PathParams = {
   market_id: string;
 };
 
-const TVChartContainer = dynamic(
-  () =>
-    import("@/components/trade/TVChartContainer").then(
-      (mod) => mod.TVChartContainer,
-    ),
-  { ssr: false },
-);
+/*
+ *  Please note that conditional render of `TVChartContainer` vs
+ * `LightweightChartsContainer` below isn't ideal performance-wise because
+ * it always loads the `LightweightChartsContainer` component even if the
+ * `TVChartContainer` is being used.
+ *
+ *  It is written this way to make it as easy as possible for developers
+ *  to clone and run the reference frontend application, since it will
+ *  work regardless of whether or not `charting_library` is present.
+ *
+ *  For the most performant code, you should leverage NextJS' server-side
+ *  rendering by:
+ *
+ *  1. Replacing the `dynamic` imports sections here and the `require` in
+ *     `TVChartsContainer.tsx` with static imports. For example:
+ *     // in this file:
+ *     import { TVChartsContainer } from "..."
+ *     // in `TVChartContainer.tsx`:
+ *     import { widget } from "../../../public/static/charting_library";
+ *
+ *  2. Exclusively import either `TVChartContainer` or
+ *    `LightweightChartsContainer`, depending on which you intend to use.
+ *
+ *  3. Replace the conditional render in this component below with a
+ *     more specific conditional render of whichever component you imported.
+ *     For example:
+ *     {isScriptReady && <TVChartContainer {...defaultTVChartProps} />
+ *      or
+ *     {isScriptReady && <LightweightChartsContainer {...defaultTVChartProps} />
+ */
+//eslint-disable-next-line
+let TVChartContainer: undefined | any = undefined;
+
+// Note that we use this try/catch block instead of a simple `dynamic` call
+// to avoid the `require.e is not a function` error noted in this issue:
+// https://github.com/Developer-DAO/DAO-job-board/issues/130
+(() => {
+  try {
+    TVChartContainer = dynamic(
+      () =>
+        import("@/components/trade/TVChartContainer").then(
+          (mod) => mod.TVChartContainer,
+        ),
+      { ssr: false },
+    );
+  } catch (error) {
+    //nothing
+  }
+})();
 
 export default function Market({ allMarketData, marketData }: Props) {
   const [tab, setTab] = useState<"orders" | "order-book" | "trade-histories">(
