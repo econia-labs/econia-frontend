@@ -32,17 +32,18 @@ const ChartContainer: any = dynamic(
   () => {
     try {
       // We call `require` here for the private charting library before
-      // conditionally rendering the alternative charting component.
+      // to facilitate SSR with a fallback to the lightweight library.
       // If the import fails, the `catch` block is executed and we
       // load the `LightweightChartsContainer` instead.
       // If the library is present, the TVChartContainer component will
-      // just load the module from the cache with its `require(...)`.
+      // be used, and it will load the `charting_library` module from the
+      // cache with its `require(...)`.
       //
       // NOTE: We must use `require` here instead of a dynamic `import`
-      // to circumvent the build process failing due to an invalid path.
-      // Despite the fact that the path is statically resolved at build time
-      // in both cases, only `import` will cause the build to fail, whereas
-      // an invalid path supplied to `require` will not.
+      // to circumvent the SSR build process failing due to an invalid path.
+      // With `import` the provided path is statically resolved at build time
+      // whereas with `require`, path resolution is deferred until runtime and can
+      // thus be conditionally resolved within a `try/catch` block.
       require("../../../public/static/charting_library");
       return import("@/components/trade/TVChartContainer").then(
         (mod) => mod.TVChartContainer,
