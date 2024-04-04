@@ -14,8 +14,15 @@ import { type ApiMarket, type MarketData } from "@/types/api";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 import { getAllDataInTimeRange, getClientTimezone } from "@/utils/helpers";
 
-/* eslint-disable-next-line  @typescript-eslint/no-var-requires */
-const ChartingLibrary = require("../../../public/static/charting_library");
+let ChartingLibrary: any = undefined;
+(() => {
+  try {
+    /* eslint-disable-next-line  @typescript-eslint/no-var-requires */
+    ChartingLibrary = require("../../../public/static/charting_library");
+  } catch (e) {
+    //
+  }
+})();
 const { widget } = ChartingLibrary;
 
 export interface ChartContainerProps {

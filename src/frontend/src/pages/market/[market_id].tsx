@@ -28,7 +28,7 @@ type PathParams = {
   market_id: string;
 };
 
-const ChartContainer: any = dynamic(
+const ChartContainer = dynamic(
   () => {
     try {
       // We call `require` here for the private charting library before
