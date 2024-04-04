@@ -10,7 +10,6 @@ import { DepositWithdrawFlowModal } from "@/components/modals/flows/DepositWithd
 import { WalletButtonFlowModal } from "@/components/modals/flows/WalletButtonFlowModal";
 import { OrderbookTable } from "@/components/OrderbookTable";
 import { StatsBar } from "@/components/StatsBar";
-import { LightweightChartsContainer } from "@/components/trade/LightweightChartsContainer";
 import MobileOrderEntry from "@/components/trade/MobileOrderEntry";
 import { OrderEntry } from "@/components/trade/OrderEntry";
 import { OrdersTable } from "@/components/trade/OrdersTable";
@@ -29,55 +28,35 @@ type PathParams = {
   market_id: string;
 };
 
-/*
- *  Please note that conditional render of `TVChartContainer` vs
- * `LightweightChartsContainer` below isn't ideal performance-wise because
- * it always loads the `LightweightChartsContainer` component even if the
- * `TVChartContainer` is being used.
- *
- *  It is written this way to make it as easy as possible for developers
- *  to clone and run the reference frontend application, since it will
- *  work regardless of whether or not `charting_library` is present.
- *
- *  For the most performant code, you should leverage NextJS' server-side
- *  rendering by:
- *
- *  1. Replacing the `dynamic` imports sections here and the `require` in
- *     `TVChartsContainer.tsx` with static imports. For example:
- *     // in this file:
- *     import { TVChartsContainer } from "..."
- *     // in `TVChartContainer.tsx`:
- *     import { widget } from "../../../public/static/charting_library";
- *
- *  2. Exclusively import either `TVChartContainer` or
- *    `LightweightChartsContainer`, depending on which you intend to use.
- *
- *  3. Replace the conditional render in this component below with a
- *     more specific conditional render of whichever component you imported.
- *     For example:
- *     {isScriptReady && <TVChartContainer {...defaultTVChartProps} />
- *      or
- *     {isScriptReady && <LightweightChartsContainer {...defaultTVChartProps} />
- */
-//eslint-disable-next-line
-let TVChartContainer: undefined | any = undefined;
-
-// Note that we use this try/catch block instead of a simple `dynamic` call
-// to avoid the `require.e is not a function` error noted in this issue:
-// https://github.com/Developer-DAO/DAO-job-board/issues/130
-(() => {
-  try {
-    TVChartContainer = dynamic(
-      () =>
-        import("@/components/trade/TVChartContainer").then(
-          (mod) => mod.TVChartContainer,
-        ),
-      { ssr: false },
-    );
-  } catch (error) {
-    //nothing
-  }
-})();
+const ChartContainer: any = dynamic(
+  () => {
+    try {
+      // We call `require` here for the private charting library before
+      // conditionally rendering the alternative charting component.
+      // If the import fails, the `catch` block is executed and we
+      // load the `LightweightChartsContainer` instead.
+      // If the library is present, the TVChartContainer component will
+      // just load the module from the cache with its `require(...)`.
+      //
+      // NOTE: We must use `require` here instead of a dynamic `import`
+      // to circumvent the build process failing due to an invalid path.
+      // Despite the fact that the path is statically resolved at build time
+      // in both cases, only `import` will cause the build to fail, whereas
+      // an invalid path supplied to `require` will not.
+      require("../../../public/static/charting_library");
+      return import("@/components/trade/TVChartContainer").then(
+        (mod) => mod.TVChartContainer,
+      );
+    } catch (e) {
+      console.warn("\nFailed to load `charting_library`.");
+      console.warn("Using `lightweight-charts` instead...");
+      return import("@/components/trade/LightweightChartsContainer").then(
+        (mod) => mod.LightweightChartsContainer,
+      );
+    }
+  },
+  { ssr: true },
+);
 
 export default function Market({ allMarketData, marketData }: Props) {
   const [tab, setTab] = useState<"orders" | "order-book" | "trade-histories">(
@@ -147,11 +126,7 @@ export default function Market({ allMarketData, marketData }: Props) {
           <div className="flex flex-col gap-3 pb-0 md:w-[calc(100%-296px)] lg:w-[calc(100%-564px)]">
             <div className=" flex grow flex-col border border-neutral-600">
               <div className="flex h-full min-h-[400px] md:min-h-[unset]">
-                {isScriptReady && TVChartContainer ? (
-                  <TVChartContainer {...defaultTVChartProps} />
-                ) : (
-                  <LightweightChartsContainer {...defaultTVChartProps} />
-                )}
+                {isScriptReady && <ChartContainer {...defaultTVChartProps} />}
               </div>
 
               <div className="hidden h-[140px] tall:block">
