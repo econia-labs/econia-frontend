@@ -10,7 +10,6 @@ import { DepositWithdrawFlowModal } from "@/components/modals/flows/DepositWithd
 import { WalletButtonFlowModal } from "@/components/modals/flows/WalletButtonFlowModal";
 import { OrderbookTable } from "@/components/OrderbookTable";
 import { StatsBar } from "@/components/StatsBar";
-import { LightweightChartsContainer } from "@/components/trade/LightweightChartsContainer";
 import MobileOrderEntry from "@/components/trade/MobileOrderEntry";
 import { OrderEntry } from "@/components/trade/OrderEntry";
 import { OrdersTable } from "@/components/trade/OrdersTable";
@@ -29,12 +28,35 @@ type PathParams = {
   market_id: string;
 };
 
-const TVChartContainer = dynamic(
-  () =>
-    import("@/components/trade/TVChartContainer").then(
-      (mod) => mod.TVChartContainer,
-    ),
-  { ssr: false },
+const ChartContainer = dynamic(
+  () => {
+    try {
+      // We call `require` here for the private charting library before
+      // to facilitate SSR with a fallback to the lightweight library.
+      // If the import fails, the `catch` block is executed and we
+      // load the `LightweightChartsContainer` instead.
+      // If the library is present, the TVChartContainer component will
+      // be used, and it will load the `charting_library` module from the
+      // cache with its `require(...)`.
+      //
+      // NOTE: We must use `require` here instead of a dynamic `import`
+      // to circumvent the SSR build process failing due to an invalid path.
+      // With `import` the provided path is statically resolved at build time
+      // whereas with `require`, path resolution is deferred until runtime and can
+      // thus be conditionally resolved within a `try/catch` block.
+      require("../../../public/static/charting_library");
+      return import("@/components/trade/TVChartContainer").then(
+        (mod) => mod.TVChartContainer,
+      );
+    } catch (e) {
+      console.warn("\nFailed to load `charting_library`.");
+      console.warn("Using `lightweight-charts` instead...");
+      return import("@/components/trade/LightweightChartsContainer").then(
+        (mod) => mod.LightweightChartsContainer,
+      );
+    }
+  },
+  { ssr: true },
 );
 
 export default function Market({ allMarketData, marketData }: Props) {
@@ -105,11 +127,7 @@ export default function Market({ allMarketData, marketData }: Props) {
           <div className="flex flex-col gap-3 pb-0 md:w-[calc(100%-296px)] lg:w-[calc(100%-564px)]">
             <div className=" flex grow flex-col border border-neutral-600">
               <div className="flex h-full min-h-[400px] md:min-h-[unset]">
-                {isScriptReady && TVChartContainer ? (
-                  <TVChartContainer {...defaultTVChartProps} />
-                ) : (
-                  <LightweightChartsContainer {...defaultTVChartProps} />
-                )}
+                {isScriptReady && <ChartContainer {...defaultTVChartProps} />}
               </div>
 
               <div className="hidden h-[140px] tall:block">
