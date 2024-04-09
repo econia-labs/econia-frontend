@@ -8,6 +8,8 @@ if (process.env.NEXT_PUBLIC_API_URL == null) {
   throw new Error("NEXT_PUBLIC_FAUCET_ADDR is not set");
 } else if (process.env.NEXT_PUBLIC_NETWORK_NAME == null) {
   throw new Error("NEXT_PUBLIC_NETWORK_NAME is not set");
+} else if (process.env.NEXT_PUBLIC_INTEGRATOR_ADDRESS == null) {
+  console.warn("NEXT_PUBLIC_INTEGRATOR_ADDRESS is not set. Defaulting to 0x1");
 }
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -27,3 +29,5 @@ export const READ_ONLY_MESSAGE = String(
 export const DEFAULT_MARKET_ID = Number(
   process.env.NEXT_PUBLIC_DEFAULT_MARKET_ID,
 );
+
+export const INTEGRATOR_ADDRESS = process.env.NEXT_PUBLIC_INTEGRATOR_ADDRESS ?? "0x1";

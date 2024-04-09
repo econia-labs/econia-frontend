@@ -9,7 +9,7 @@ import { ConnectedButton } from "@/components/ConnectedButton";
 import RangeSlider from "@/components/slider-order/RangeSlider";
 import { useAptos } from "@/contexts/AptosContext";
 import { useOrderEntry } from "@/contexts/OrderEntryContext";
-import { ECONIA_ADDR } from "@/env";
+import { ECONIA_ADDR, INTEGRATOR_ADDRESS } from "@/env";
 import { useOrderBookData } from "@/features/hooks";
 import { useBalance } from "@/hooks/useBalance";
 import { type ApiMarket } from "@/types/api";
@@ -208,7 +208,7 @@ export const LimitOrderEntry: React.FC<{
       TypeTag.fromApiCoin(marketData.base).toString(),
       TypeTag.fromApiCoin(marketData.quote).toString(),
       BigInt(marketData.market_id),
-      "0x1",
+      INTEGRATOR_ADDRESS,
       orderSide,
       BigInt(rawSize.div(marketData.lot_size).toString()),
       BigInt(rawPrice.div(marketData.tick_size).toString()),
