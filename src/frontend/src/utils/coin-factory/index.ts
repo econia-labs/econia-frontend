@@ -23,6 +23,21 @@ const MODULE_BYTECODE = `a11ceb0b060000000b01000802082003283904610e056f7407e301e
 const PUBLISHER_ADDRESS =
   "0123bbbb456789abcdef01234567abc1234567abcdef0123456789abcbbbbdef";
 
+/**
+ * Converts a TypeScript string to a Serializable MoveVector<U8>
+ * representation.
+ * @param s
+ * @returns the Serializable Move class representing a vector<u8> b"string"
+ * where s == "string"
+ */
+export function stringToVectorU8(s: string): MoveVector<U8> {
+  // Remove the first byte (the length) so we're just passing the raw
+  // hexified string bytes to the vector<u8>.
+  const stringBytes = new MoveString(s).bcsToBytes().slice(1);
+  // Pass the bytes to the MoveVector<U8> constructor.
+  return MoveVector.U8(stringBytes);
+}
+
 async function mintInitialSupply(
   aptos: Aptos,
   accountAddress: AccountAddress,
@@ -37,8 +52,8 @@ async function mintInitialSupply(
     data: {
       function: `${accountAddress}::coin_factory::mint_initial_supply`,
       functionArguments: [
-        MoveVector.U8(new MoveString(name).bcsToBytes().slice(1)),
-        MoveVector.U8(new MoveString(symbol).bcsToBytes().slice(1)),
+        stringToVectorU8(name),
+        stringToVectorU8(symbol),
         new U8(decimals),
         new Bool(monitorSupply),
         new U128(mintedSupply),
