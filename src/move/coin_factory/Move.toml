@@ -1,0 +1,15 @@
+[package]
+name = "CoinFactory"
+version = '1.0.0'
+upgrade_policy = 'immutable' # The creator should never have to change this contract.
+
+[addresses]
+contract_address = "0123bbbb456789abcdef01234567abc1234567abcdef0123456789abcbbbbdef"
+
+[dev-addresses]
+contract_address = "0xbeefcafe"
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "mainnet"
+subdir = "aptos-move/framework/aptos-framework"
