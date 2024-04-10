@@ -26,9 +26,18 @@ const PUBLISHER_ADDRESS =
 /**
  * Converts a TypeScript string to a Serializable MoveVector<U8>
  * representation.
+ * 
  * @param s
  * @returns the Serializable Move class representing a vector<u8> b"string"
  * where s == "string"
+ * @example
+ * // in Move.
+ * let byte_vector: vector<u8> = b"Coin";
+ * assert!(byte_vector == vector<u8> [67, 111, 105, 110], 0);
+ * 
+ * // in TypeScript.
+ * const byteVector = stringToVectorU8("Coin").toUint8Array();
+ * expect(byteVector == Uint8Array.from([67, 111, 105, 110]));
  */
 export function stringToVectorU8(s: string): MoveVector<U8> {
   // Remove the first byte (the length) so we're just passing the raw
