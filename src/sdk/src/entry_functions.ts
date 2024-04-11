@@ -191,7 +191,7 @@ export const swapBetweenCoinstoresEntry = (
   maxQuote: BCS.Uint64,
   limitPrice: BCS.Uint64
 ): Types.EntryFunctionPayload => ({
-  function: `${econiaAddress}::market::register_market_base_coin_from_coinstore`,
+  function: `${econiaAddress}::market::swap_between_coinstores_entry`,
   type_arguments: [base, quote],
   arguments: [
     marketId,
