@@ -18,7 +18,7 @@
   "author": "",
   "type": "module",
   "dependencies": {
-    "aptos": "^1.8.4"
+    "@aptos-labs/ts-sdk": "^1.13.3"
   },
   "devDependencies": {
     "@types/node": "^20.2.3",
