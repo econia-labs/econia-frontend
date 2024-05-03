@@ -1,4 +1,4 @@
-import { type BCS } from "aptos";
+import { type Uint64 } from "@aptos-labs/ts-sdk";
 
 // Order Side
 export type Side = "bid" | "ask";
@@ -21,25 +21,25 @@ export type OrderState = "open" | "filled" | "cancelled" | "evicted";
 
 // Order
 export type Order = {
-  market_order_id: BCS.Uint64;
-  market_id: BCS.Uint64;
+  market_order_id: Uint64;
+  market_id: Uint64;
   side: Side;
-  size: BCS.Uint64;
-  price: BCS.Uint64;
+  size: Uint64;
+  price: Uint64;
   user_address: string;
-  custodian_id?: BCS.Uint64;
+  custodian_id?: Uint64;
   order_state: OrderState;
   created_at: Date;
 };
 
 // Fill
 export type Fill = {
-  market_id: BCS.Uint64;
-  maker_order_id: BCS.Uint64;
+  market_id: Uint64;
+  maker_order_id: Uint64;
   maker: string;
   maker_side: Side;
-  custodian_id?: BCS.Uint64;
-  size: BCS.Uint64;
-  price: BCS.Uint64;
+  custodian_id?: Uint64;
+  size: Uint64;
+  price: Uint64;
   time: Date;
 };

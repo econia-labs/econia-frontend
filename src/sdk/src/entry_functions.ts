@@ -1,5 +1,11 @@
-import { type BCS, type Types } from "aptos";
-import { type MaybeHexString } from "aptos";
+import {
+  type AccountAddressInput,
+  type InputEntryFunctionData,
+  type TypeTag,
+  type Uint8,
+  type Uint64,
+  type Uint128,
+} from "@aptos-labs/ts-sdk";
 
 import {
   type AdvanceStyle,
@@ -18,17 +24,17 @@ import {
 // Incentives entry functions
 
 export const updateIncentives = (
-  econiaAddress: MaybeHexString,
-  utilityCoin: Types.MoveType,
-  marketRegistrationFee: BCS.Uint64,
-  underwriterRegistrationFee: BCS.Uint64,
-  custodianRegistrationFee: BCS.Uint64,
-  takerFeeDivisor: BCS.Uint64,
-  integratorFeeStoreTiers: BCS.Uint64[][]
-): Types.EntryFunctionPayload => ({
+  econiaAddress: AccountAddressInput,
+  utilityCoin: string | TypeTag,
+  marketRegistrationFee: Uint64,
+  underwriterRegistrationFee: Uint64,
+  custodianRegistrationFee: Uint64,
+  takerFeeDivisor: Uint64,
+  integratorFeeStoreTiers: Uint64[][]
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::incentives::update_incentives`,
-  type_arguments: [utilityCoin],
-  arguments: [
+  typeArguments: [utilityCoin],
+  functionArguments: [
     marketRegistrationFee,
     underwriterRegistrationFee,
     custodianRegistrationFee,
@@ -38,77 +44,74 @@ export const updateIncentives = (
 });
 
 export const upgradeIntegratorFeeStoreViaCoinstore = (
-  econiaAddress: MaybeHexString,
-  quoteCoin: Types.MoveType,
-  utilityCoin: Types.MoveType,
-  marketId: BCS.Uint64,
-  newTier: BCS.Uint8
-): Types.EntryFunctionPayload => ({
+  econiaAddress: AccountAddressInput,
+  quoteCoin: string | TypeTag,
+  utilityCoin: string | TypeTag,
+  marketId: Uint64,
+  newTier: Uint8
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::incentives::upgrade_integrator_fee_store_via_coinstore`,
-  type_arguments: [quoteCoin, utilityCoin],
-  arguments: [marketId, newTier],
+  typeArguments: [quoteCoin, utilityCoin],
+  functionArguments: [marketId, newTier],
 });
 
 export const withdrawIntegratorFeesViaCoinstores = (
-  econiaAddress: MaybeHexString,
-  quoteCoin: Types.MoveType,
-  utilityCoin: Types.MoveType,
-  marketId: BCS.Uint64
-): Types.EntryFunctionPayload => ({
+  econiaAddress: AccountAddressInput,
+  quoteCoin: string | TypeTag,
+  utilityCoin: string | TypeTag,
+  marketId: Uint64
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::incentives::withdraw_integrator_fees_via_coinstores`,
-  type_arguments: [quoteCoin, utilityCoin],
-  arguments: [marketId],
+  typeArguments: [quoteCoin, utilityCoin],
+  functionArguments: [marketId],
 });
 
 // market entry functions
 
 export const cancelAllOrdersUser = (
-  econiaAddress: MaybeHexString,
-  marketId: BCS.Uint64,
+  econiaAddress: AccountAddressInput,
+  marketId: Uint64,
   side: Side
-): Types.EntryFunctionPayload => ({
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::market::cancel_all_orders_user`,
-  type_arguments: [],
-  arguments: [marketId, sideToNumber(side)],
+  functionArguments: [marketId, sideToNumber(side)],
 });
 
 export const cancelOrderUser = (
-  econiaAddress: MaybeHexString,
-  marketId: BCS.Uint64,
+  econiaAddress: AccountAddressInput,
+  marketId: Uint64,
   side: Side,
-  marketOrderId: BCS.Uint128
-): Types.EntryFunctionPayload => ({
+  marketOrderId: Uint128
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::market::cancel_order_user`,
-  type_arguments: [],
-  arguments: [marketId, sideToBoolean(side), marketOrderId],
+  functionArguments: [marketId, sideToBoolean(side), marketOrderId],
 });
 
 export const changeOrderSizeUser = (
-  econiaAddress: MaybeHexString,
-  marketId: BCS.Uint64,
+  econiaAddress: AccountAddressInput,
+  marketId: Uint64,
   side: Side,
-  marketOrderId: BCS.Uint128,
-  newSize: BCS.Uint64
-): Types.EntryFunctionPayload => ({
+  marketOrderId: Uint128,
+  newSize: Uint64
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::market::change_order_size_user`,
-  type_arguments: [],
-  arguments: [marketId, sideToNumber(side), marketOrderId, newSize],
+  functionArguments: [marketId, sideToNumber(side), marketOrderId, newSize],
 });
 
 export const placeLimitOrderPassiveAdvanceUserEntry = (
-  econiaAddress: MaybeHexString,
-  base: Types.MoveType,
-  quote: Types.MoveType,
-  marketId: BCS.Uint64,
-  integrator: MaybeHexString,
+  econiaAddress: AccountAddressInput,
+  base: string | TypeTag,
+  quote: string | TypeTag,
+  marketId: Uint64,
+  integrator: AccountAddressInput,
   side: Side,
-  size: BCS.Uint64,
+  size: Uint64,
   advanceStyle: AdvanceStyle,
-  targetAdvanceAmount: BCS.Uint64
-): Types.EntryFunctionPayload => ({
+  targetAdvanceAmount: Uint64
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::market::place_limit_order_passive_advance_user_entry`,
-  type_arguments: [base, quote],
-  arguments: [
+  typeArguments: [base, quote],
+  functionArguments: [
     marketId,
     integrator,
     sideToNumber(side),
@@ -119,20 +122,20 @@ export const placeLimitOrderPassiveAdvanceUserEntry = (
 });
 
 export const placeLimitOrderUserEntry = (
-  econiaAddress: MaybeHexString,
-  base: Types.MoveType,
-  quote: Types.MoveType,
-  marketId: BCS.Uint64,
-  integrator: MaybeHexString,
+  econiaAddress: AccountAddressInput,
+  base: string | TypeTag,
+  quote: string | TypeTag,
+  marketId: Uint64,
+  integrator: AccountAddressInput,
   side: Side,
-  size: BCS.Uint64,
-  price: BCS.Uint64,
+  size: Uint64,
+  price: Uint64,
   restriction: Restriction,
   selfMatchBehavior: SelfMatchBehavior
-): Types.EntryFunctionPayload => ({
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::market::place_limit_order_user_entry`,
-  type_arguments: [base, quote],
-  arguments: [
+  typeArguments: [base, quote],
+  functionArguments: [
     marketId,
     integrator,
     sideToBoolean(side),
@@ -144,18 +147,18 @@ export const placeLimitOrderUserEntry = (
 });
 
 export const placeMarketOrderUserEntry = (
-  econiaAddress: MaybeHexString,
-  base: Types.MoveType,
-  quote: Types.MoveType,
-  marketId: BCS.Uint64,
-  integrator: MaybeHexString,
+  econiaAddress: AccountAddressInput,
+  base: string | TypeTag,
+  quote: string | TypeTag,
+  marketId: Uint64,
+  integrator: AccountAddressInput,
   side: Side,
-  size: BCS.Uint64,
+  size: Uint64,
   selfMatchBehavior: SelfMatchBehavior
-): Types.EntryFunctionPayload => ({
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::market::place_market_order_user_entry`,
-  type_arguments: [base, quote],
-  arguments: [
+  typeArguments: [base, quote],
+  functionArguments: [
     marketId,
     integrator,
     sideToBoolean(side),
@@ -165,35 +168,35 @@ export const placeMarketOrderUserEntry = (
 });
 
 export const registerMarketBaseCoinFromCoinstore = (
-  econiaAddress: MaybeHexString,
-  base: Types.MoveType,
-  quote: Types.MoveType,
-  utilityCoin: Types.MoveType,
-  lotSize: BCS.Uint64,
-  tickSize: BCS.Uint64,
-  minSize: BCS.Uint64
-): Types.EntryFunctionPayload => ({
+  econiaAddress: AccountAddressInput,
+  base: string | TypeTag,
+  quote: string | TypeTag,
+  utilityCoin: string | TypeTag,
+  lotSize: Uint64,
+  tickSize: Uint64,
+  minSize: Uint64
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::market::register_market_base_coin_from_coinstore`,
-  type_arguments: [base, quote, utilityCoin],
-  arguments: [lotSize, tickSize, minSize],
+  typeArguments: [base, quote, utilityCoin],
+  functionArguments: [lotSize, tickSize, minSize],
 });
 
 export const swapBetweenCoinstoresEntry = (
-  econiaAddress: MaybeHexString,
-  base: Types.MoveType,
-  quote: Types.MoveType,
-  marketId: BCS.Uint64,
-  integrator: MaybeHexString,
+  econiaAddress: AccountAddressInput,
+  base: string | TypeTag,
+  quote: string | TypeTag,
+  marketId: Uint64,
+  integrator: AccountAddressInput,
   side: Side,
-  minBase: BCS.Uint64,
-  maxBase: BCS.Uint64,
-  minQuote: BCS.Uint64,
-  maxQuote: BCS.Uint64,
-  limitPrice: BCS.Uint64
-): Types.EntryFunctionPayload => ({
+  minBase: Uint64,
+  maxBase: Uint64,
+  minQuote: Uint64,
+  maxQuote: Uint64,
+  limitPrice: Uint64
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::market::swap_between_coinstores_entry`,
-  type_arguments: [base, quote],
-  arguments: [
+  typeArguments: [base, quote],
+  functionArguments: [
     marketId,
     integrator,
     sideToBoolean(side),
@@ -208,88 +211,96 @@ export const swapBetweenCoinstoresEntry = (
 // registry functions
 
 export const registerIntegratorFeeStoreBaseTier = (
-  econiaAddress: MaybeHexString,
-  quote: Types.MoveType,
-  utilityCoin: Types.MoveType,
-  marketId: BCS.Uint64
-): Types.EntryFunctionPayload => ({
+  econiaAddress: AccountAddressInput,
+  quote: string | TypeTag,
+  utilityCoin: string | TypeTag,
+  marketId: Uint64
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::registry::register_integrator_fee_store_base_tier`,
-  type_arguments: [quote, utilityCoin],
-  arguments: [marketId],
+  typeArguments: [quote, utilityCoin],
+  functionArguments: [marketId],
 });
 
 export const registerIntegratorFeeStoreFromCoinstore = (
-  econiaAddress: MaybeHexString,
-  quote: Types.MoveType,
-  utilityCoin: Types.MoveType,
-  marketId: BCS.Uint64,
-  tier: BCS.Uint8
-): Types.EntryFunctionPayload => ({
+  econiaAddress: AccountAddressInput,
+  quote: string | TypeTag,
+  utilityCoin: string | TypeTag,
+  marketId: Uint64,
+  tier: Uint8
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::registry::register_integrator_fee_store_from_coinstore`,
-  type_arguments: [quote, utilityCoin],
-  arguments: [marketId, tier],
+  typeArguments: [quote, utilityCoin],
+  functionArguments: [marketId, tier],
 });
 
 export const removeRecognizedMarkets = (
-  econiaAddress: MaybeHexString,
-  marketIds: BCS.Uint64[]
-): Types.EntryFunctionPayload => ({
+  econiaAddress: AccountAddressInput,
+  marketIds: Uint64[]
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::registry::remove_recognized_markets`,
-  type_arguments: [],
-  arguments: [marketIds],
+  functionArguments: [marketIds],
 });
 
 export const setRecognizedMarket = (
-  econiaAddress: MaybeHexString,
-  marketId: BCS.Uint64
-): Types.EntryFunctionPayload => ({
+  econiaAddress: AccountAddressInput,
+  marketId: Uint64
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::registry::set_recognized_market`,
-  type_arguments: [],
-  arguments: [marketId],
+  functionArguments: [marketId],
 });
 
 export const depositFromCoinstore = (
-  econiaAddress: MaybeHexString,
-  coin: Types.MoveType,
-  marketId: BCS.Uint64,
-  custodianId: BCS.Uint64,
-  amount: BCS.Uint64
-): Types.EntryFunctionPayload => ({
+  econiaAddress: AccountAddressInput,
+  coin: string | TypeTag,
+  marketId: Uint64,
+  custodianId: Uint64,
+  amount: Uint64
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::user::deposit_from_coinstore`,
-  type_arguments: [coin],
-  arguments: [marketId, custodianId, amount],
+  typeArguments: [coin],
+  functionArguments: [marketId, custodianId, amount],
 });
 
 export const registerMarketAccount = (
-  econiaAddress: MaybeHexString,
-  base: Types.MoveType,
-  quote: Types.MoveType,
-  marketId: BCS.Uint64,
-  custodianId: BCS.Uint64
-): Types.EntryFunctionPayload => ({
+  econiaAddress: AccountAddressInput,
+  base: string | TypeTag,
+  quote: string | TypeTag,
+  marketId: Uint64,
+  custodianId: Uint64
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::user::register_market_account`,
-  type_arguments: [base, quote],
-  arguments: [marketId, custodianId],
+  typeArguments: [base, quote],
+  functionArguments: [marketId, custodianId],
 });
 
 export const registerMarketAccountGenericBase = (
-  econiaAddress: MaybeHexString,
-  quote: Types.MoveType,
-  marketId: BCS.Uint64,
-  custodianId: BCS.Uint64
-): Types.EntryFunctionPayload => ({
+  econiaAddress: AccountAddressInput,
+  quote: string | TypeTag,
+  marketId: Uint64,
+  custodianId: Uint64
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::user::register_market_account_generic_base`,
-  type_arguments: [quote],
-  arguments: [marketId, custodianId],
+  typeArguments: [quote],
+  functionArguments: [marketId, custodianId],
 });
 
 export const withdrawToCoinstore = (
-  econiaAddress: MaybeHexString,
-  coin: Types.MoveType,
-  marketId: BCS.Uint64,
-  amount: BCS.Uint64
-): Types.EntryFunctionPayload => ({
+  econiaAddress: AccountAddressInput,
+  coin: string | TypeTag,
+  marketId: Uint64,
+  amount: Uint64
+): InputEntryFunctionData => ({
   function: `${econiaAddress}::user::withdraw_to_coinstore`,
-  type_arguments: [coin],
-  arguments: [marketId, amount],
+  typeArguments: [coin],
+  functionArguments: [marketId, amount],
+});
+
+export const faucetMint = (
+  faucetAddress: AccountAddressInput,
+  coin: string | TypeTag,
+  amount: Uint64
+): InputEntryFunctionData => ({
+  function: `${faucetAddress}::faucet::mint`,
+  typeArguments: [coin],
+  functionArguments: [amount],
 });
