@@ -103,10 +103,7 @@ export const RegisterAccountContent: React.FC<RegisterAccountContentProps> = ({
             BigInt(selectedMarket.market_id),
             BigInt(NO_CUSTODIAN),
           );
-          const res = await signAndSubmitTransaction({
-            ...payload,
-            type: "entry_function_payload",
-          });
+          const res = await signAndSubmitTransaction({ data: payload });
 
           if (onAccountCreated) {
             onAccountCreated(res);

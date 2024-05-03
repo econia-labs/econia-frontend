@@ -1,5 +1,14 @@
+import {
+  Aptos,
+  AptosConfig,
+  Network,
+  NetworkToFaucetAPI,
+  NetworkToIndexerAPI,
+  NetworkToNetworkName,
+} from "@aptos-labs/ts-sdk";
+
 import { MAX_ELEMENTS_PER_FETCH } from "@/constants";
-import { API_URL } from "@/env";
+import { API_URL, NETWORK_NAME, RPC_NODE_URL } from "@/env";
 import { type ApiMarket, type MarketSelectData } from "@/types/api";
 
 /**
@@ -192,4 +201,14 @@ export async function getAllDataInTimeRange<T>(args: {
   return new Promise<T[]>((resolve, reject) => {
     fetchData(resolve, reject);
   });
+}
+
+export function getAptosClient(): Aptos {
+  const aptosConfig = new AptosConfig({
+    fullnode: RPC_NODE_URL,
+    network: NetworkToNetworkName[NETWORK_NAME] || Network.LOCAL,
+    indexer: NetworkToIndexerAPI[NETWORK_NAME],
+    faucet: NetworkToFaucetAPI[NETWORK_NAME],
+  });
+  return new Aptos(aptosConfig);
 }

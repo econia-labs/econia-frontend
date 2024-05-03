@@ -13,10 +13,10 @@ export const useCoinInfo = (coinTypeTag?: TypeTag | null) => {
   const { aptosClient } = useAptos();
   return useQuery(["useCoinInfo", coinTypeTag?.toString()], async () => {
     if (!coinTypeTag) return null;
-    const coinInfo = await aptosClient.getAccountResource(
-      coinTypeTag.addr,
-      `0x1::coin::CoinInfo<${coinTypeTag.toString()}>`,
-    );
-    return coinInfo.data as CoinInfo;
+    const coinInfo = await aptosClient.getAccountResource<CoinInfo>({
+      accountAddress: coinTypeTag.addr,
+      resourceType: `0x1::coin::CoinInfo<${coinTypeTag.toString()}>`,
+    });
+    return coinInfo;
   });
 };

@@ -14,6 +14,7 @@ import { type ApiMarket, type MarketData } from "@/types/api";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 import { getAllDataInTimeRange, getClientTimezone } from "@/utils/helpers";
 
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 let ChartingLibrary: any = undefined;
 (() => {
   try {

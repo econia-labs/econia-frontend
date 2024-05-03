@@ -107,7 +107,7 @@ export function ConnectWalletContextProvider({ children }: PropsWithChildren) {
             site to access your account.
           </p>
           <div className="mt-8 flex flex-col gap-4">
-            {wallets.map((wallet) => (
+            {wallets?.map((wallet) => (
               <WalletItem
                 wallet={wallet}
                 key={wallet.name}

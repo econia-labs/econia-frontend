@@ -82,9 +82,9 @@ export const MarketOrderEntry: React.FC<{
   const { data: takerFeeDivisor } = useQuery(["takerFeeDivisor"], async () => {
     try {
       const rs = await aptosClient.view({
-        function: `${ECONIA_ADDR}::incentives::get_taker_fee_divisor`,
-        arguments: [],
-        type_arguments: [],
+        payload: {
+          function: `${ECONIA_ADDR}::incentives::get_taker_fee_divisor`,
+        },
       });
       return Number(rs[0]);
     } catch (e) {
@@ -196,10 +196,7 @@ export const MarketOrderEntry: React.FC<{
       "abort",
     );
 
-    await signAndSubmitTransaction({
-      type: "entry_function_payload",
-      ...payload,
-    });
+    await signAndSubmitTransaction({ data: payload });
   };
 
   return (

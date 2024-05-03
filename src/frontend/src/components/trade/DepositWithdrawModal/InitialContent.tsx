@@ -23,11 +23,11 @@ export const InitialContent: React.FC<{
     async () => {
       if (!account?.address) return null;
       try {
-        const resource = await aptosClient.getAccountResource(
-          account.address,
-          `${ECONIA_ADDR}::user::MarketAccounts`,
-        );
-        return resource.data as MarketAccounts;
+        const resource = await aptosClient.getAccountResource<MarketAccounts>({
+          accountAddress: account.address,
+          resourceType: `${ECONIA_ADDR}::user::MarketAccounts`,
+        });
+        return resource;
       } catch (e) {
         if (e instanceof Error) {
           toast.error(e.message);
@@ -43,14 +43,15 @@ export const InitialContent: React.FC<{
     async () => {
       if (!account?.address || !selectedMarket) return null;
       try {
-        const marketAccount = await aptosClient.getTableItem(
-          marketAccounts!.map.handle,
-          {
+        const marketAccount = await aptosClient.getTableItem({
+          handle: marketAccounts!.map.handle,
+          data: {
             key_type: "u128",
             value_type: `${ECONIA_ADDR}::user::MarketAccount`,
             key: makeMarketAccountId(selectedMarket.market_id, NO_CUSTODIAN),
           },
-        );
+        });
+        console.warn("check market account here:", marketAccount);
         return marketAccount as MarketAccount;
       } catch (e) {
         if (e instanceof Error) {
@@ -91,10 +92,7 @@ export const InitialContent: React.FC<{
               BigInt(selectedMarket.market_id),
               BigInt(NO_CUSTODIAN),
             );
-            await signAndSubmitTransaction({
-              ...payload,
-              type: "entry_function_payload",
-            });
+            await signAndSubmitTransaction({ data: payload });
           }}
           variant="primary"
         >

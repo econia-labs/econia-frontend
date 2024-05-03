@@ -1,3 +1,4 @@
+import { type InputViewFunctionData } from "@aptos-labs/ts-sdk";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 
@@ -33,12 +34,15 @@ export const DepositWithdrawFlowModal: React.FC<Props> = ({
       if (!account?.address) {
         return false;
       }
-      const payload = {
+      const payload: InputViewFunctionData = {
         function: `${ECONIA_ADDR}::user::has_market_account_by_market_id`,
-        type_arguments: [],
-        arguments: [`${account?.address}`, selectedMarket.market_id.toString()],
+        typeArguments: [],
+        functionArguments: [
+          `${account?.address}`,
+          selectedMarket.market_id.toString(),
+        ],
       };
-      const data = await aptosClient.view(payload);
+      const data = await aptosClient.view({ payload });
 
       const isRegistered = data[0] as boolean;
       return isRegistered;

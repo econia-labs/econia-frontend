@@ -1,9 +1,8 @@
-import { AptosClient } from "aptos";
 import BigNumber from "bignumber.js";
 
-import { RPC_NODE_URL } from "@/env";
 import { type CoinInfo } from "@/hooks/useCoinInfo";
 
+import { getAptosClient } from "./helpers";
 import { TypeTag } from "./TypeTag";
 
 /**
@@ -75,19 +74,19 @@ export const fromRawCoinAmount = (
  */
 export async function getCoinInfo(coinTypes: TypeTag[]) {
   const rs: { [key: string]: CoinInfo } = {};
-  const aptosClient = new AptosClient(RPC_NODE_URL);
+  const aptosClient = getAptosClient();
   const uniqueTypes = [...new Set(coinTypes.map((i) => i.toString()))];
 
   const t = await Promise.all(
     uniqueTypes.map(async (coinType) => {
-      return await aptosClient.getAccountResource(
-        TypeTag.fromString(coinType).addr,
-        `0x1::coin::CoinInfo<${coinType.toString()}>`,
-      );
+      return await aptosClient.getAccountResource<CoinInfo>({
+        accountAddress: TypeTag.fromString(coinType).addr,
+        resourceType: `0x1::coin::CoinInfo<${coinType.toString()}>`,
+      });
     }),
   );
   uniqueTypes.map((type, index) => {
-    rs[type.toString()] = t[index].data as CoinInfo;
+    rs[type.toString()] = t[index];
   });
 
   return rs;

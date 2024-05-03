@@ -53,9 +53,11 @@ export const LimitOrderEntry: React.FC<{
   const { data: takerFeeDivisor } = useQuery(["takerFeeDivisor"], async () => {
     try {
       const rs = await aptosClient.view({
-        function: `${ECONIA_ADDR}::incentives::get_taker_fee_divisor`,
-        arguments: [],
-        type_arguments: [],
+        payload: {
+          function: `${ECONIA_ADDR}::incentives::get_taker_fee_divisor`,
+          functionArguments: [],
+          typeArguments: [],
+        },
       });
       return Number(rs[0]);
     } catch (e) {
@@ -215,10 +217,7 @@ export const LimitOrderEntry: React.FC<{
       "noRestriction",
       "abort",
     );
-    await signAndSubmitTransaction({
-      type: "entry_function_payload",
-      ...payload,
-    });
+    await signAndSubmitTransaction({ data: payload });
   };
 
   const isSufficient = useMemo(() => {

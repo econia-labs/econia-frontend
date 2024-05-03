@@ -2,6 +2,7 @@ import "rc-slider/assets/index.css";
 
 import Slider, { type SliderProps } from "rc-slider";
 import { type MarkObj } from "rc-slider/lib/Marks";
+import { useEffect, useState } from "react";
 
 import { handleRender } from "./TooltipSlider";
 
@@ -61,25 +62,40 @@ const RangeSlider = ({
     return result;
   }, {} as Record<string | number, MarkObj>);
 
+  const [rendered, setRendered] = useState(false);
+
+  // Not entirely sure why this is suddenly necessary- perhaps because of the
+  // change in the wallet adapter context provider?
+  // In the previous build, useLayoutEffect was not triggered by the
+  // Slider component below, but now it is.
+  // This is causing a hydration error on page load, thus we wrap the render
+  // in a useEffect to ensure it is only rendered client-side.
+  // TODO: Investigate why this is necessary.
+  useEffect(() => {
+    setRendered(true);
+  }, []);
+
   return (
-    <Slider
-      defaultValue={0}
-      min={0}
-      marks={marks ?? marksDefault}
-      value={value}
-      className={`${className}`}
-      draggableTrack={false}
-      dotStyle={{
-        backgroundColor: "white",
-        borderColor: "white",
-        bottom: "0",
-        width: "4px",
-        height: "4px",
-      }}
-      handleRender={handleRender}
-      {...styles[variant]}
-      {...props}
-    />
+    rendered && (
+      <Slider
+        defaultValue={0}
+        min={0}
+        marks={marks ?? marksDefault}
+        value={value}
+        className={`${className}`}
+        draggableTrack={false}
+        dotStyle={{
+          backgroundColor: "white",
+          borderColor: "white",
+          bottom: "0",
+          width: "4px",
+          height: "4px",
+        }}
+        handleRender={handleRender}
+        {...styles[variant]}
+        {...props}
+      />
+    )
   );
 };
 
