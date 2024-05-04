@@ -1,9 +1,4 @@
-import {
-  Bool,
-  type InputEntryFunctionData,
-  MoveString,
-  U128,
-} from "@aptos-labs/ts-sdk";
+import { type InputEntryFunctionData } from "@aptos-labs/ts-sdk";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { type Side } from "@econia-labs/sdk/dist/src/order";
 import { sideToBoolean } from "@econia-labs/sdk/dist/src/utils";
@@ -93,9 +88,9 @@ export const OrdersTable: React.FC<{
 
         const payload: InputEntryFunctionData = {
           functionArguments: [
-            new MoveString(market_id.toString()),
-            new Bool(sideToBoolean(side as Side)),
-            new U128(order_id),
+            market_id.toString(),
+            sideToBoolean(side as Side),
+            order_id,
           ],
           function: `${ECONIA_ADDR}::market::cancel_order_user`,
         };
