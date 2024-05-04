@@ -304,3 +304,4 @@ export const faucetMint = (
   typeArguments: [coin],
   functionArguments: [amount],
 });
+

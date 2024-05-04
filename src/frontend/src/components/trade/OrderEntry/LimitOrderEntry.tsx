@@ -1,4 +1,4 @@
-import { entryFunctions, type order } from "@econia-labs/sdk";
+import { entryFunctions, type order, viewFunctions } from "@econia-labs/sdk";
 import { useQuery } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { useEffect, useMemo, useState } from "react";
@@ -52,14 +52,7 @@ export const LimitOrderEntry: React.FC<{
   const { errors } = formState;
   const { data: takerFeeDivisor } = useQuery(["takerFeeDivisor"], async () => {
     try {
-      const rs = await aptosClient.view({
-        payload: {
-          function: `${ECONIA_ADDR}::incentives::get_taker_fee_divisor`,
-          functionArguments: [],
-          typeArguments: [],
-        },
-      });
-      return Number(rs[0]);
+      return await viewFunctions.getTakerFeeDivisor(aptosClient, ECONIA_ADDR);
     } catch (e) {
       return 2000;
     }

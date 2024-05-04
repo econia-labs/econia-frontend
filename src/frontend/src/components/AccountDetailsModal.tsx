@@ -139,16 +139,15 @@ export const AccountDetailsModal: React.FC<{
         </p>
         {marketAccounts?.map((marketAccount, index: number) => {
           return (
-            <>
+            <div key={`${marketAccount.market_id}deposit card`}>
               <MarketAccountCard
-                key={marketAccount.market_id.toString() + "deposit card"}
                 onDepositWithdrawClick={onDepositWithdrawClick}
                 marketAccountData={marketAccount}
               />
               {index === marketAccounts.length - 1 && (
                 <div className="h-[50px]"></div>
               )}
-            </>
+            </div>
           );
         })}
       </div>
