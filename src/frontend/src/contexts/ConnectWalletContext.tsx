@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 
 import { ArrowIcon } from "@/components/icons/ArrowIcon";
 import MartianIcon from "@/components/icons/MartianIcon";
+import NightlyIcon from "@/components/icons/NightlyIcon";
 import PetraIcon from "@/components/icons/PetraIcon";
 import PontemIcon from "@/components/icons/PontemIcon";
 import RiseIcon from "@/components/icons/RiseIcon";
@@ -79,6 +80,7 @@ export const WALLET_ICON: { [key: string]: ReactElement } = {
   pontem: <PontemIcon />,
   martian: <MartianIcon />,
   rise: <RiseIcon />,
+  nightly: <NightlyIcon />,
 };
 export function ConnectWalletContextProvider({ children }: PropsWithChildren) {
   const { connect, wallets } = useWallet();
