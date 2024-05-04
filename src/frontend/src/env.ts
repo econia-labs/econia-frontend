@@ -10,6 +10,7 @@ if (process.env.NEXT_PUBLIC_API_URL == null) {
   throw new Error("NEXT_PUBLIC_NETWORK_NAME is not set");
 } else if (process.env.NEXT_PUBLIC_INTEGRATOR_ADDRESS == null) {
   console.warn("NEXT_PUBLIC_INTEGRATOR_ADDRESS is not set. Defaulting to 0x1.");
+  process.env.NEXT_PUBLIC_INTEGRATOR_ADDRESS = "0x1";
 }
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL;

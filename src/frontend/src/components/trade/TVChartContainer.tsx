@@ -312,9 +312,19 @@ export const TVChartContainer: React.FC<
           to: endTimestamp,
         })
         .then(() => {
-          console.warn("Visible range applied!");
-          console.warn("from: ", new Date(startTimestamp * 1000));
-          console.warn("to:   ", new Date(endTimestamp * 1000));
+          const options = {
+            year: "numeric",
+            month: "numeric",
+            day: "numeric",
+          };
+          const from = new Date(startTimestamp * 1000);
+          const to = new Date(endTimestamp * 1000);
+          /* eslint-disable-next-line no-console */
+          console.debug(
+            "Visible range applied:",
+            `${from.toLocaleDateString("en-US", options)}`,
+            `- ${to.toLocaleDateString("en-US", options)}\n`,
+          );
         })
         .catch((error) => {
           console.error("Error applying visible range:", error);
@@ -322,7 +332,6 @@ export const TVChartContainer: React.FC<
     });
 
     return () => {
-      console.warn("reject");
       if (tvWidget.current != null) {
         tvWidget.current.remove();
         tvWidget.current = undefined;
