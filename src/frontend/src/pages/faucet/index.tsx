@@ -1,5 +1,6 @@
+import { Aptos, AptosConfig } from "@aptos-labs/ts-sdk";
+import { entryFunctions } from "@econia-labs/sdk";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
-import { AptosClient } from "aptos";
 import { type GetStaticProps } from "next";
 import Head from "next/head";
 import { useCallback, useEffect, useState } from "react";
@@ -43,11 +44,11 @@ export default function Faucet({
         if (account?.address == null) {
           throw new Error("Query should not be enabled.");
         }
-        const resource = await aptosClient.getAccountResource(
-          account.address,
-          `0x1::coin::CoinStore<${TYPE_TAGS[i].toString()}>`,
-        );
-        const coinStore = resource.data as CoinStore;
+        const resource = await aptosClient.getAccountResource<CoinStore>({
+          accountAddress: account.address,
+          resourceType: `0x1::coin::CoinStore<${TYPE_TAGS[i].toString()}>`,
+        });
+        const coinStore = resource;
         return fromRawCoinAmount(coinStore.coin.value, coinInfo.decimals);
       },
       enabled: account?.address != null && TYPE_TAGS[i] != null,
@@ -66,12 +67,12 @@ export default function Faucet({
         ...isLoadingArray.slice(i + 1),
       ]);
       try {
-        await signAndSubmitTransaction({
-          type: "entry_function_payload",
-          function: `${FAUCET_ADDR}::faucet::mint`,
-          type_arguments: [typeTag.toString()],
-          arguments: [Math.floor(AMOUNTS[i] * 10 ** coinInfoList[i].decimals)],
-        });
+        const payload = entryFunctions.faucetMint(
+          FAUCET_ADDR,
+          typeTag.toString(),
+          BigInt(Math.floor(AMOUNTS[i] * 10 ** coinInfoList[i].decimals)),
+        );
+        await signAndSubmitTransaction({ data: payload });
         await queryClient.invalidateQueries([
           "balance",
           coinInfoList[i].name,
@@ -139,15 +140,18 @@ export default function Faucet({
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  const aptosClient = new AptosClient(RPC_NODE_URL);
+  const config = new AptosConfig({
+    fullnode: RPC_NODE_URL,
+  });
+  const aptosClient = new Aptos(config);
 
   const coinInfoList = await Promise.all(
     TYPE_TAGS.map(async (typeTag) => {
-      const res = await aptosClient.getAccountResource(
-        typeTag.addr,
-        `0x1::coin::CoinInfo<${typeTag.toString()}>`,
-      );
-      return res.data as CoinInfo;
+      const res = await aptosClient.getAccountResource<CoinInfo>({
+        accountAddress: typeTag.addr,
+        resourceType: `0x1::coin::CoinInfo<${typeTag.toString()}>`,
+      });
+      return res;
     }),
   );
 

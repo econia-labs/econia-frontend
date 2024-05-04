@@ -1,3 +1,4 @@
+import { type InputEntryFunctionData } from "@aptos-labs/ts-sdk";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { type Side } from "@econia-labs/sdk/dist/src/order";
 import { sideToBoolean } from "@econia-labs/sdk/dist/src/utils";
@@ -85,19 +86,15 @@ export const OrdersTable: React.FC<{
             break;
         }
 
-        const payload = {
-          arguments: [
+        const payload: InputEntryFunctionData = {
+          functionArguments: [
             market_id.toString(),
             sideToBoolean(side as Side),
             order_id,
           ],
           function: `${ECONIA_ADDR}::market::cancel_order_user`,
-          type_arguments: [],
         };
-        await signAndSubmitTransaction({
-          type: "entry_function_payload",
-          ...payload,
-        });
+        await signAndSubmitTransaction({ data: payload });
         refetch();
 
         // close modal if it's open

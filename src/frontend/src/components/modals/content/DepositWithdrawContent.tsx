@@ -59,7 +59,7 @@ const SelectCoinInput: React.FC<{
           {coins.map((coin) => (
             <Menu.Item
               as="div"
-              key={coin.account_address}
+              key={coin.account_address + coin.module_name + coin.struct_name}
               onClick={() => onSelectCoin(coin)}
               className="w-[97px] cursor-pointer items-center px-8 py-2 text-left font-roboto-mono hover:bg-neutral-600/30"
             >
@@ -124,10 +124,7 @@ const DepositWithdrawForm: React.FC<{
             BigInt(selectedMarket.market_id),
             BigInt(toRawCoinAmount(amount, selectedCoin.decimals).toString()),
           );
-    await signAndSubmitTransaction({
-      type: "entry_function_payload",
-      ...payload,
-    });
+    await signAndSubmitTransaction({ data: payload });
   };
 
   const handleRegisterMarketAccount = async () => {
@@ -141,10 +138,7 @@ const DepositWithdrawForm: React.FC<{
       BigInt(selectedMarket.market_id),
       BigInt(NO_CUSTODIAN),
     );
-    const res = await signAndSubmitTransaction({
-      ...payload,
-      type: "entry_function_payload",
-    });
+    const res = await signAndSubmitTransaction({ data: payload });
     if (res) {
       // refetch user market accounts
       await queryClient.invalidateQueries({

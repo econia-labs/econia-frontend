@@ -1,4 +1,4 @@
-import { entryFunctions, type order } from "@econia-labs/sdk";
+import { entryFunctions, type order, viewFunctions } from "@econia-labs/sdk";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -81,12 +81,7 @@ export const MarketOrderEntry: React.FC<{
 
   const { data: takerFeeDivisor } = useQuery(["takerFeeDivisor"], async () => {
     try {
-      const rs = await aptosClient.view({
-        function: `${ECONIA_ADDR}::incentives::get_taker_fee_divisor`,
-        arguments: [],
-        type_arguments: [],
-      });
-      return Number(rs[0]);
+      return await viewFunctions.getTakerFeeDivisor(aptosClient, ECONIA_ADDR);
     } catch (e) {
       return 2000;
     }
@@ -196,10 +191,7 @@ export const MarketOrderEntry: React.FC<{
       "abort",
     );
 
-    await signAndSubmitTransaction({
-      type: "entry_function_payload",
-      ...payload,
-    });
+    await signAndSubmitTransaction({ data: payload });
   };
 
   return (

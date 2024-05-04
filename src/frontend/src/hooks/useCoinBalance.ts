@@ -1,5 +1,5 @@
+import { AccountAddress, type AccountAddressInput } from "@aptos-labs/ts-sdk";
 import { useQuery } from "@tanstack/react-query";
-import { type MaybeHexString } from "aptos";
 
 import { useAptos } from "@/contexts/AptosContext";
 import { fromRawCoinAmount } from "@/utils/coin";
@@ -15,25 +15,28 @@ export type CoinStore = {
 
 export const CoinBalanceQueryKey = (
   coinTypeTag?: TypeTag | null,
-  userAddr?: MaybeHexString | null,
-) => ["useCoinBalance", coinTypeTag?.toString(), userAddr];
+  userAddr?: AccountAddressInput | null,
+) => [
+  "useCoinBalance",
+  coinTypeTag?.toString(),
+  userAddr ? AccountAddress.from(userAddr) : null,
+];
 
 export const useCoinBalance = (
   coinTypeTag?: TypeTag | null,
-  userAddr?: MaybeHexString | null,
+  userAddrInput?: AccountAddressInput | null,
 ) => {
   const { aptosClient } = useAptos();
   const coinInfo = useCoinInfo(coinTypeTag);
+  const userAddr = userAddrInput ? AccountAddress.from(userAddrInput) : null;
   return useQuery(
     CoinBalanceQueryKey(coinTypeTag, userAddr),
     async () => {
       if (!userAddr || !coinTypeTag) return null;
-      const coinStore = await aptosClient
-        .getAccountResource(
-          userAddr,
-          `0x1::coin::CoinStore<${coinTypeTag.toString()}>`,
-        )
-        .then(({ data }) => data as CoinStore);
+      const coinStore = await aptosClient.getAccountResource<CoinStore>({
+        accountAddress: userAddr,
+        resourceType: `0x1::coin::CoinStore<${coinTypeTag.toString()}>`,
+      });
       return fromRawCoinAmount(coinStore.coin.value, coinInfo.data!.decimals);
     },
     {
