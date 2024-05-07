@@ -47,6 +47,19 @@ const WalletItem: React.FC<
       {children}
     </button>
   );
+
+// This should only show up if the wallet extension isn't installed.
+const PlaceholderWalletItem: React.FC<
+  {
+    url: string;
+    className?: string;
+  } & PropsWithChildren
+> = ({ url, className, children }) => (
+  <a href={url} className={className} target="_blank" rel="noreferrer">
+    {children}
+  </a>
+);
+
 let t: NodeJS.Timeout | null = null;
 const AutoConnect = () => {
   const { account, connect } = useWallet();
@@ -75,6 +88,23 @@ const AutoConnect = () => {
 
   return null;
 };
+
+const WalletItemClassName =
+  "relative flex h-[45px] w-full items-center p-4 text-neutral-600 ring-1 ring-neutral-600 " +
+  "transition-all hover:text-blue hover:ring-blue [&:hover>.arrow-wrapper]:bg-blue [&:hover>.arrow-wrapper]:ring-blue " +
+  "[&:hover>div>.arrow]:-rotate-45";
+const WalletIconClassName =
+  "ml-2 font-jost text-base font-medium text-neutral-500";
+const ArrowDivClassName =
+  "arrow-wrapper absolute bottom-0 right-0 p-[7px] ring-1 ring-neutral-600 transition-all";
+
+const AIP62Wallets: readonly [string, string][] = [
+  [
+    "Nightly",
+    "https://chromewebstore.google.com/detail/nightly/fiikommddbeccaoicoejoniammnalkfa?hl=en",
+  ],
+];
+
 export const WALLET_ICON: { [key: string]: ReactElement } = {
   petra: <PetraIcon />,
   pontem: <PontemIcon />,
@@ -109,11 +139,12 @@ export function ConnectWalletContextProvider({ children }: PropsWithChildren) {
             site to access your account.
           </p>
           <div className="mt-8 flex flex-col gap-4">
+            {/* Wallet modal items for non AIP-62 wallets. */}
             {wallets?.map((wallet) => (
               <WalletItem
                 wallet={wallet}
                 key={wallet.name}
-                className="relative flex h-[45px] w-full items-center p-4 text-neutral-600 ring-1 ring-neutral-600 transition-all hover:text-blue hover:ring-blue [&:hover>.arrow-wrapper]:bg-blue [&:hover>.arrow-wrapper]:ring-blue [&:hover>div>.arrow]:-rotate-45"
+                className={WalletItemClassName}
                 onClick={() => {
                   try {
                     connect(wallet.name);
@@ -126,23 +157,36 @@ export function ConnectWalletContextProvider({ children }: PropsWithChildren) {
                   }
                 }}
               >
-                {/* <Image
-                  src={wallet.icon}
-                  height={36}
-                  width={36}
-                  alt={`${wallet.name} Wallet Icon`}
-                /> */}
                 {WALLET_ICON[wallet.name.toLowerCase()]}
-                <p className="ml-2 font-jost text-base font-medium text-neutral-500">
+                <p className={WalletIconClassName}>
                   {wallet.readyState === WalletReadyState.NotDetected
                     ? `Install ${wallet.name} Wallet`
                     : `${wallet.name} Wallet`}
                 </p>
-                <div className="arrow-wrapper absolute bottom-0 right-0 p-[7px] ring-1 ring-neutral-600 transition-all">
+                <div className={ArrowDivClassName}>
                   <ArrowIcon className="arrow transition-all" />
                 </div>
               </WalletItem>
             ))}
+            {/* Wallet modal placeholders for select AIP-62 wallets that aren't installed. */}
+            {AIP62Wallets.map(
+              ([name, url]) =>
+                !wallets?.map((w) => String(w.name)).includes(name) && (
+                  <PlaceholderWalletItem
+                    key={`placeholder-item-${name}`}
+                    url={url}
+                    className={WalletItemClassName}
+                  >
+                    {WALLET_ICON[name.toLowerCase()]}
+                    <p className={WalletIconClassName}>
+                      {`Install ${name} Wallet`}
+                    </p>
+                    <div className={ArrowDivClassName}>
+                      <ArrowIcon className="arrow transition-all" />
+                    </div>
+                  </PlaceholderWalletItem>
+                ),
+            )}
           </div>
         </div>
       </BaseModal>
