@@ -10,6 +10,10 @@ import {
   TV_CHARTING_LIBRARY_RESOLUTIONS,
 } from "@/constants";
 import { DAY_BY_RESOLUTION, MS_IN_ONE_DAY } from "@/hooks/useChartData";
+import {
+  type ChartContainerProps,
+  type TVChartContainerProps,
+} from "@/pages/market/[market_id]";
 import { type ApiMarket, type MarketData } from "@/types/api";
 import { toDecimalPrice, toDecimalSize } from "@/utils/econia";
 import { getAllDataInTimeRange, getClientTimezone } from "@/utils/helpers";
@@ -26,10 +30,6 @@ let ChartingLibrary: any = undefined;
 })();
 const { widget } = ChartingLibrary;
 
-export interface ChartContainerProps {
-  symbol: string;
-}
-
 const configurationData: DatafeedConfiguration = {
   supported_resolutions: TV_CHARTING_LIBRARY_RESOLUTIONS,
   symbols_types: [
@@ -38,11 +38,6 @@ const configurationData: DatafeedConfiguration = {
       value: "crypto",
     },
   ],
-};
-
-type TVChartContainerProps = {
-  selectedMarket: ApiMarket;
-  allMarketData: ApiMarket[];
 };
 
 export const TVChartContainer: React.FC<

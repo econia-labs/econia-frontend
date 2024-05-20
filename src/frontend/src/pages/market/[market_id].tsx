@@ -1,6 +1,7 @@
 import type { GetStaticPaths, GetStaticProps } from "next";
 import dynamic from "next/dynamic";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import Script from "next/script";
 import React, { useEffect, useMemo, useState } from "react";
 
@@ -27,8 +28,16 @@ type Props = {
 type PathParams = {
   market_id: string;
 };
+export interface ChartContainerProps {
+  symbol: string;
+}
 
-const ChartContainer = dynamic(
+export interface TVChartContainerProps {
+  selectedMarket: ApiMarket;
+  allMarketData: ApiMarket[];
+}
+
+let ChartContainer = dynamic(
   () => {
     try {
       // We call `require` here for the private charting library before
@@ -60,6 +69,8 @@ const ChartContainer = dynamic(
 );
 
 export default function Market({ allMarketData, marketData }: Props) {
+  const router = useRouter();
+
   const [tab, setTab] = useState<"orders" | "order-book" | "trade-histories">(
     "orders",
   );
@@ -69,6 +80,22 @@ export default function Market({ allMarketData, marketData }: Props) {
     useState<boolean>(false);
 
   const [isScriptReady, setIsScriptReady] = useState(false);
+
+  useEffect(() => {
+    if (router.query.lwc === "true") {
+      // NOTE: We may have already loaded the private charting library, but this is a feature
+      // for testing and debugging, so we don't need to check if the library is already loaded.
+      console.warn(
+        "Force loading LightweightChartsContainer. Avoid loading both libraries in production.",
+      );
+      // In a production app, you should load one or the other.
+      ChartContainer = dynamic(async () =>
+        import("@/components/trade/LightweightChartsContainer").then(
+          (mod) => mod.LightweightChartsContainer,
+        ),
+      );
+    }
+  }, [router.query]);
 
   useEffect(() => {
     const f = () => {

@@ -8,19 +8,13 @@ import {
   VOLUME_PRICE_CHART_ID,
 } from "@/constants";
 import { type DAY_BY_RESOLUTION, useChartData } from "@/hooks/useChartData";
-import { type ApiMarket } from "@/types/api";
+import {
+  type ChartContainerProps,
+  type TVChartContainerProps,
+} from "@/pages/market/[market_id]";
 
 import ResizeChartButton from "./ResizeChartButton";
 import ResolutionSelector from "./ResolutionSelector";
-
-export interface ChartContainerProps {
-  symbol: string;
-}
-
-export type TVChartContainerProps = {
-  selectedMarket: ApiMarket;
-  allMarketData: ApiMarket[];
-};
 
 export const LightweightChartsContainer: React.FC<
   Partial<ChartContainerProps> & TVChartContainerProps
