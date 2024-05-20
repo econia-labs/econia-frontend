@@ -45,7 +45,9 @@ export type ChartData = {
 };
 
 export type ChartDataDictionary = {
-  [K in keyof typeof DAY_BY_RESOLUTION]?: ChartData;
+  [marketID: number]: {
+    [K in keyof typeof DAY_BY_RESOLUTION]?: ChartData;
+  };
 };
 
 // Calculate scale factor relative to a specified base resolution.
@@ -135,6 +137,10 @@ export function useChartData(
   const localDate = useRef<Date>(new Date());
 
   useEffect(() => {
+    const marketID = selectedMarket.market_id;
+    if (!chartDataRef.current[marketID]) {
+      chartDataRef.current[marketID] = {};
+    }
     schedulers.current.forEach(clearTimeout);
     schedulers.current = [];
     // Calculate the initial start based off of the current time and a
@@ -153,7 +159,8 @@ export function useChartData(
         schedulers.current = [];
 
         const latestForCurrentRes =
-          chartDataRef.current[resolution]?.latestTime || scaledInitialStart;
+          chartDataRef.current[marketID][resolution]?.latestTime ||
+          scaledInitialStart;
 
         const now = new Date();
         const chartData = await fetchChartData(
@@ -174,16 +181,20 @@ export function useChartData(
 
         const updatedChartData = {
           ...chartDataRef.current,
-          [resolution]: {
-            priceData: {
-              ...(chartDataRef.current[resolution]?.priceData || {}),
-              ...chartData.priceData,
+          [marketID]: {
+            [resolution]: {
+              priceData: {
+                ...(chartDataRef.current[marketID][resolution]?.priceData ||
+                  {}),
+                ...chartData.priceData,
+              },
+              volumeData: {
+                ...(chartDataRef.current[marketID][resolution]?.volumeData ||
+                  {}),
+                ...chartData.volumeData,
+              },
+              latestTime,
             },
-            volumeData: {
-              ...(chartDataRef.current[resolution]?.volumeData || {}),
-              ...chartData.volumeData,
-            },
-            latestTime,
           },
         };
         chartDataRef.current = updatedChartData;
@@ -229,5 +240,5 @@ export function useChartData(
     };
   }, [resolution, selectedMarket]);
 
-  return chartDataDictionary[resolution];
+  return chartDataDictionary[selectedMarket.market_id]?.[resolution];
 }

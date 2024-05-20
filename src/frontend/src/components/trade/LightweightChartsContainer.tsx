@@ -8,19 +8,13 @@ import {
   VOLUME_PRICE_CHART_ID,
 } from "@/constants";
 import { type DAY_BY_RESOLUTION, useChartData } from "@/hooks/useChartData";
-import { type ApiMarket } from "@/types/api";
+import {
+  type ChartContainerProps,
+  type TVChartContainerProps,
+} from "@/pages/market/[market_id]";
 
 import ResizeChartButton from "./ResizeChartButton";
 import ResolutionSelector from "./ResolutionSelector";
-
-export interface ChartContainerProps {
-  symbol: string;
-}
-
-export type TVChartContainerProps = {
-  selectedMarket: ApiMarket;
-  allMarketData: ApiMarket[];
-};
 
 export const LightweightChartsContainer: React.FC<
   Partial<ChartContainerProps> & TVChartContainerProps
@@ -29,6 +23,7 @@ export const LightweightChartsContainer: React.FC<
   const chartAPIRef = useRef<any>(null);
   const candlestickSeriesRef = useRef<any>(null);
   const volumeSeriesRef = useRef<any>(null);
+  const chartIsInitialized = useRef(false);
   /* eslint-enable  @typescript-eslint/no-explicit-any */
 
   const chartComponentRef = useRef<HTMLDivElement>(null);
@@ -44,7 +39,7 @@ export const LightweightChartsContainer: React.FC<
 
   const resizeChart = useCallback(() => {
     const chart = chartAPIRef.current;
-    if (chart) {
+    if (chart && chartIsInitialized.current) {
       // The ID of the price scale is automatically set to "right"
       // because it doesn't have an ID otherwise. This is not
       // documented in the TradingView API.
@@ -67,7 +62,8 @@ export const LightweightChartsContainer: React.FC<
       chartComponentRef.current &&
       chartAPIRef.current &&
       candlestickSeriesRef.current &&
-      volumeSeriesRef.current
+      volumeSeriesRef.current &&
+      chartIsInitialized.current
     ) {
       const priceData = Object.values(chartData.priceData);
       const volumeData = Object.values(chartData.volumeData);
@@ -137,11 +133,13 @@ export const LightweightChartsContainer: React.FC<
       timeVisible: true,
     });
 
-    window.addEventListener("resize", () => {
-      chart.timeScale().fitContent();
-    });
-
     chartAPIRef.current = chart;
+
+    const windowFitContentForResize = () => {
+      chart.timeScale().fitContent();
+    };
+
+    window.addEventListener("resize", windowFitContentForResize);
 
     // Subscribe to logical range changes so that when the user zooms out
     // too far, we reset the logical range back to the maximum.
@@ -163,14 +161,16 @@ export const LightweightChartsContainer: React.FC<
     };
 
     chart.timeScale().subscribeVisibleLogicalRangeChange(rangeChangeHandler);
-
+    chartIsInitialized.current = true;
     return () => {
+      window.removeEventListener("resize", windowFitContentForResize);
       // Remove the chart and end the fetch loop
       // scheduler if the component is unmounted.
       chart
         .timeScale()
         .unsubscribeVisibleLogicalRangeChange(rangeChangeHandler);
       chart.remove();
+      chartIsInitialized.current = false;
     };
   }, [props.symbol, props.selectedMarket]);
 
@@ -196,7 +196,7 @@ export const LightweightChartsContainer: React.FC<
         window.removeEventListener("mouseup", handleMouseUp);
       };
     }
-  }, [chartComponentRef]);
+  }, []);
 
   return (
     <div className="relative h-full w-full">
