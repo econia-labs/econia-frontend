@@ -283,7 +283,7 @@ export const getStaticPaths: GetStaticPaths<PathParams> = async () => {
   const paths = allMarketData.map((market: ApiMarket) => ({
     params: { market_id: `${market.market_id}` },
   }));
-  return { paths, fallback: false };
+  return { paths, fallback: true };
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
