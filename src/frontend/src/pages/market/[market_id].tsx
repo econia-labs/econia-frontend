@@ -113,7 +113,7 @@ export default function Market({ allMarketData, marketData }: Props) {
     data: orderbookData,
     isFetching: orderbookIsFetching,
     isLoading: orderbookIsLoading,
-  } = useOrderBook(marketData.market_id);
+  } = useOrderBook(marketData?.market_id ?? 0);
 
   const defaultTVChartProps = useMemo(() => {
     return {
@@ -122,6 +122,10 @@ export default function Market({ allMarketData, marketData }: Props) {
       allMarketData: allMarketData as ApiMarket[],
     };
   }, [marketData, allMarketData]);
+
+  if (!allMarketData) {
+    return <>Loading...</>;
+  }
 
   if (!marketData)
     return (
